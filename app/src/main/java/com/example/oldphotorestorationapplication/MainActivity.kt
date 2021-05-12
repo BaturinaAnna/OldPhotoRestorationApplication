@@ -14,12 +14,10 @@ import android.util.Log
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.Default
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
@@ -33,19 +31,19 @@ import java.util.concurrent.TimeUnit
 
 
 class MainActivity : AppCompatActivity() {
-    private var button: Button? = null
+    private var buttonToRestore: Button? = null
     private var imageView: ImageView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        button = findViewById(R.id.buttonRestore)
+        buttonToRestore = findViewById(R.id.buttonRestore)
         imageView = findViewById(R.id.centerimg)
         init()
     }
 
     private fun init() {
-        button!!.setOnClickListener {
+        buttonToRestore!!.setOnClickListener {
             if (ContextCompat.checkSelfPermission(
                     this@MainActivity,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE
@@ -72,13 +70,6 @@ class MainActivity : AppCompatActivity() {
         val intent = Intent("android.intent.action.GET_CONTENT")
         intent.type = "image/*"
         startActivityForResult(intent, 1)
-//        try {
-//            handleImageOnKitKat(data)
-//        } catch (e: IOException) {
-//            e.printStackTrace()
-//        } catch (e: JSONException) {
-//            e.printStackTrace()
-//        }
     }
 
     override fun onRequestPermissionsResult(
@@ -87,7 +78,7 @@ class MainActivity : AppCompatActivity() {
         grantResults: IntArray
     ) {
         when (requestCode) {
-            1 -> if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            1 -> if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 openAlbum()
             } else {
                 Toast.makeText(applicationContext, "You denied the permission", Toast.LENGTH_SHORT)
@@ -124,37 +115,6 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
     }
-
-//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
-//        super.onActivityResult(requestCode, resultCode, data)
-//        when (requestCode) {
-////            1 -> if (resultCode == MainActivity.RESULT_OK) {
-//            1 -> if (resultCode == -1) {
-//                //Determine the mobile phone system version number,because4.4At the beginning of the version, the selected album picture no longer returns the real Uri of the picture, but a packaged Uri,To be parsed
-//                if (Build.VERSION.SDK_INT >= 19) {
-//                    //4.4And above
-//                    try {
-//                        handleImageOnKitKat(data)
-//                    } catch (e: IOException) {
-//                        e.printStackTrace()
-//                    } catch (e: JSONException) {
-//                        e.printStackTrace()
-//                    }
-//                } else {
-//                    //4.4Following version
-//                    try {
-//                        handleImageBeforeKitKat(data)
-//                    } catch (e: IOException) {
-//                        e.printStackTrace()
-//                    } catch (e: JSONException) {
-//                        e.printStackTrace()
-//                    }
-//                }
-//            }
-//            else -> {
-//            }
-//        }
-//    }
 
     //4.4And above
     @TargetApi(19)
@@ -233,60 +193,28 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    private val SUCCESS = 254
-    private val FALL = 318
-
-    private val mHandler: Handler = object : Handler() {
-        @RequiresApi(api = Build.VERSION_CODES.O)
-        override fun handleMessage(msg: Message) {
-            super.handleMessage(msg)
-            when (msg.what) {
-                SUCCESS -> {
-                    val picture_bt = msg.obj as ByteArray
-                    val bitmap = BitmapFactory.decodeByteArray(picture_bt, 0, picture_bt.size)
-                    imageView!!.setImageBitmap(bitmap)
-                    Toast.makeText(this@MainActivity, "Request successful", Toast.LENGTH_SHORT)
-                        .show()
-                }
-                FALL -> Toast.makeText(this@MainActivity, "Request failed", Toast.LENGTH_SHORT)
-                    .show()
-            }
+    private fun processResponse(restoredPhoto: ByteArray) {
+        try{
+            val bitmap = BitmapFactory.decodeByteArray(restoredPhoto, 0, restoredPhoto.size)
+            imageView!!.setImageBitmap(bitmap)
+        } catch (e: java.lang.Exception){
+            e.message?.let { Log.d("ANNA", it) }
         }
-    }
-
-    override fun onPause() {
-        super.onPause()
     }
 
     private suspend fun uploadPhoto(imagePath: String, url: String){
         withContext(Default) {
 
             val file: File = File(imagePath)
-            var image: RequestBody? = null
-            try {
-                image = RequestBody.create(MediaType.parse("image/*"), file)
-
-            } catch (e: Exception) {
-                Log.d("ANNA", e.message!!)
-            }
-            var requestBody: RequestBody? = null
-            try {
-                requestBody = MultipartBody.Builder()
+            val image: RequestBody? = RequestBody.create(MediaType.parse("image/*"), file)
+            val requestBody: RequestBody? = MultipartBody.Builder()
                     .setType(MultipartBody.FORM)
                     .addFormDataPart("file", imagePath, image)
                     .build()
-            } catch (e: Exception) {
-                Log.d("ANNA", e.message!!)
-            }
-            var request: Request? = null
-            try {
-                request = Request.Builder()
+            val request: Request? =  Request.Builder()
                     .url(url)
                     .post(requestBody)
                     .build()
-            } catch (e: Exception){
-                Log.d("ANNA", e.message!!)
-            }
             val okHttpClient: OkHttpClient = OkHttpClient.Builder()
                 .readTimeout(1, TimeUnit.HOURS)
                 //.writeTimeout(1, TimeUnit.HOURS)
@@ -298,9 +226,7 @@ class MainActivity : AppCompatActivity() {
             call.enqueue(object : Callback {
                 override fun onFailure(call: Call?, e: IOException) {
                     Log.d("ANNA", e.toString())
-                    mHandler.sendEmptyMessage(318)
                 }
-
                 @Throws(IOException::class)
                 override fun onResponse(call: Call?, response: Response) {
                     val buffer = ByteArrayOutputStream()
@@ -317,10 +243,7 @@ class MainActivity : AppCompatActivity() {
                     }
                     buffer.flush()
                     val byteArray = buffer.toByteArray()
-                    val message: Message = mHandler.obtainMessage()
-                    message.obj = byteArray
-                    message.what = 254
-                    mHandler.sendMessage(message)
+                    processResponse(byteArray);
                 }
             })
         }
