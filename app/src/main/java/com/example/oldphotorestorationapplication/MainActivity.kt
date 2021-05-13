@@ -5,6 +5,7 @@ import android.annotation.TargetApi
 import android.content.ContentUris
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.*
@@ -12,33 +13,49 @@ import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.util.Log
 import android.widget.Button
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers.Default
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import okhttp3.*
 import org.json.JSONException
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
+import java.lang.Exception
 import java.util.concurrent.TimeUnit
 
 
 class MainActivity : AppCompatActivity() {
+
+    private var recyclerView: RecyclerView? = null
+    private var recyclerDataArrayList: ArrayList<RecyclerData>? = null
     private var buttonToRestore: Button? = null
-    private var imageView: ImageView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         buttonToRestore = findViewById(R.id.buttonRestore)
-        imageView = findViewById(R.id.centerimg)
+        recyclerView = findViewById(R.id.idCourseRV)
+
+        // created new array list..
+        recyclerDataArrayList = ArrayList()
+
+        // added data from arraylist to adapter class.
+        val adapter = RecyclerViewAdapter(recyclerDataArrayList!!, this)
+
+        // setting grid layout manager to implement grid view.
+        // in this method '2' represents number of columns to be displayed in grid view.
+        val layoutManager = GridLayoutManager(this, 2)
+
+        // at last set adapter to recycler view.
+        recyclerView!!.layoutManager = layoutManager
+        recyclerView!!.adapter = adapter
+
         init()
     }
 
@@ -58,7 +75,6 @@ class MainActivity : AppCompatActivity() {
                     1
                 )
                 Toast.makeText(applicationContext, "PERMISSION", Toast.LENGTH_SHORT).show()
-
             } else {
                 Toast.makeText(applicationContext, "ALLOWED", Toast.LENGTH_SHORT).show()
                 openAlbum()
@@ -77,43 +93,40 @@ class MainActivity : AppCompatActivity() {
         permissions: Array<String?>,
         grantResults: IntArray
     ) {
-        when (requestCode) {
-            1 -> if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                openAlbum()
-            } else {
-                Toast.makeText(applicationContext, "You denied the permission", Toast.LENGTH_SHORT)
-                    .show()
-            }
-            else -> {
-            }
+        if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            openAlbum()
+        } else {
+            Toast.makeText(applicationContext, "You denied the permission", Toast.LENGTH_SHORT)
+                .show()
         }
     }
+
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (Build.VERSION.SDK_INT >= 19) {
-                    //4.4And above
-                    try {
-                        if (data != null) {
-                            handleImageOnKitKat(data)
-                        }
-                    } catch (e: IOException) {
-                        e.printStackTrace()
-                    } catch (e: JSONException) {
-                        e.printStackTrace()
-                    }
-                } else {
-                    //4.4Following version
-                    try {
-                        if (data != null) {
-                            handleImageBeforeKitKat(data)
-                        }
-                    } catch (e: IOException) {
-                        e.printStackTrace()
-                    } catch (e: JSONException) {
-                        e.printStackTrace()
-                    }
+            //4.4And above
+            try {
+                if (data != null) {
+                    handleImageOnKitKat(data)
                 }
+            } catch (e: IOException) {
+                e.printStackTrace()
+            } catch (e: JSONException) {
+                e.printStackTrace()
+            }
+        } else {
+            //4.4Following version
+            try {
+                if (data != null) {
+                    handleImageBeforeKitKat(data)
+                }
+            } catch (e: IOException) {
+                e.printStackTrace()
+            } catch (e: JSONException) {
+                e.printStackTrace()
+            }
+        }
     }
 
     //4.4And above
@@ -178,10 +191,11 @@ class MainActivity : AppCompatActivity() {
     //Display pictures according to picture path
     private fun displayImage(imagePath: String?) {
         if (imagePath != null) {
-            val bitmap = BitmapFactory.decodeFile(imagePath)
-            imageView!!.setImageBitmap(bitmap)
-            CoroutineScope(IO).launch{
-                uploadPhoto(imagePath, "http://192.168.1.235:8080/OldPhotoRestoration_war_exploded/restoration-servlet")
+            CoroutineScope(IO).launch {
+                uploadPhoto(
+                    imagePath,
+                    "http://192.168.1.235:8080/OldPhotoRestoration_war_exploded/restoration-servlet"
+                )
             }
         } else {
             Toast.makeText(
@@ -192,29 +206,18 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
-    private fun processResponse(restoredPhoto: ByteArray) {
-        try{
-            val bitmap = BitmapFactory.decodeByteArray(restoredPhoto, 0, restoredPhoto.size)
-            imageView!!.setImageBitmap(bitmap)
-        } catch (e: java.lang.Exception){
-            e.message?.let { Log.d("ANNA", it) }
-        }
-    }
-
-    private suspend fun uploadPhoto(imagePath: String, url: String){
-        withContext(Default) {
-
+    private suspend fun uploadPhoto(imagePath: String, url: String) {
+        withContext(IO) {
             val file: File = File(imagePath)
             val image: RequestBody? = RequestBody.create(MediaType.parse("image/*"), file)
             val requestBody: RequestBody? = MultipartBody.Builder()
-                    .setType(MultipartBody.FORM)
-                    .addFormDataPart("file", imagePath, image)
-                    .build()
-            val request: Request? =  Request.Builder()
-                    .url(url)
-                    .post(requestBody)
-                    .build()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("file", imagePath, image)
+                .build()
+            val request: Request? = Request.Builder()
+                .url(url)
+                .post(requestBody)
+                .build()
             val okHttpClient: OkHttpClient = OkHttpClient.Builder()
                 .readTimeout(1, TimeUnit.HOURS)
                 //.writeTimeout(1, TimeUnit.HOURS)
@@ -227,6 +230,7 @@ class MainActivity : AppCompatActivity() {
                 override fun onFailure(call: Call?, e: IOException) {
                     Log.d("ANNA", e.toString())
                 }
+
                 @Throws(IOException::class)
                 override fun onResponse(call: Call?, response: Response) {
                     val buffer = ByteArrayOutputStream()
@@ -243,10 +247,17 @@ class MainActivity : AppCompatActivity() {
                     }
                     buffer.flush()
                     val byteArray = buffer.toByteArray()
-                    processResponse(byteArray);
+                    try {
+                        val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
+                        recyclerDataArrayList!!.add(RecyclerData("Photo", bitmap))
+                        GlobalScope.launch(Dispatchers.Main){
+                            recyclerView!!.adapter!!.notifyDataSetChanged()
+                        }
+                    } catch (e: Exception) {
+                        e.message?.let { Log.d("ANNA", it) }
+                    }
                 }
             })
         }
     }
-
 }
