@@ -4,6 +4,8 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ExpandableListView
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -11,7 +13,7 @@ import java.util.*
 
 
 class RecyclerViewAdapter(
-    private val courseDataArrayList: ArrayList<RecyclerData>,
+    private val courseDataArrayList: ArrayList<PhotoInfo>,
     private val mcontext: Context
 ) :
     RecyclerView.Adapter<RecyclerViewAdapter.RecyclerViewHolder>() {
@@ -25,9 +27,8 @@ class RecyclerViewAdapter(
     override fun onBindViewHolder(holder: RecyclerViewHolder, position: Int) {
         // Set the data to textview and imageview.
         val recyclerData = courseDataArrayList[position]
-        holder.courseTV.text = recyclerData.title
-//        holder.courseIV.setImageResource(recyclerData.imgid)
-        holder.courseIV.setImageBitmap(recyclerData.image)
+        holder.photoTitle.text = recyclerData.title
+        holder.photo.setImageBitmap(recyclerData.restoredPhoto)
     }
 
     override fun getItemCount(): Int {
@@ -37,12 +38,12 @@ class RecyclerViewAdapter(
 
     // View Holder Class to handle Recycler View.
     inner class RecyclerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val courseTV: TextView
-        val courseIV: ImageView
+        val photoTitle: TextView
+        val photo: ImageView
 
         init {
-            courseTV = itemView.findViewById(R.id.idTVCourse)
-            courseIV = itemView.findViewById(R.id.idIVcourseIV)
+            photoTitle = itemView.findViewById(R.id.idTVCourse)
+            photo = itemView.findViewById(R.id.idIVcourseIV)
         }
     }
 }

@@ -5,15 +5,18 @@ import android.annotation.TargetApi
 import android.content.ContentUris
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.*
 import android.provider.DocumentsContract
 import android.provider.MediaStore
+import android.renderscript.RenderScript.Priority
 import android.util.Log
-import android.widget.Button
-import android.widget.Toast
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.View.OnFocusChangeListener
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -26,15 +29,19 @@ import org.json.JSONException
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
-import java.lang.Exception
 import java.util.concurrent.TimeUnit
 
 
 class MainActivity : AppCompatActivity() {
 
     private var recyclerView: RecyclerView? = null
-    private var recyclerDataArrayList: ArrayList<RecyclerData>? = null
+    private var recyclerDataArrayList: ArrayList<PhotoInfo>? = null
     private var buttonToRestore: Button? = null
+
+    private var popupView: View? = null
+    private var popupWindow: PopupWindow? = null
+    private var editTextTitle: TextView? = null
+    private var photoImageView: ImageView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,6 +63,16 @@ class MainActivity : AppCompatActivity() {
         recyclerView!!.layoutManager = layoutManager
         recyclerView!!.adapter = adapter
 
+        recyclerView!!.addOnItemTouchListener(RecyclerItemClickListener(this, recyclerView!!,
+            object : RecyclerItemClickListener.OnItemClickListener {
+            override fun onItemClick(view: View, position: Int) {
+                Log.d("ANNA", "CLICK")
+                showPopupWindow(recyclerView)
+            }
+            override fun onItemLongClick(view: View?, position: Int) {
+                Log.d("ANNA", "LONG CLICK")
+            }
+        }))
         init()
     }
 
@@ -80,6 +97,50 @@ class MainActivity : AppCompatActivity() {
                 openAlbum()
             }
         }
+    }
+
+    private fun setView(view: View) {
+        val inflater = view.context.getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        popupView = inflater.inflate(R.layout.photo_editor, null)
+        val width = LinearLayout.LayoutParams.MATCH_PARENT
+        val height = LinearLayout.LayoutParams.MATCH_PARENT
+        val focusable = true
+        popupWindow = PopupWindow(popupView, width, height, focusable)
+        popupWindow!!.showAtLocation(view, Gravity.CENTER, 0, 0)
+        editTextTitle = popupView!!.findViewById(R.id.editTextTitle)
+        photoImageView = popupView!!.findViewById(R.id.photo)
+    }
+
+    fun showPopupWindow(view: View?) {
+        setView(view!!)
+        photoImageView!!.setImageBitmap(recyclerDataArrayList?.get(0)?.restoredPhoto)
+        editTextTitle!!.setOnFocusChangeListener { v, hasFocus ->
+            if (hasFocus) {
+                editTextTitle!!.text = ""
+            }
+        }
+        editTextTitle!!.onFocusChangeListener =
+            OnFocusChangeListener { v: View?, hasFocus: Boolean ->
+                if (hasFocus) {
+                    editTextTitle!!.text = ""
+                }
+            }
+//        buttonAdd.setOnClickListener { v ->
+//            var priority: Priority? = Priority.HIGH
+//            if (radioButtonMedium.isChecked()) {
+//                priority = Priority.MEDIUM
+//            } else if (radioButtonLow.isChecked()) {
+//                priority = Priority.LOW
+//            }
+//            val notice = Notice(
+//                editTextTitle!!.text.toString(),
+//                editTextNote.getText().toString(),
+//                priority
+//            )
+//            NoticeInsertTask().execute(notice)
+//            notices.add(notice)
+//            popupWindow!!.dismiss()
+//        }
     }
 
     private fun openAlbum() {
@@ -248,8 +309,8 @@ class MainActivity : AppCompatActivity() {
                     buffer.flush()
                     val byteArray = buffer.toByteArray()
                     try {
-                        val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
-                        recyclerDataArrayList!!.add(RecyclerData("Photo", bitmap))
+                        val bitmapRestored = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
+                        recyclerDataArrayList!!.add(PhotoInfo("Photo", bitmapRestored))
                         GlobalScope.launch(Dispatchers.Main){
                             recyclerView!!.adapter!!.notifyDataSetChanged()
                         }
