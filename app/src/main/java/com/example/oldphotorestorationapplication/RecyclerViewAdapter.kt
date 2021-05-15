@@ -1,20 +1,26 @@
 package com.example.oldphotorestorationapplication
 
 import android.content.Context
+import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ExpandableListView
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.oldphotorestorationapplication.data.Photo
 import java.util.*
 
 
+interface OnPhotoClickListener{
+    fun onPhotoClick()
+}
+
+
 class RecyclerViewAdapter(
-    private val courseDataArrayList: ArrayList<PhotoInfo>,
-    private val mcontext: Context
+    private val courseDataArrayList: ArrayList<Photo>,
+    private val mcontext: Context,
+    private val listener: OnPhotoClickListener
 ) :
     RecyclerView.Adapter<RecyclerViewAdapter.RecyclerViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerViewHolder {
@@ -28,7 +34,9 @@ class RecyclerViewAdapter(
         // Set the data to textview and imageview.
         val recyclerData = courseDataArrayList[position]
         holder.photoTitle.text = recyclerData.title
-        holder.photo.setImageBitmap(recyclerData.restoredPhoto)
+        holder.photo.setImageBitmap(BitmapFactory.decodeByteArray(recyclerData.restoredPhoto, 0, recyclerData.restoredPhoto.size))
+//        holder.photo.setImageBitmap(recyclerData.restoredPhoto)
+        holder.itemView.setOnClickListener{listener.onPhotoClick()}
     }
 
     override fun getItemCount(): Int {
