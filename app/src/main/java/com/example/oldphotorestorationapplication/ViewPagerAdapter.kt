@@ -7,6 +7,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.viewpager.widget.PagerAdapter
 
+import com.github.chrisbanes.photoview.PhotoView;
+
 class ViewPagerAdapter(private val context: Context, private val photoArray: Array<Bitmap?>): PagerAdapter() {
 
     override fun getCount(): Int {
@@ -18,10 +20,11 @@ class ViewPagerAdapter(private val context: Context, private val photoArray: Arr
     }
 
     override fun instantiateItem(container: ViewGroup, position: Int): Any {
-        var imageView = ImageView(context)
-        imageView.setImageBitmap(photoArray[position])
-        container.addView(imageView, 0)
-        return imageView
+//        var imageView = ImageView(context)
+        var photoView = PhotoView(context)
+        photoView.setImageBitmap(photoArray[position])
+        container.addView(photoView, 0)
+        return photoView
     }
 
     override fun destroyItem(container: ViewGroup, position: Int, `object`: Any) {
