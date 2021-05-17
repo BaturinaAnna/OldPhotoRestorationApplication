@@ -23,6 +23,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager.widget.ViewPager
 import com.example.oldphotorestorationapplication.data.Photo
 import com.example.oldphotorestorationapplication.data.PhotoViewModel
 import kotlinx.coroutines.*
@@ -32,6 +33,7 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
 import java.lang.reflect.Field
+import java.text.FieldPosition
 import java.util.concurrent.TimeUnit
 
 
@@ -47,6 +49,9 @@ class MainActivity : AppCompatActivity(), OnPhotoClickListener {
   private lateinit var photoImageView: ImageView
   private lateinit var photoImageView2: ImageView
   private lateinit var button: Button
+
+
+  private lateinit var viewPager: ViewPager
 
   private lateinit var mViewModel: PhotoViewModel
 
@@ -68,10 +73,11 @@ class MainActivity : AppCompatActivity(), OnPhotoClickListener {
       adapter.setData(photo)
     })
     init()
+
   }
 
-  override fun onPhotoClick() {
-    showPopupWindow(recyclerView)
+  override fun onPhotoClick(position: Int) {
+    showPopupWindow(recyclerView, position)
   }
 
   private fun init() {
@@ -104,12 +110,18 @@ class MainActivity : AppCompatActivity(), OnPhotoClickListener {
     photoImageView = popupView.findViewById(R.id.photoRestored)
     photoImageView2 = popupView.findViewById(R.id.photoInitial)
     button = popupView.findViewById(R.id.button)
+
+    viewPager = popupView.findViewById(R.id.viewPager)
   }
 
-  fun showPopupWindow(view: View) {
+  fun showPopupWindow(view: View, position:Int) {
     setView(view)
-//    photoImageView2.setImageBitmap([index].initialPhoto)
-//    photoImageView.setImageBitmap(recyclerDataArrayList[index].restoredPhoto)
+    val viewPagerAdapter = ViewPagerAdapter(this, arrayOf(mViewModel.readAllData.value?.get(position)?.restoredPhoto,
+      mViewModel.readAllData.value?.get(position)?.initialPhoto))
+    viewPager.adapter = viewPagerAdapter
+//    photoImageView.setImageBitmap(mViewModel.readAllData.value?.get(position)?.restoredPhoto)
+//    photoImageView2.setImageBitmap(mViewModel.readAllData.value?.get(position)?.initialPhoto)
+//    photoImageView.setImageBitmap(recyclerDataArrayList[position].restoredPhoto)
     editTextTitle.setOnFocusChangeListener { _, hasFocus ->
       if (hasFocus) {
         editTextTitle.text = ""
@@ -208,8 +220,6 @@ class MainActivity : AppCompatActivity(), OnPhotoClickListener {
                   imagePath,
                   "http://192.168.1.235:8080/OldPhotoRestoration_war_exploded/restoration-servlet")
             }
-        }.orElse {
-          Log.d("DebugPhotoRestorationApp", "Failed to upload or download image")
         }
   }
 
@@ -263,9 +273,5 @@ class MainActivity : AppCompatActivity(), OnPhotoClickListener {
             }
           }
         })
-  }
-
-  inline fun <R> R?.orElse(block: () -> R): R {
-    return this ?: block()
   }
 }

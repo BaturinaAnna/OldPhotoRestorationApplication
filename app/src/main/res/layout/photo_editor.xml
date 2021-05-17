@@ -19,6 +19,11 @@
             android:background="@color/cardview_dark_background"
             android:orientation="vertical">
 
+            <androidx.viewpager.widget.ViewPager
+                android:id="@+id/viewPager"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
             <ImageView
                 android:id="@+id/photoInitial"
                 android:layout_width="167dp"
