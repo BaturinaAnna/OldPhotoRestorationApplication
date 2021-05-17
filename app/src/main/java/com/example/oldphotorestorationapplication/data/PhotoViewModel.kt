@@ -8,7 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class PhotoViewModel(application: Application): AndroidViewModel(application) {
-    private val readAllData: LiveData<List<Photo>>
+    val readAllData: LiveData<List<Photo>>
     private val repository: PhotoRepository
 
     init{

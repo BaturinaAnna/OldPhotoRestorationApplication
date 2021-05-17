@@ -1,15 +1,15 @@
 package com.example.oldphotorestorationapplication.data
 
 import android.content.Context
-import androidx.room.Database
-import androidx.room.Room
-import androidx.room.RoomDatabase
+import androidx.room.*
 
-@Database(entities = [Photo::class], version=1)
+@Database(entities = [Photo::class], version=5)
+@TypeConverters(Converters::class)
 abstract class PhotoDatabase: RoomDatabase() {
     abstract fun photoDao(): PhotoDao
 
     companion object{
+        @Volatile
         private var INSTANCE: PhotoDatabase? = null
 
         fun getDatabase(context: Context): PhotoDatabase{
@@ -22,7 +22,8 @@ abstract class PhotoDatabase: RoomDatabase() {
                     context.applicationContext,
                     PhotoDatabase::class.java,
                     "OldPhotoDatabase"
-                ).build()
+                ).fallbackToDestructiveMigration()
+                    .build()
                 INSTANCE = instance
                 return instance
             }

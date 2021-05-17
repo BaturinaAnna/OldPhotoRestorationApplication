@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.ContentUris
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.database.CursorWindow
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.*
@@ -18,23 +19,26 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.oldphotorestorationapplication.data.Photo
 import com.example.oldphotorestorationapplication.data.PhotoViewModel
-import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.IOException
-import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.*
 import okhttp3.*
 import org.json.JSONException
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.IOException
+import java.lang.reflect.Field
+import java.util.concurrent.TimeUnit
+
 
 class MainActivity : AppCompatActivity(), OnPhotoClickListener {
 
   private lateinit var recyclerView: RecyclerView
-  private lateinit var recyclerDataArrayList: ArrayList<Photo>
+//  private lateinit var recyclerDataArrayList: ArrayList<Photo>
   private lateinit var buttonToRestore: Button
 
   private lateinit var popupView: View
@@ -46,26 +50,23 @@ class MainActivity : AppCompatActivity(), OnPhotoClickListener {
 
   private lateinit var mViewModel: PhotoViewModel
 
-//  private lateinit var dataBase: AppDatabase
-//  private lateinit var photoDao: PhotoDao
-
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_main)
     buttonToRestore = findViewById(R.id.buttonRestore)
-    recyclerView = findViewById(R.id.idCourseRV)
-    recyclerDataArrayList = ArrayList()
-
-    mViewModel = ViewModelProvider(this).get(PhotoViewModel::class.java)
-
-
-    val adapter = RecyclerViewAdapter(recyclerDataArrayList, this, this)
+    recyclerView = findViewById(R.id.photoRecyclerView)
 
     // in this method '2' represents number of columns to be displayed in grid view.
     val layoutManager = GridLayoutManager(this, 2)
-
     recyclerView.layoutManager = layoutManager
+
+    val adapter = RecyclerViewAdapter(this)
     recyclerView.adapter = adapter
+
+    mViewModel = ViewModelProvider(this).get(PhotoViewModel::class.java)
+    mViewModel.readAllData.observe(this, Observer { photo ->
+      adapter.setData(photo)
+    })
     init()
   }
 
@@ -100,15 +101,15 @@ class MainActivity : AppCompatActivity(), OnPhotoClickListener {
     popupWindow = PopupWindow(popupView, width, height, focusable)
     popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0)
     editTextTitle = popupView.findViewById(R.id.editTextTitle)
-    photoImageView = popupView.findViewById(R.id.photo)
-    photoImageView2 = popupView.findViewById(R.id.photo2)
+    photoImageView = popupView.findViewById(R.id.photoRestored)
+    photoImageView2 = popupView.findViewById(R.id.photoInitial)
     button = popupView.findViewById(R.id.button)
   }
 
   fun showPopupWindow(view: View) {
     setView(view)
-    photoImageView2.setImageBitmap((BitmapFactory.decodeByteArray(recyclerDataArrayList[0].initialPhoto, 0, recyclerDataArrayList[0].initialPhoto.size)))
-    photoImageView.setImageBitmap((BitmapFactory.decodeByteArray(recyclerDataArrayList[0].restoredPhoto, 0, recyclerDataArrayList[0].restoredPhoto.size)))
+//    photoImageView2.setImageBitmap([index].initialPhoto)
+//    photoImageView.setImageBitmap(recyclerDataArrayList[index].restoredPhoto)
     editTextTitle.setOnFocusChangeListener { _, hasFocus ->
       if (hasFocus) {
         editTextTitle.text = ""
@@ -121,19 +122,6 @@ class MainActivity : AppCompatActivity(), OnPhotoClickListener {
           }
         }
     button.setOnClickListener {
-      //            var priority: Priority? = Priority.HIGH
-      //            if (radioButtonMedium.isChecked()) {
-      //                priority = Priority.MEDIUM
-      //            } else if (radioButtonLow.isChecked()) {
-      //                priority = Priority.LOW
-      //            }
-      //            val notice = Notice(
-      //                editTextTitle!!.text.toString(),
-      //                editTextNote.getText().toString(),
-      //                priority
-      //            )
-      //            NoticeInsertTask().execute(notice)
-      //            notices.add(notice)
       popupWindow.dismiss()
     }
   }
@@ -220,8 +208,7 @@ class MainActivity : AppCompatActivity(), OnPhotoClickListener {
                   imagePath,
                   "http://192.168.1.235:8080/OldPhotoRestoration_war_exploded/restoration-servlet")
             }
-        }
-        .orElse {
+        }.orElse {
           Log.d("DebugPhotoRestorationApp", "Failed to upload or download image")
         }
   }
@@ -265,12 +252,11 @@ class MainActivity : AppCompatActivity(), OnPhotoClickListener {
             buffer.flush()
             val byteArray = buffer.toByteArray()
             try {
-//              val bitmapRestored = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
-              var photoToInsert = Photo(null, file.readBytes(), byteArray, null, null, null, null)
+              val bitmapRestored = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
+              var photoToInsert = Photo(BitmapFactory.decodeFile(imagePath), bitmapRestored, null, null, null, null)
               mViewModel.addPhoto(photoToInsert)
-              recyclerDataArrayList.add(photoToInsert)
-              Log.d("ANNA","Successfully added to database")
-              runOnUiThread { recyclerView.adapter!!.notifyDataSetChanged() }
+//              recyclerDataArrayList.add(photoToInsert)
+              Log.d("DebugPhotoRestorationApp","Successfully added to database")
             } catch (e: Exception) {
               e.message?.let {       Log.d("DebugPhotoRestorationApp", it)
               }
