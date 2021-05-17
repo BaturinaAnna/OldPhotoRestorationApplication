@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.ContentUris
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.database.CursorWindow
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.*
@@ -14,8 +13,8 @@ import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.OnFocusChangeListener
 import android.widget.*
+import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -32,8 +31,6 @@ import org.json.JSONException
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
-import java.lang.reflect.Field
-import java.text.FieldPosition
 import java.util.concurrent.TimeUnit
 
 
@@ -46,8 +43,8 @@ class MainActivity : AppCompatActivity(), OnPhotoClickListener {
   private lateinit var popupView: View
   private lateinit var popupWindow: PopupWindow
   private lateinit var editTextTitle: TextView
-  private lateinit var photoImageView: ImageView
-  private lateinit var photoImageView2: ImageView
+//  private lateinit var photoImageView: ImageView
+//  private lateinit var photoImageView2: ImageView
   private lateinit var button: Button
 
 
@@ -107,10 +104,9 @@ class MainActivity : AppCompatActivity(), OnPhotoClickListener {
     popupWindow = PopupWindow(popupView, width, height, focusable)
     popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0)
     editTextTitle = popupView.findViewById(R.id.editTextTitle)
-    photoImageView = popupView.findViewById(R.id.photoRestored)
-    photoImageView2 = popupView.findViewById(R.id.photoInitial)
+//    photoImageView = popupView.findViewById(R.id.photoRestored)
+//    photoImageView2 = popupView.findViewById(R.id.photoInitial)
     button = popupView.findViewById(R.id.button)
-
     viewPager = popupView.findViewById(R.id.viewPager)
   }
 
@@ -119,20 +115,21 @@ class MainActivity : AppCompatActivity(), OnPhotoClickListener {
     val viewPagerAdapter = ViewPagerAdapter(this, arrayOf(mViewModel.readAllData.value?.get(position)?.restoredPhoto,
       mViewModel.readAllData.value?.get(position)?.initialPhoto))
     viewPager.adapter = viewPagerAdapter
+
 //    photoImageView.setImageBitmap(mViewModel.readAllData.value?.get(position)?.restoredPhoto)
 //    photoImageView2.setImageBitmap(mViewModel.readAllData.value?.get(position)?.initialPhoto)
-//    photoImageView.setImageBitmap(recyclerDataArrayList[position].restoredPhoto)
-    editTextTitle.setOnFocusChangeListener { _, hasFocus ->
-      if (hasFocus) {
-        editTextTitle.text = ""
-      }
-    }
-    editTextTitle.onFocusChangeListener =
-        OnFocusChangeListener { _: View?, hasFocus: Boolean ->
-          if (hasFocus) {
-            editTextTitle.text = ""
-          }
-        }
+
+//    editTextTitle.setOnFocusChangeListener { _, hasFocus ->
+//      if (hasFocus) {
+//        editTextTitle.text = ""
+//      }
+//    }
+//    editTextTitle.onFocusChangeListener =
+//        OnFocusChangeListener { _: View?, hasFocus: Boolean ->
+//          if (hasFocus) {
+//            editTextTitle.text = ""
+//          }
+//        }
     button.setOnClickListener {
       popupWindow.dismiss()
     }
@@ -218,7 +215,8 @@ class MainActivity : AppCompatActivity(), OnPhotoClickListener {
           GlobalScope.launch {
               uploadPhoto(
                   imagePath,
-                  "http://192.168.1.235:8080/OldPhotoRestoration_war_exploded/restoration-servlet")
+//                  "http://192.168.1.235:8080/OldPhotoRestoration_war_exploded/restoration-servlet")
+                  "http://192.168.129.125:8080/OldPhotoRestoration_war_exploded/restoration-servlet")
             }
         }
   }
