@@ -34,7 +34,7 @@ class RecyclerViewAdapter(
 
     override fun onBindViewHolder(holder: RecyclerViewHolder, position: Int) {
         val currentItem = photoList[position]
-        holder.itemView.photoItemTitle.text = currentItem.title
+//        holder.itemView.photoItemTitle.text = currentItem.title
         holder.itemView.photoItemImageView.setImageBitmap(currentItem.restoredPhoto)
         holder.itemView.setOnClickListener{listener.onPhotoClick(position)}
     }
