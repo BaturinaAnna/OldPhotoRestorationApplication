@@ -16,4 +16,7 @@ interface PhotoDao {
 
     @Query("SELECT * FROM photo")
     fun readAllData(): LiveData<List<Photo>>
+
+    @Query("SELECT * FROM photo WHERE id = :id")
+    fun findPhotoById(id: Int): LiveData<Photo>
 }

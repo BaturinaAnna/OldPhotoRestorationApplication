@@ -4,53 +4,53 @@ import android.Manifest
 import android.content.ContentUris
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.*
 import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.util.Log
-import android.view.Gravity
-import android.view.LayoutInflater
+import android.util.LruCache
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.viewpager.widget.ViewPager
 import com.example.oldphotorestorationapplication.data.Photo
 import com.example.oldphotorestorationapplication.data.PhotoViewModel
+import kotlinx.coroutines.*
+import okhttp3.*
+import org.json.JSONException
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
 import java.util.concurrent.TimeUnit
-import kotlinx.coroutines.*
-import okhttp3.*
-import org.json.JSONException
 
 class MainActivity : AppCompatActivity(), OnPhotoClickListener {
 
   private lateinit var recyclerView: RecyclerView
   private lateinit var buttonToRestore: Button
 
-  private lateinit var popupView: View
-  private lateinit var popupWindow: PopupWindow
-  private lateinit var editTextTitle: TextView
-  private lateinit var editTextDescription: TextView
-  private lateinit var editTextDate: TextView
-  private lateinit var editTextLocation: TextView
-  private lateinit var buttonSave: Button
-  private lateinit var buttonCancel: Button
+//  private lateinit var popupView: View
+//  private lateinit var popupWindow: PopupWindow
+//  private lateinit var editTextTitle: TextView
+//  private lateinit var editTextDescription: TextView
+//  private lateinit var editTextDate: TextView
+//  private lateinit var editTextLocation: TextView
+//  private lateinit var buttonSave: Button
+//  private lateinit var buttonCancel: Button
 
-  private lateinit var viewPager: ViewPager
+//  private lateinit var viewPager: ViewPager
 
   private lateinit var mViewModel: PhotoViewModel
+  private lateinit var memoryCache: LruCache<String, Bitmap>
 
-  override fun onCreate(savedInstanceState: Bundle?) {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_main)
     buttonToRestore = findViewById(R.id.buttonRestore)
@@ -64,12 +64,36 @@ class MainActivity : AppCompatActivity(), OnPhotoClickListener {
     recyclerView.adapter = adapter
 
     mViewModel = ViewModelProvider(this).get(PhotoViewModel::class.java)
-    mViewModel.readAllData.observe(this, Observer { photo -> adapter.setData(photo) })
+    mViewModel.readAllData.observe(this, { photo -> adapter.setData(photo) })
     init()
+
+
+//      val maxMemory = (Runtime.getRuntime().maxMemory() / 1024).toInt()
+//      val cacheSize = maxMemory / 8
+//      memoryCache = object : LruCache<String, Bitmap>(cacheSize) {
+//          override fun sizeOf(key: String, bitmap: Bitmap): Int {
+//              return bitmap.byteCount / 1024
+//          }
+//      }
+
   }
 
-  override fun onPhotoClick(position: Int) {
-    showPopupWindow(recyclerView, position)
+//    fun addBitmapToMemoryCache(key: String?, bitmap: Bitmap?) {
+//        if (getBitmapFromMemCache(key) == null) {
+//            memoryCache.put(key, bitmap)
+//        }
+//    }
+//
+//    fun getBitmapFromMemCache(key: String?): Bitmap? {
+//        return memoryCache.get(key)
+//    }
+
+
+    override fun onPhotoClick(position: Int, view: View) {
+      val photo = mViewModel.readAllData.value?.get(position)
+      val intent = Intent(view.context, PhotoEditorActivity::class.java)
+      intent.putExtra("photoId", photo?.id)
+      view.context.startActivity(intent)
   }
 
   private fun init() {
@@ -90,64 +114,64 @@ class MainActivity : AppCompatActivity(), OnPhotoClickListener {
     }
   }
 
-  private fun setView(view: View) {
-    val inflater = view.context.getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
-    popupView = inflater.inflate(R.layout.photo_editor, null)
-    val width = LinearLayout.LayoutParams.MATCH_PARENT
-    val height = LinearLayout.LayoutParams.MATCH_PARENT
-    val focusable = true
-    popupWindow = PopupWindow(popupView, width, height, focusable)
-    popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0)
-    editTextTitle = popupView.findViewById(R.id.editTextTitle)
-    editTextDescription = popupView.findViewById(R.id.editTextDescription)
-    editTextDate = popupView.findViewById(R.id.editTextDate)
-    editTextLocation = popupView.findViewById(R.id.editTextLocation)
-    buttonSave = popupView.findViewById(R.id.buttonSave)
-    buttonCancel = popupView.findViewById(R.id.buttonCancel)
-    viewPager = popupView.findViewById(R.id.viewPager)
-  }
+//  private fun setView(view: View) {
+//    val inflater = view.context.getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
+//    popupView = inflater.inflate(R.layout.photo_editor, null)
+//    val width = LinearLayout.LayoutParams.MATCH_PARENT
+//    val height = LinearLayout.LayoutParams.MATCH_PARENT
+//    val focusable = true
+//    popupWindow = PopupWindow(popupView, width, height, focusable)
+//    popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0)
+//    editTextTitle = popupView.findViewById(R.id.editTextTitle)
+//    editTextDescription = popupView.findViewById(R.id.editTextDescription)
+//    editTextDate = popupView.findViewById(R.id.editTextDate)
+//    editTextLocation = popupView.findViewById(R.id.editTextLocation)
+//    buttonSave = popupView.findViewById(R.id.buttonSave)
+//    buttonCancel = popupView.findViewById(R.id.buttonCancel)
+//    viewPager = popupView.findViewById(R.id.viewPager)
+//  }
 
   fun showPopupWindow(view: View, position: Int) {
-    setView(view)
-    val photo = mViewModel.readAllData.value?.get(position)
-    val viewPagerAdapter =
-        ViewPagerAdapter(this, arrayOf(photo?.restoredPhoto, photo?.initialPhoto))
-    viewPager.adapter = viewPagerAdapter
-
-    editTextTitle.text = photo?.title
-    editTextDescription.text = photo?.description
-    editTextDate.text = photo?.date
-    editTextLocation.text = photo?.location
-
-    buttonSave.setOnClickListener {
-      if (editTextTitle.text.toString().isNotEmpty()) {
-        photo?.title = editTextTitle.text.toString()
-      } else{
-        photo?.title = null
-      }
-      if (editTextDescription.text.toString().isNotEmpty()) {
-        photo?.description = editTextDescription.text.toString()
-      } else{
-        photo?.description = null
-      }
-      if (editTextDate.text.toString().isNotEmpty()) {
-        photo?.date = editTextDate.text.toString()
-      } else{
-        photo?.date = null
-      }
-      if (editTextLocation.text.toString().isNotEmpty()) {
-        photo?.location = editTextLocation.text.toString()
-      } else {
-        photo?.location = null
-      }
-
-      mViewModel.updatePhoto(photo!!)
-
-      popupWindow.dismiss()
-    }
-    buttonCancel.setOnClickListener {
-//      mViewModel.deletePhoto(photo!!)
-      popupWindow.dismiss() }
+//    setView(view)
+//    val photo = mViewModel.readAllData.value?.get(position)
+//    val viewPagerAdapter =
+//        ViewPagerAdapter(this, arrayOf(photo?.restoredPhoto, photo?.initialPhoto))
+//    viewPager.adapter = viewPagerAdapter
+//
+//    editTextTitle.text = photo?.title
+//    editTextDescription.text = photo?.description
+//    editTextDate.text = photo?.date
+//    editTextLocation.text = photo?.location
+//
+//    buttonSave.setOnClickListener {
+//      if (editTextTitle.text.toString().isNotEmpty()) {
+//        photo?.title = editTextTitle.text.toString()
+//      } else{
+//        photo?.title = null
+//      }
+//      if (editTextDescription.text.toString().isNotEmpty()) {
+//        photo?.description = editTextDescription.text.toString()
+//      } else{
+//        photo?.description = null
+//      }
+//      if (editTextDate.text.toString().isNotEmpty()) {
+//        photo?.date = editTextDate.text.toString()
+//      } else{
+//        photo?.date = null
+//      }
+//      if (editTextLocation.text.toString().isNotEmpty()) {
+//        photo?.location = editTextLocation.text.toString()
+//      } else {
+//        photo?.location = null
+//      }
+//
+//      mViewModel.updatePhoto(photo!!)
+//
+//      popupWindow.dismiss()
+//    }
+//    buttonCancel.setOnClickListener {
+////      mViewModel.deletePhoto(photo!!)
+//      popupWindow.dismiss() }
   }
 
   private fun openAlbum() {

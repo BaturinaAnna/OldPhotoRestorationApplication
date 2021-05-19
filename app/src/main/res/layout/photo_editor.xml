@@ -3,14 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingVertical="60dp"
-    android:paddingHorizontal="30dp"
     android:gravity="center">
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:cardCornerRadius="5dp">
+        android:layout_height="match_parent">
 
         <ScrollView
             android:layout_width="match_parent"

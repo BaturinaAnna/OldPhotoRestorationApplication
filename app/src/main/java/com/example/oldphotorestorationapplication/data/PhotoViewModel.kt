@@ -1,11 +1,11 @@
 package com.example.oldphotorestorationapplication.data
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
 
 class PhotoViewModel(application: Application): AndroidViewModel(application) {
     val readAllData: LiveData<List<Photo>>
@@ -33,5 +33,9 @@ class PhotoViewModel(application: Application): AndroidViewModel(application) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.deletePhoto(photo)
         }
+    }
+
+    fun findPhotoById(id: Int): LiveData<Photo>{
+         return repository.findPhotoById(id = id)
     }
 }

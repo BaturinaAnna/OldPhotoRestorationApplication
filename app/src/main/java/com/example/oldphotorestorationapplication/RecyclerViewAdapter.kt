@@ -1,11 +1,13 @@
 package com.example.oldphotorestorationapplication
 
+import android.content.Context
 import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.oldphotorestorationapplication.data.Photo
 import kotlinx.android.synthetic.main.item_layout.view.*
@@ -13,7 +15,7 @@ import java.util.*
 
 
 interface OnPhotoClickListener{
-    fun onPhotoClick(position: Int)
+    fun onPhotoClick(position: Int, view: View)
 }
 
 
@@ -36,7 +38,7 @@ class RecyclerViewAdapter(
         val currentItem = photoList[position]
 //        holder.itemView.photoItemTitle.text = currentItem.title
         holder.itemView.photoItemImageView.setImageBitmap(currentItem.restoredPhoto)
-        holder.itemView.setOnClickListener{listener.onPhotoClick(position)}
+        holder.itemView.setOnClickListener{listener.onPhotoClick(position, holder.itemView)}
     }
 
     override fun getItemCount(): Int {
