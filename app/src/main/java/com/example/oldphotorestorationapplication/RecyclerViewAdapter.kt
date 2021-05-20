@@ -13,7 +13,7 @@ import java.util.*
 
 
 interface OnPhotoClickListener{
-    fun onPhotoClick(position: Int)
+    fun onPhotoClick(position: Int, view: View)
 }
 
 
@@ -34,9 +34,8 @@ class RecyclerViewAdapter(
 
     override fun onBindViewHolder(holder: RecyclerViewHolder, position: Int) {
         val currentItem = photoList[position]
-//        holder.itemView.photoItemTitle.text = currentItem.title
         holder.itemView.photoItemImageView.setImageBitmap(currentItem.restoredPhoto)
-        holder.itemView.setOnClickListener{listener.onPhotoClick(position)}
+        holder.itemView.setOnClickListener{listener.onPhotoClick(position, holder.itemView)}
     }
 
     override fun getItemCount(): Int {

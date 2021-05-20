@@ -2,6 +2,7 @@ package com.example.oldphotorestorationapplication.data
 
 import android.content.Context
 import androidx.room.*
+import com.example.oldphotorestorationapplication.App
 
 @Database(entities = [Photo::class], version=5)
 @TypeConverters(Converters::class)
@@ -12,14 +13,14 @@ abstract class PhotoDatabase: RoomDatabase() {
         @Volatile
         private var INSTANCE: PhotoDatabase? = null
 
-        fun getDatabase(context: Context): PhotoDatabase{
+        fun getDatabase(): PhotoDatabase{
             val tempInstance = INSTANCE
             if (tempInstance != null){
                 return tempInstance
             }
             synchronized(this){
                 val instance = Room.databaseBuilder(
-                    context.applicationContext,
+                    App.appContext,
                     PhotoDatabase::class.java,
                     "OldPhotoDatabase"
                 ).fallbackToDestructiveMigration()

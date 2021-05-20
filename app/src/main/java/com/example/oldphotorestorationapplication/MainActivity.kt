@@ -1,53 +1,40 @@
 package com.example.oldphotorestorationapplication
 
 import android.Manifest
+import android.content.ActivityNotFoundException
 import android.content.ContentUris
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.*
 import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.util.Log
-import android.view.Gravity
-import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.viewpager.widget.ViewPager
 import com.example.oldphotorestorationapplication.data.Photo
 import com.example.oldphotorestorationapplication.data.PhotoViewModel
+import kotlinx.coroutines.*
+import okhttp3.*
+import org.json.JSONException
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
 import java.util.concurrent.TimeUnit
-import kotlinx.coroutines.*
-import okhttp3.*
-import org.json.JSONException
+
 
 class MainActivity : AppCompatActivity(), OnPhotoClickListener {
 
   private lateinit var recyclerView: RecyclerView
   private lateinit var buttonToRestore: Button
-
-  private lateinit var popupView: View
-  private lateinit var popupWindow: PopupWindow
-  private lateinit var editTextTitle: TextView
-  private lateinit var editTextDescription: TextView
-  private lateinit var editTextDate: TextView
-  private lateinit var editTextLocation: TextView
-  private lateinit var buttonSave: Button
-  private lateinit var buttonCancel: Button
-
-  private lateinit var viewPager: ViewPager
-
   private lateinit var mViewModel: PhotoViewModel
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,90 +51,46 @@ class MainActivity : AppCompatActivity(), OnPhotoClickListener {
     recyclerView.adapter = adapter
 
     mViewModel = ViewModelProvider(this).get(PhotoViewModel::class.java)
-    mViewModel.readAllData.observe(this, Observer { photo -> adapter.setData(photo) })
+    mViewModel.readAllData.observe(this, { photo -> adapter.setData(photo) })
     init()
   }
 
-  override fun onPhotoClick(position: Int) {
-    showPopupWindow(recyclerView, position)
+  override fun onPhotoClick(position: Int, view: View) {
+      val photo = mViewModel.readAllData.value?.get(position)
+      val intent = Intent(view.context, PhotoEditorActivity::class.java)
+      intent.putExtra("photoId", photo?.id)
+      view.context.startActivity(intent)
+  }
+
+  val REQUEST_IMAGE_CAPTURE = 1
+
+  private fun dispatchTakePictureIntent() {
+    val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+    try {
+      startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
+    } catch (e: ActivityNotFoundException) {
+      // display error state to the user
+    }
   }
 
   private fun init() {
     buttonToRestore.setOnClickListener {
-      if (ContextCompat.checkSelfPermission(
-          this@MainActivity, Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
-          PackageManager.PERMISSION_GRANTED) {
-        ActivityCompat.requestPermissions(
-            this@MainActivity,
-            arrayOf(
-                Manifest.permission.CAMERA,
-                Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE),
-            1)
-      } else {
-        openAlbum()
-      }
+//      dispatchTakePictureIntent()
+            if (ContextCompat.checkSelfPermission(
+                this@MainActivity, Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
+                PackageManager.PERMISSION_GRANTED) {
+              ActivityCompat.requestPermissions(
+                  this@MainActivity,
+                  arrayOf(
+                      Manifest.permission.CAMERA,
+                      Manifest.permission.READ_EXTERNAL_STORAGE,
+                      Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                  1)
+            } else {
+//              openAlbum()
+              dispatchTakePictureIntent()
+            }
     }
-  }
-
-  private fun setView(view: View) {
-    val inflater = view.context.getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
-    popupView = inflater.inflate(R.layout.photo_editor, null)
-    val width = LinearLayout.LayoutParams.MATCH_PARENT
-    val height = LinearLayout.LayoutParams.MATCH_PARENT
-    val focusable = true
-    popupWindow = PopupWindow(popupView, width, height, focusable)
-    popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0)
-    editTextTitle = popupView.findViewById(R.id.editTextTitle)
-    editTextDescription = popupView.findViewById(R.id.editTextDescription)
-    editTextDate = popupView.findViewById(R.id.editTextDate)
-    editTextLocation = popupView.findViewById(R.id.editTextLocation)
-    buttonSave = popupView.findViewById(R.id.buttonSave)
-    buttonCancel = popupView.findViewById(R.id.buttonCancel)
-    viewPager = popupView.findViewById(R.id.viewPager)
-  }
-
-  fun showPopupWindow(view: View, position: Int) {
-    setView(view)
-    val photo = mViewModel.readAllData.value?.get(position)
-    val viewPagerAdapter =
-        ViewPagerAdapter(this, arrayOf(photo?.restoredPhoto, photo?.initialPhoto))
-    viewPager.adapter = viewPagerAdapter
-
-    editTextTitle.text = photo?.title
-    editTextDescription.text = photo?.description
-    editTextDate.text = photo?.date
-    editTextLocation.text = photo?.location
-
-    buttonSave.setOnClickListener {
-      if (editTextTitle.text.toString().isNotEmpty()) {
-        photo?.title = editTextTitle.text.toString()
-      } else{
-        photo?.title = null
-      }
-      if (editTextDescription.text.toString().isNotEmpty()) {
-        photo?.description = editTextDescription.text.toString()
-      } else{
-        photo?.description = null
-      }
-      if (editTextDate.text.toString().isNotEmpty()) {
-        photo?.date = editTextDate.text.toString()
-      } else{
-        photo?.date = null
-      }
-      if (editTextLocation.text.toString().isNotEmpty()) {
-        photo?.location = editTextLocation.text.toString()
-      } else {
-        photo?.location = null
-      }
-
-      mViewModel.updatePhoto(photo!!)
-
-      popupWindow.dismiss()
-    }
-    buttonCancel.setOnClickListener {
-//      mViewModel.deletePhoto(photo!!)
-      popupWindow.dismiss() }
   }
 
   private fun openAlbum() {
@@ -161,8 +104,10 @@ class MainActivity : AppCompatActivity(), OnPhotoClickListener {
       permissions: Array<String?>,
       grantResults: IntArray
   ) {
+    super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-      openAlbum()
+      // openAlbum()
+      dispatchTakePictureIntent()
     } else {
       Log.d("DebugPhotoRestorationApp", "The permission is denied")
     }
@@ -170,16 +115,31 @@ class MainActivity : AppCompatActivity(), OnPhotoClickListener {
 
   override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
     super.onActivityResult(requestCode, resultCode, data)
-    try {
-      if (data != null) {
-        handleImageOnKitKat(data)
+    if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+      val imageBitmap = data?.extras?.get("data") as Bitmap
+      GlobalScope.launch {
+        restorePhoto(
+            imageBitmap,
+          "http://192.168.1.235:8080/OldPhotoRestoration_war_exploded/restoration-servlet")
       }
-    } catch (e: IOException) {
-      e.printStackTrace()
-    } catch (e: JSONException) {
-      e.printStackTrace()
+      //      mViewModel.addPhoto(Photo(imageBitmap, imageBitmap, null, null, null, null))
+
+      //      imageView.setImageBitmap(imageBitmap)
     }
   }
+
+  //  override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+  //    super.onActivityResult(requestCode, resultCode, data)
+  //    try {
+  //      if (data != null) {
+  //        handleImageOnKitKat(data)
+  //      }
+  //    } catch (e: IOException) {
+  //      e.printStackTrace()
+  //    } catch (e: JSONException) {
+  //      e.printStackTrace()
+  //    }
+  //  }
 
   @Throws(IOException::class, JSONException::class)
   private fun handleImageOnKitKat(data: Intent) {
@@ -229,10 +189,71 @@ class MainActivity : AppCompatActivity(), OnPhotoClickListener {
       GlobalScope.launch {
         uploadPhoto(
             imagePath,
-            "http://192.168.1.235:8080/OldPhotoRestoration_war_exploded/restoration-servlet")
+            //
+            // "http://192.168.1.235:8080/OldPhotoRestoration_war_exploded/restoration-servlet")
+            "http://192.168.25.122:8080/OldPhotoRestoration_war_exploded/restoration-servlet")
       }
     }
   }
+
+  private suspend fun restorePhoto(image: Bitmap, url: String) =
+      withContext(Dispatchers.IO) {
+        val file = convertToFile(image, this@MainActivity)
+        val img: RequestBody = RequestBody.create(MediaType.parse("image/*"), file)
+        val requestBody: RequestBody =
+            MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("file", file.path, img)
+                .build()
+        val request: Request? = Request.Builder().url(url).post(requestBody).build()
+        val okHttpClient: OkHttpClient =
+            OkHttpClient.Builder()
+                .readTimeout(1, TimeUnit.HOURS)
+                // .writeTimeout(1, TimeUnit.HOURS)
+                .connectTimeout(1, TimeUnit.HOURS)
+                .build()
+
+        val call: Call = okHttpClient.newCall(request)
+
+        call.enqueue(
+            object : Callback {
+              override fun onFailure(call: Call?, e: IOException) {
+                Log.d("DebugPhotoRestorationApp", e.toString())
+              }
+
+              @Throws(IOException::class)
+              override fun onResponse(call: Call?, response: Response) {
+                val buffer = ByteArrayOutputStream()
+                var nRead: Int? = null
+                val data = ByteArray(1024)
+                while (response.body()?.byteStream()?.read(data, 0, data.size).also {
+                  if (it != null) {
+                    nRead = it
+                  }
+                } != -1) {
+                  nRead?.let { buffer.write(data, 0, it) }
+                }
+                buffer.flush()
+                val byteArray = buffer.toByteArray()
+                try {
+                  val bitmapRestored = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
+                  val photoToInsert =
+                      Photo(
+                          //                  BitmapFactory.decodeFile(imagePath),
+                          image,
+                          bitmapRestored,
+                          null,
+                          null,
+                          null,
+                          null)
+                  mViewModel.addPhoto(photoToInsert)
+                  Log.d("DebugPhotoRestorationApp", "Successfully added to database")
+                } catch (e: Exception) {
+                  e.message?.let { Log.d("DebugPhotoRestorationApp", it) }
+                }
+              }
+            })
+      }
 
   private suspend fun uploadPhoto(imagePath: String, url: String) =
       withContext(Dispatchers.IO) {
@@ -275,7 +296,7 @@ class MainActivity : AppCompatActivity(), OnPhotoClickListener {
                 val byteArray = buffer.toByteArray()
                 try {
                   val bitmapRestored = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
-                  var photoToInsert =
+                  val photoToInsert =
                       Photo(
                           BitmapFactory.decodeFile(imagePath),
                           bitmapRestored,
