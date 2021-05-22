@@ -4,12 +4,11 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.viewpager.widget.PagerAdapter
+import com.github.chrisbanes.photoview.PhotoView
 
-import com.github.chrisbanes.photoview.PhotoView;
-
-class ViewPagerAdapter(private val context: Context, private val photoArray: Array<Bitmap?>): PagerAdapter() {
+class ViewPagerAdapter(private val context: Context, private val photoArray: Array<Bitmap?>) :
+    PagerAdapter() {
 
     override fun getCount(): Int {
         return photoArray.size
@@ -20,7 +19,7 @@ class ViewPagerAdapter(private val context: Context, private val photoArray: Arr
     }
 
     override fun instantiateItem(container: ViewGroup, position: Int): Any {
-//        var imageView = ImageView(context)
+        //        var imageView = ImageView(context)
         var photoView = PhotoView(context)
         photoView.setImageBitmap(photoArray[position])
         container.addView(photoView, 0)

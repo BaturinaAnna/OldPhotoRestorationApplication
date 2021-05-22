@@ -6,7 +6,7 @@ import androidx.room.*
 @Dao
 interface PhotoDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun addPhoto(photo:Photo)
+    suspend fun addPhoto(photo: Photo)
 
     @Update
     suspend fun updatePhoto(photo: Photo)
