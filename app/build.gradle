@@ -12,6 +12,7 @@ android {
 
     buildFeatures {
         viewBinding = true
+        dataBinding = true
     }
 
     defaultConfig {
@@ -47,9 +48,15 @@ android {
 }
 
 dependencies {
+    // Picking images from gallery or camera
+    implementation 'com.github.SimformSolutionsPvtLtd:SSImagePicker:1.5'
+
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
 
-// Navigation Component
+    implementation("androidx.fragment:fragment-ktx:1.3.4")
+
+
+    // Navigation Component
     implementation 'androidx.navigation:navigation-fragment-ktx:2.2.2'
     implementation 'androidx.navigation:navigation-ui-ktx:2.2.2'
 

@@ -10,7 +10,6 @@ import kotlinx.coroutines.launch
 class PhotoViewModel(application: Application) : AndroidViewModel(application) {
     val allData: LiveData<List<Photo>>
     private val repository: PhotoRepository
-    //  lateinit var photo: LiveData<Photo>
 
     init {
         val photoDao = PhotoDatabase.getDatabase().photoDao()
