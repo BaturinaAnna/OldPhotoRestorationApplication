@@ -7,8 +7,8 @@
 
     <ImageView
         android:id="@+id/photoToRestore"
-        android:layout_width="246dp"
-        android:layout_height="464dp"
+        android:layout_width="234dp"
+        android:layout_height="362dp"
         android:layout_marginTop="30dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -21,6 +21,16 @@
         android:layout_height="wrap_content"
         android:text="Restore"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/photoToRestore" />
+
+    <Switch
+        android:id="@+id/switchRemoveScratches"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Remove Scratches"
+        app:layout_constraintBottom_toTopOf="@+id/buttonRestore"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/photoToRestore" />

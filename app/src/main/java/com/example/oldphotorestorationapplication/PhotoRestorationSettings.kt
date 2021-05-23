@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
@@ -52,8 +53,8 @@ class PhotoRestorationSettings: AppCompatActivity(), ImagePickerBottomsheet.Item
             GlobalScope.launch {
                 uploadPhoto(
                     imagePath,
-                    "http://192.168.163.234:8080/OldPhotoRestoration_war_exploded/restoration-servlet"
-                    )
+                    binding.switchRemoveScratches.isChecked.toString(),
+                    "http://192.168.20.161:8080/OldPhotoRestoration_war_exploded/restoration-servlet")
             }
         }
     }
@@ -101,14 +102,15 @@ class PhotoRestorationSettings: AppCompatActivity(), ImagePickerBottomsheet.Item
 //    IMAGE PICKER
 
 
-    private suspend fun uploadPhoto(imagePath: String, url: String) =
+    private suspend fun uploadPhoto(imagePath: String, removeScratches:String, url: String) =
         withContext(Dispatchers.IO) {
             val file = File(imagePath)
             val image: RequestBody = RequestBody.create(MediaType.parse("image/*"), file)
             val requestBody: RequestBody =
                 MultipartBody.Builder()
                     .setType(MultipartBody.FORM)
-                    .addFormDataPart("file", imagePath, image)
+                    .addFormDataPart("photoToRestore", imagePath, image)
+                    .addFormDataPart("removeScratches", removeScratches)
                     .build()
             val request: Request? = Request.Builder().url(url).post(requestBody).build()
             val okHttpClient: OkHttpClient =
