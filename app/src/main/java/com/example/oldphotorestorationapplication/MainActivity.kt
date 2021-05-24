@@ -1,46 +1,30 @@
 package com.example.oldphotorestorationapplication
 
-import android.Manifest
-import android.content.ActivityNotFoundException
-import android.content.ContentUris
+
+import android.app.AlertDialog
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.*
-import android.provider.DocumentsContract
-import android.provider.MediaStore
-import android.util.Log
 import android.view.View
-import android.widget.*
+import android.widget.PopupMenu
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.app.imagepickerlibrary.*
-import com.example.oldphotorestorationapplication.data.Photo
 import com.example.oldphotorestorationapplication.data.PhotoViewModel
 import com.example.oldphotorestorationapplication.databinding.ActivityMainBinding
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.coroutines.*
-import okhttp3.*
-import org.json.JSONException
-import java.io.ByteArrayOutputStream
+import kotlinx.android.synthetic.main.item_layout.*
 import java.io.File
+import java.io.FileNotFoundException
+import java.io.FileOutputStream
 import java.io.IOException
-import java.util.concurrent.TimeUnit
 
 
-import com.app.imagepickerlibrary.ImagePickerActivityClass
-import com.app.imagepickerlibrary.ImagePickerBottomsheet
-import com.app.imagepickerlibrary.bottomSheetActionCamera
-import com.app.imagepickerlibrary.bottomSheetActionFragment
-import com.app.imagepickerlibrary.bottomSheetActionGallary
-import com.app.imagepickerlibrary.loadImage
-
-class MainActivity : AppCompatActivity(), OnPhotoClickListener, ImagePickerBottomsheet.ItemClickListener, ImagePickerActivityClass.OnResult  {
+class MainActivity : AppCompatActivity(), OnPhotoClickListener, OnPhotoLongClickListener, ImagePickerBottomsheet.ItemClickListener, ImagePickerActivityClass.OnResult  {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var mViewModel: PhotoViewModel
@@ -57,7 +41,8 @@ class MainActivity : AppCompatActivity(), OnPhotoClickListener, ImagePickerBotto
         val layoutManager = GridLayoutManager(this, 2)
         binding.photoRecyclerView.layoutManager = layoutManager
 
-        val adapter = RecyclerViewAdapter(this)
+        val adapter = RecyclerViewAdapter(this, this)
+//        val adapter = RecyclerViewAdapter(this, this)
         binding.photoRecyclerView.adapter = adapter
 
         mViewModel = ViewModelProvider(this).get(PhotoViewModel::class.java)
@@ -66,9 +51,9 @@ class MainActivity : AppCompatActivity(), OnPhotoClickListener, ImagePickerBotto
 
         imagePicker = ImagePickerActivityClass(this, this, this, activityResultRegistry)
         imagePicker.cropOptions(true)
+
+//        registerForContextMenu(binding.photoRecyclerView)
     }
-
-
 
     //IMAGE PICKER
 
@@ -109,7 +94,7 @@ class MainActivity : AppCompatActivity(), OnPhotoClickListener, ImagePickerBotto
     }
 
     override fun returnString(item: Uri?) {
-        val intent = Intent(this, PhotoRestorationSettings::class.java)
+        val intent = Intent(this, PhotoRestorationSettingsActivity::class.java)
         intent.putExtra("imagePath", item?.path)
         startActivity(intent)
     }
@@ -124,10 +109,95 @@ class MainActivity : AppCompatActivity(), OnPhotoClickListener, ImagePickerBotto
         view.context.startActivity(intent)
     }
 
+
     private fun init() {
         binding.buttonRestore.setOnClickListener{
                 val fragment = ImagePickerBottomsheet()
                 fragment.show(supportFragmentManager, bottomSheetActionFragment)
         }
     }
+
+    override fun onLongPhotoClick(position: Int, view: View): Boolean {
+        val popupMenu = PopupMenu(applicationContext, view)
+        popupMenu.inflate(R.menu.menu)
+        popupMenu.setOnMenuItemClickListener {
+            when(it.itemId){
+                R.id.deletePhotoMenu -> {
+                    val photo = mViewModel.allData.value?.get(position)
+                    val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+                    builder.setPositiveButton("Yes") { _, _ ->
+                        mViewModel.deletePhoto(photo!!)
+                        Toast.makeText(applicationContext, "Successfully removed", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                    builder.setNegativeButton("No") { _, _ -> }
+                    builder.setMessage("Are you sure you want to delete this photo?")
+                    builder.create().show()
+                    true
+                }
+                R.id.sharePhotoMenu -> {
+                    val photo = mViewModel.allData.value?.get(position)
+                    shareBitmap(photo!!.restoredPhoto)
+//                    val intent = Intent()
+//                    intent.action = Intent.ACTION_SEND
+////                    intent.putExtra(Intent.)
+//                    intent.putExtra(Intent.EXTRA_TEXT, "try send intent in android")
+//                    intent.type = "image/*"
+//                    startActivity(Intent.createChooser(intent, "Share to: "))
+//                    Toast.makeText(applicationContext, "PRESS SHARE IN MENU", Toast.LENGTH_SHORT).show()
+                    true
+                }
+                else -> true
+            }
+        }
+        popupMenu.show()
+        return true
+    }
+
+    private fun shareBitmap(bitmap: Bitmap) {
+        //---Save bitmap to external cache directory---//
+        //get cache directory
+        val cachePath = File(externalCacheDir, "my_images/")
+        cachePath.mkdirs()
+
+        //create png file
+        val file = File(cachePath, "Image_123.png")
+        val fileOutputStream: FileOutputStream
+        try {
+            fileOutputStream = FileOutputStream(file)
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream)
+            fileOutputStream.flush()
+            fileOutputStream.close()
+        } catch (e: FileNotFoundException) {
+            e.printStackTrace()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+
+        //---Share File---//
+        //get file uri
+        val myImageFileUri =
+            FileProvider.getUriForFile(this, applicationContext.packageName + ".provider", file)
+
+        //create a intent
+        val intent = Intent(Intent.ACTION_SEND)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        intent.putExtra(Intent.EXTRA_STREAM, myImageFileUri)
+        intent.type = "image/png"
+        startActivity(Intent.createChooser(intent, "Share to: "))
+    }
+
+
+//    override fun onMenuDeleteClickListener(item: MenuItem): Boolean {
+////        Toast.makeText(applicationContext, "DELETE PRESSED IN MENU", Toast.LENGTH_SHORT).show()
+//        Toast.makeText(applicationContext, ph, Toast.LENGTH_SHORT).show()
+//        return true
+//    }
+//
+//    override fun onMenuShareClickListener(item: MenuItem): Boolean {
+//        Toast.makeText(applicationContext, "SHARE PRESSED IN MENU", Toast.LENGTH_SHORT).show()
+//        return true
+//    }
+
 }

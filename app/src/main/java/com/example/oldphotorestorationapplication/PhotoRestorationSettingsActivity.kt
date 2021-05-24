@@ -23,7 +23,7 @@ import java.io.File
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
-class PhotoRestorationSettings: AppCompatActivity(), ImagePickerBottomsheet.ItemClickListener, ImagePickerActivityClass.OnResult {
+class PhotoRestorationSettingsActivity: AppCompatActivity(), ImagePickerBottomsheet.ItemClickListener, ImagePickerActivityClass.OnResult {
     private lateinit var binding: RestorationSettingsBinding
     private lateinit var imagePath: String
     private lateinit var mViewModel: PhotoViewModel
