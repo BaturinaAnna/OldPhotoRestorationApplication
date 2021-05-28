@@ -2,6 +2,7 @@ package com.example.oldphotorestorationapplication
 
 import android.R
 import android.app.AlertDialog
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
@@ -99,66 +100,61 @@ class PhotoEditorActivity : AppCompatActivity() {
     }
 
     private fun checkUnsavedChanges(photo: Photo): Boolean {
-        if (binding.editTextTitle.text.toString().trim().isNotEmpty()) {
-            if (binding.editTextTitle.text.toString() != photo.title) {
-                return true
-            }
-        } else if (photo.title != null) {
-            return true
-        }
-
-        if (binding.editTextDescription.text.toString().trim().isNotEmpty()) {
-            if (binding.editTextDescription.text.toString() != photo.description) {
-                return true
-            }
-        } else if (photo.description != null) {
-            return true
-        }
-
-        if (binding.editTextDate.text.toString().trim().isNotEmpty()) {
-            if (binding.editTextDate.text.toString() != photo.date) {
-                return true
-            }
-        } else if (photo.date != null) {
-            return true
-        }
-
-        if (binding.editTextLocation.text.toString().trim().isNotEmpty()) {
-            if (binding.editTextLocation.text.toString() != photo.location) {
-                return true
-            }
-        } else if (photo.location != null) {
-            return true
-        }
-        return false
+        return with(binding.editTextTitle.text.toString().trim()){
+                    when {
+                        isNotEmpty() && (this != photo.title) -> true
+                        isEmpty() && (photo.title != null) -> true
+                        else -> false
+                    }
+                } ||
+                with(binding.editTextDescription.text.toString().trim()){
+                    when {
+                        isNotEmpty() && (this != photo.description) -> true
+                        isEmpty() && (photo.description != null) -> true
+                        else -> false
+                    }
+                } ||
+                with(binding.editTextDate.text.toString().trim()){
+                    when {
+                        isNotEmpty() && (this != photo.date) -> true
+                        isEmpty() && (photo.date != null) -> true
+                        else -> false
+                    }
+                } ||
+                with(binding.editTextLocation.text.toString().trim()){
+                    when {
+                        isNotEmpty() && (this != photo.location) -> true
+                        isEmpty() && (photo.location != null) -> true
+                        else -> false
+                    }
+                }
     }
 
     private fun updatePhotoInfo(photo: Photo): Photo{
-        photo.title =
-            if (binding.editTextTitle.text.toString().trim().isNotEmpty()) {
-                binding.editTextTitle.text.toString()
-            } else {
-                null
+        photo.title = with (binding.editTextTitle.text.toString().trim()){
+            when {
+                isNotEmpty() -> binding.editTextTitle.text.toString()
+                else -> null
             }
-        photo.description =
-            if (binding.editTextDescription.text.toString().trim().isNotEmpty()) {
-                binding.editTextDescription.text.toString()
-            } else {
-                null
+        }
+        photo.description = with (binding.editTextDescription.text.toString().trim()){
+            when {
+                isNotEmpty() -> binding.editTextDescription.text.toString()
+                else -> null
             }
-        photo.date =
-            if (binding.editTextDate.text.toString().trim().isNotEmpty()) {
-                binding.editTextDate.text.toString()
-            } else {
-                null
+        }
+        photo.date = with (binding.editTextDate.text.toString().trim()){
+            when {
+                isNotEmpty() -> binding.editTextDate.text.toString()
+                else -> null
             }
-        photo.location =
-            if (binding.editTextLocation.text.toString().trim().isNotEmpty()) {
-                binding.editTextLocation.text.toString()
-            } else {
-                null
+        }
+        photo.location = with (binding.editTextLocation.text.toString().trim()){
+            when {
+                isNotEmpty() -> binding.editTextLocation.text.toString()
+                else -> null
             }
+        }
         return photo
     }
-
 }

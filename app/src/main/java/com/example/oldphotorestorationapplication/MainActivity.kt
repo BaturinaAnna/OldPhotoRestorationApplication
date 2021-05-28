@@ -21,8 +21,6 @@ import com.app.imagepickerlibrary.*
 import com.example.oldphotorestorationapplication.data.Photo
 import com.example.oldphotorestorationapplication.data.PhotoViewModel
 import com.example.oldphotorestorationapplication.databinding.ActivityMainBinding
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.item_layout.*
 import java.io.File
 import java.io.FileOutputStream
 
@@ -33,6 +31,7 @@ class MainActivity : AppCompatActivity(), OnPhotoClickListener, OnPhotoLongClick
     private lateinit var mViewModel: PhotoViewModel
     private lateinit var imagePicker: ImagePickerActivityClass
     private lateinit var adapter: RecyclerViewAdapter
+    private var foundPhotosList: List<Photo>? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -105,7 +104,10 @@ class MainActivity : AppCompatActivity(), OnPhotoClickListener, OnPhotoLongClick
 
 
     override fun onPhotoClick(position: Int, view: View) {
-        val photo = mViewModel.allData.value?.get(position)
+        val photo = when(foundPhotosList){
+            null -> mViewModel.allData.value?.get(position)
+            else -> foundPhotosList!![position]
+        }
         val intent = Intent(view.context, PhotoEditorActivity::class.java)
         intent.putExtra("photoId", photo?.id)
         view.context.startActivity(intent)
@@ -185,6 +187,7 @@ class MainActivity : AppCompatActivity(), OnPhotoClickListener, OnPhotoLongClick
                 }
 
                 override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
+                    foundPhotosList = null
                     searchView.setQuery("", true)
                     searchView.clearFocus()
                     return true
@@ -214,14 +217,15 @@ class MainActivity : AppCompatActivity(), OnPhotoClickListener, OnPhotoLongClick
                             }
                         }
                         adapter.setData(foundPhotos)
+                        foundPhotosList = foundPhotos
                     } else {
+                        foundPhotosList = mViewModel.allData.value
                         mViewModel.allData.value?.let { adapter.setData(it) }
                     }
                     return true
                 }
             })
         }
-
         return super.onCreateOptionsMenu(menu)
     }
 }
