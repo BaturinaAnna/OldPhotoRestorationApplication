@@ -6,8 +6,11 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.*
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.PopupMenu
+import android.widget.SearchView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -15,13 +18,13 @@ import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.app.imagepickerlibrary.*
+import com.example.oldphotorestorationapplication.data.Photo
 import com.example.oldphotorestorationapplication.data.PhotoViewModel
 import com.example.oldphotorestorationapplication.databinding.ActivityMainBinding
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.item_layout.*
 import java.io.File
-import java.io.FileNotFoundException
 import java.io.FileOutputStream
-import java.io.IOException
 
 
 class MainActivity : AppCompatActivity(), OnPhotoClickListener, OnPhotoLongClickListener, ImagePickerBottomsheet.ItemClickListener, ImagePickerActivityClass.OnResult  {
@@ -29,6 +32,7 @@ class MainActivity : AppCompatActivity(), OnPhotoClickListener, OnPhotoLongClick
     private lateinit var binding: ActivityMainBinding
     private lateinit var mViewModel: PhotoViewModel
     private lateinit var imagePicker: ImagePickerActivityClass
+    private lateinit var adapter: RecyclerViewAdapter
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,8 +45,7 @@ class MainActivity : AppCompatActivity(), OnPhotoClickListener, OnPhotoLongClick
         val layoutManager = GridLayoutManager(this, 2)
         binding.photoRecyclerView.layoutManager = layoutManager
 
-        val adapter = RecyclerViewAdapter(this, this)
-//        val adapter = RecyclerViewAdapter(this, this)
+        adapter = RecyclerViewAdapter(this, this)
         binding.photoRecyclerView.adapter = adapter
 
         mViewModel = ViewModelProvider(this).get(PhotoViewModel::class.java)
@@ -52,7 +55,6 @@ class MainActivity : AppCompatActivity(), OnPhotoClickListener, OnPhotoLongClick
         imagePicker = ImagePickerActivityClass(this, this, this, activityResultRegistry)
         imagePicker.cropOptions(true)
 
-//        registerForContextMenu(binding.photoRecyclerView)
     }
 
     //IMAGE PICKER
@@ -138,13 +140,6 @@ class MainActivity : AppCompatActivity(), OnPhotoClickListener, OnPhotoLongClick
                 R.id.sharePhotoMenu -> {
                     val photo = mViewModel.allData.value?.get(position)
                     shareBitmap(photo!!.restoredPhoto)
-//                    val intent = Intent()
-//                    intent.action = Intent.ACTION_SEND
-////                    intent.putExtra(Intent.)
-//                    intent.putExtra(Intent.EXTRA_TEXT, "try send intent in android")
-//                    intent.type = "image/*"
-//                    startActivity(Intent.createChooser(intent, "Share to: "))
-//                    Toast.makeText(applicationContext, "PRESS SHARE IN MENU", Toast.LENGTH_SHORT).show()
                     true
                 }
                 else -> true
@@ -155,31 +150,20 @@ class MainActivity : AppCompatActivity(), OnPhotoClickListener, OnPhotoLongClick
     }
 
     private fun shareBitmap(bitmap: Bitmap) {
-        //---Save bitmap to external cache directory---//
-        //get cache directory
         val cachePath = File(externalCacheDir, "my_images/")
         cachePath.mkdirs()
 
         //create png file
-        val file = File(cachePath, "Image_123.png")
+        val file = File(cachePath, "photo.png")
         val fileOutputStream: FileOutputStream
-        try {
-            fileOutputStream = FileOutputStream(file)
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream)
-            fileOutputStream.flush()
-            fileOutputStream.close()
-        } catch (e: FileNotFoundException) {
-            e.printStackTrace()
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
+        fileOutputStream = FileOutputStream(file)
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream)
+        fileOutputStream.flush()
+        fileOutputStream.close()
 
-        //---Share File---//
-        //get file uri
         val myImageFileUri =
             FileProvider.getUriForFile(this, applicationContext.packageName + ".provider", file)
 
-        //create a intent
         val intent = Intent(Intent.ACTION_SEND)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
@@ -188,16 +172,56 @@ class MainActivity : AppCompatActivity(), OnPhotoClickListener, OnPhotoLongClick
         startActivity(Intent.createChooser(intent, "Share to: "))
     }
 
+    @ExperimentalStdlibApi
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_search, menu)
+        val menuItem = menu?.findItem(R.id.search)
+        if(menuItem != null){
+            val searchView = menuItem.actionView as SearchView
 
-//    override fun onMenuDeleteClickListener(item: MenuItem): Boolean {
-////        Toast.makeText(applicationContext, "DELETE PRESSED IN MENU", Toast.LENGTH_SHORT).show()
-//        Toast.makeText(applicationContext, ph, Toast.LENGTH_SHORT).show()
-//        return true
-//    }
-//
-//    override fun onMenuShareClickListener(item: MenuItem): Boolean {
-//        Toast.makeText(applicationContext, "SHARE PRESSED IN MENU", Toast.LENGTH_SHORT).show()
-//        return true
-//    }
+            menuItem.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
+                override fun onMenuItemActionExpand(item: MenuItem?): Boolean {
+                    return true
+                }
 
+                override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
+                    searchView.setQuery("", true)
+                    searchView.clearFocus()
+                    return true
+                }
+            })
+
+            searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
+                override fun onQueryTextSubmit(query: String?): Boolean {
+                    searchView.clearFocus()
+                    return true
+                }
+
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    if (newText!!.trim().isNotEmpty()){
+                        val allPhotos = mViewModel.allData.value
+                        val foundPhotos = mutableListOf<Photo>()
+                        val query: String = newText.lowercase()
+                        allPhotos?.forEach {
+                            if (it.title?.lowercase()?.contains(query) == true) {
+                                foundPhotos.add(it)
+                            } else if (it.description?.lowercase()?.contains(query) == true){
+                                foundPhotos.add(it)
+                            } else if (it.date?.lowercase()?.contains(query) == true){
+                                foundPhotos.add(it)
+                            } else if (it.location?.lowercase()?.contains(query) == true){
+                                foundPhotos.add(it)
+                            }
+                        }
+                        adapter.setData(foundPhotos)
+                    } else {
+                        mViewModel.allData.value?.let { adapter.setData(it) }
+                    }
+                    return true
+                }
+            })
+        }
+
+        return super.onCreateOptionsMenu(menu)
+    }
 }

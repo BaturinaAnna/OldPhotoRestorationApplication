@@ -19,7 +19,6 @@ class ViewPagerAdapter(private val context: Context, private val photoArray: Arr
     }
 
     override fun instantiateItem(container: ViewGroup, position: Int): Any {
-        //        var imageView = ImageView(context)
         var photoView = PhotoView(context)
         photoView.setImageBitmap(photoArray[position])
         container.addView(photoView, 0)

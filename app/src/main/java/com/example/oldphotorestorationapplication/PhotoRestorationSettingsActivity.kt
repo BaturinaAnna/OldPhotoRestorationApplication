@@ -5,6 +5,8 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.widget.SearchView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -54,7 +56,7 @@ class PhotoRestorationSettingsActivity: AppCompatActivity(), ImagePickerBottomsh
                 uploadPhoto(
                     imagePath,
                     binding.switchRemoveScratches.isChecked.toString(),
-                    "http://192.168.20.161:8080/OldPhotoRestoration_war_exploded/restoration-servlet")
+                    "http://192.168.245.226:8080/OldPhotoRestoration_war_exploded/restoration-servlet")
             }
         }
     }
