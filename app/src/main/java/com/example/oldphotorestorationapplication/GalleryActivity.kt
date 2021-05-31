@@ -25,7 +25,7 @@ import java.io.File
 import java.io.FileOutputStream
 
 
-class MainActivity : AppCompatActivity(), OnPhotoClickListener, OnPhotoLongClickListener, ImagePickerBottomsheet.ItemClickListener, ImagePickerActivityClass.OnResult  {
+class GalleryActivity : AppCompatActivity(), OnPhotoClickListener, OnPhotoLongClickListener, ImagePickerBottomsheet.ItemClickListener, ImagePickerActivityClass.OnResult  {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var mViewModel: PhotoViewModel

@@ -56,7 +56,7 @@ class PhotoRestorationSettingsActivity: AppCompatActivity(), ImagePickerBottomsh
                 uploadPhoto(
                     imagePath,
                     binding.switchRemoveScratches.isChecked.toString(),
-                    "http://192.168.245.226:8080/OldPhotoRestoration_war_exploded/restoration-servlet")
+                    "http://192.168.30.130:8080/OldPhotoRestoration_war_exploded/restoration-servlet")
             }
         }
     }
@@ -118,7 +118,7 @@ class PhotoRestorationSettingsActivity: AppCompatActivity(), ImagePickerBottomsh
             val okHttpClient: OkHttpClient =
                 OkHttpClient.Builder()
                     .readTimeout(1, TimeUnit.HOURS)
-                    // .writeTimeout(1, TimeUnit.HOURS)
+                     .writeTimeout(1, TimeUnit.HOURS)
                     .connectTimeout(1, TimeUnit.HOURS)
                     .build()
 

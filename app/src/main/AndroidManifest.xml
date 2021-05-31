@@ -23,7 +23,7 @@
         android:supportsRtl="true"
         android:usesCleartextTraffic="true"
         android:theme="@style/Theme.OldPhotoRestorationApplication">
-        <activity android:name=".MainActivity">
+        <activity android:name=".GalleryActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -33,23 +33,23 @@
     <activity android:name=".PhotoEditorActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value=".GalleryActivity" />
         </activity>
         <activity android:name=".PhotoRestorationSettingsActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value=".GalleryActivity" />
         </activity>
-        <provider
-            tools:replace="android:authorities"
-            android:name="androidx.core.content.FileProvider"
-            android:authorities="${applicationId}.provider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                tools:replace="android:resource"
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths" />
-        </provider>
+<!--        <provider-->
+<!--&lt;!&ndash;            tools:replace="android:authorities"&ndash;&gt;-->
+<!--            android:name="androidx.core.content.FileProvider"-->
+<!--            android:authorities="${applicationId}.provider"-->
+<!--            android:exported="false"-->
+<!--            android:grantUriPermissions="true">-->
+<!--            <meta-data-->
+<!--&lt;!&ndash;                tools:replace="android:resource"&ndash;&gt;-->
+<!--                android:name="android.support.FILE_PROVIDER_PATHS"-->
+<!--                android:resource="@xml/provider_paths" />-->
+<!--        </provider>-->
     </application>
     </manifest>
