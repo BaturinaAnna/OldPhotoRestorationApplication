@@ -7,11 +7,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "photo")
 data class Photo(
-    //    @ColumnInfo(name = "initialPhoto", typeAffinity = ColumnInfo.BLOB) val initialPhoto:
-    // ByteArray,
     @ColumnInfo(name = "initialPhoto") val initialPhoto: Bitmap,
-    //    @ColumnInfo(name = "restoredPhoto", typeAffinity = ColumnInfo.BLOB) val restoredPhoto:
-    // ByteArray,
     @ColumnInfo(name = "restoredPhoto") val restoredPhoto: Bitmap,
     @ColumnInfo(name = "title") var title: String?,
     @ColumnInfo(name = "description") var description: String?,
