@@ -30,7 +30,6 @@ class FacesRecyclerViewAdapter() : RecyclerView.Adapter<FacesRecyclerViewAdapter
 
     fun setData(faces: List<Face>) {
         this.faceList = faces
-        Log.d("ANNA", "SIZE OF FACES IN ADAPTER ${faces.size}")
         notifyDataSetChanged()
     }
 

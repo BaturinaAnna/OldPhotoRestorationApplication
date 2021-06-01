@@ -85,9 +85,9 @@ class PhotoRestorationSettingsActivity :
                 cancelButtonText = "Cancel"
             )
             // Customize button text color
-            setButtonColors(
-                galleryButtonColor = ContextCompat.getColor(requireContext(), R.color.white)
-            )
+//            setButtonColors(
+//                galleryButtonColor = ContextCompat.getColor(requireContext(), R.color.white)
+//            )
             // For more customization make a style in your styles xml and pass it to this method.
             // (This will override above method result).
             //            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M)
@@ -176,7 +176,6 @@ class PhotoRestorationSettingsActivity :
                                     name = null
                                 ))
                             }
-                            Log.d("ANNA", "FACES SIZE IN SETTINGS ${faces.size}")
                             mViewModel.addPhotoWithFaces(photoToInsert, faces)
                         }
                         finish()
