@@ -6,7 +6,7 @@ import androidx.room.*
 @Dao
 interface PhotoDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun addPhoto(photo: Photo)
+    suspend fun addPhoto(photo: Photo): Long
 
     @Update
     suspend fun updatePhoto(photo: Photo)
@@ -18,5 +18,5 @@ interface PhotoDao {
     fun readAllData(): LiveData<List<Photo>>
 
     @Query("SELECT * FROM photo WHERE id = :id")
-    fun findPhotoById(id: Int): LiveData<Photo>
+    fun findPhotoById(id: Long): LiveData<Photo>
 }

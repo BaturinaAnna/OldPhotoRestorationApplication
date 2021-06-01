@@ -6,10 +6,11 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.example.oldphotorestorationapplication.App
 
-@Database(entities = [Photo::class], version = 5)
+@Database(entities = [Photo::class, Face::class], version = 6)
 @TypeConverters(Converters::class)
 abstract class PhotoDatabase : RoomDatabase() {
     abstract fun photoDao(): PhotoDao
+    abstract fun faceDao(): FaceDao
 
     companion object {
         @Volatile private var INSTANCE: PhotoDatabase? = null

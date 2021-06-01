@@ -13,12 +13,17 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
 
     init {
         val photoDao = PhotoDatabase.getDatabase().photoDao()
-        repository = PhotoRepository(photoDao)
+        val faceDao = PhotoDatabase.getDatabase().faceDao()
+        repository = PhotoRepository(photoDao, faceDao)
         allData = repository.readAllData
     }
 
     fun addPhoto(photo: Photo) {
         viewModelScope.launch(Dispatchers.IO) { repository.addPhoto(photo) }
+    }
+
+    fun addPhotoWithFaces(photo: Photo, faces: List<Face>){
+        viewModelScope.launch(Dispatchers.IO) { repository.addPhotoWithFaces(photo, faces) }
     }
 
     fun updatePhoto(photo: Photo) {
@@ -29,7 +34,11 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch(Dispatchers.IO) { repository.deletePhoto(photo) }
     }
 
-    fun findPhotoById(id: Int): LiveData<Photo> {
+    fun findPhotoById(id: Long): LiveData<Photo> {
         return repository.findPhotoById(id)
+    }
+
+    fun  findFacesByPhotoId(idPhoto: Long): LiveData<List<Face>> {
+        return repository.findFacesByPhotoId(idPhoto)
     }
 }

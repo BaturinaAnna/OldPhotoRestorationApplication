@@ -14,5 +14,5 @@ data class Photo(
     @ColumnInfo(name = "date") var date: String?,
     @ColumnInfo(name = "location") var location: String?
 ) {
-    @PrimaryKey(autoGenerate = true) var id: Int = 0
+    @PrimaryKey(autoGenerate = true) var id: Long = 0
 }

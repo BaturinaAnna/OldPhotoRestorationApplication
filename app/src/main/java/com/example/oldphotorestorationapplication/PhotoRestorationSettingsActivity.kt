@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import com.app.imagepickerlibrary.*
+import com.example.oldphotorestorationapplication.data.Face
 import com.example.oldphotorestorationapplication.data.Photo
 import com.example.oldphotorestorationapplication.data.PhotoViewModel
 import com.example.oldphotorestorationapplication.databinding.RestorationSettingsBinding
@@ -56,7 +57,7 @@ class PhotoRestorationSettingsActivity :
                 uploadPhoto(
                     imagePath,
                     binding.switchRemoveScratches.isChecked.toString(),
-                    "http://192.168.96.68:8080/OldPhotoRestoration_war_exploded/restoration-servlet"
+                    "http://192.168.39.20:8080/OldPhotoRestoration_war_exploded/restoration-servlet"
                 )
             }
         }
@@ -144,64 +145,40 @@ class PhotoRestorationSettingsActivity :
 
                     @Throws(IOException::class)
                     override fun onResponse(call: Call?, response: Response) {
-                        val list =
+                        val listOfPhotos =
                             ZipInputStream(response.body()?.byteStream()).use { zipInputStream ->
                                 generateSequence { zipInputStream.nextEntry }
                                     .filterNot { it.isDirectory }
                                     .map { zipInputStream.readBytes() }
                                     .toList()
                             }
-                        for (l in list) {
-                            val bitmapRestored = BitmapFactory.decodeByteArray(l, 0, l.size)
-                            if (BitmapFactory.decodeFile(imagePath) == null) {
-                                Log.d("ANNA", "BitmapFactory.decodeFile(imagePath) null")
-                            } else if (bitmapRestored == null) {
-                                Log.d("ANNA", "bitmapRestored null")
-                            } else {
-                                val photoToInsert =
-                                    Photo(
-                                        BitmapFactory.decodeFile(imagePath),
-                                        bitmapRestored,
-                                        null,
-                                        null,
-                                        null,
-                                        null
-                                    )
-                                mViewModel.addPhoto(photoToInsert)
+                        val bitmapRestoredPhoto = BitmapFactory.decodeByteArray(listOfPhotos[0],
+                            0,
+                            listOfPhotos[0].size)
+                        val photoToInsert =
+                            Photo(
+                                BitmapFactory.decodeFile(imagePath),
+                                bitmapRestoredPhoto,
+                                null,
+                                null,
+                                null,
+                                null
+                            )
+                        if (listOfPhotos.size == 1){
+                            mViewModel.addPhoto(photoToInsert)
+                        } else {
+                            val faces: ArrayList<Face> = ArrayList()
+                            for (faceByteArray in listOfPhotos.subList(1, listOfPhotos.size))
+                            {
+                                faces.add(Face(
+                                    face = BitmapFactory.decodeByteArray(faceByteArray, 0, faceByteArray.size),
+                                    idPhoto = null,
+                                    name = null
+                                ))
                             }
+                            mViewModel.addPhotoWithFaces(photoToInsert, faces)
                         }
                         finish()
-                        //                        val buffer = ByteArrayOutputStream()
-                        //                        var nRead: Int? = null
-                        //                        val data = ByteArray(1024)
-                        //                        while (response.body()?.byteStream()?.read(data,
-                        // 0, data.size).also {
-                        //                                if (it != null) {
-                        //                                    nRead = it
-                        //                                }
-                        //                            } != -1) {
-                        //                            nRead?.let { buffer.write(data, 0, it) }
-                        //                        }
-                        //                        buffer.flush()
-                        //                        val byteArray = buffer.toByteArray()
-                        //                        try {
-                        //                            val bitmapRestored =
-                        //                                BitmapFactory.decodeByteArray(byteArray,
-                        // 0, byteArray.size)
-                        //                            val photoToInsert =
-                        //                                Photo(
-                        //                                    BitmapFactory.decodeFile(imagePath),
-                        //                                    bitmapRestored,
-                        //                                    null,
-                        //                                    null,
-                        //                                    null,
-                        //                                    null
-                        //                                )
-                        //                            mViewModel.addPhoto(photoToInsert)
-                        //                            finish()
-                        //                        } catch (e: Exception) {
-                        //                            e.message?.let { Log.d("ANNA", it) }
-                        //                        }
                     }
                 }
             )

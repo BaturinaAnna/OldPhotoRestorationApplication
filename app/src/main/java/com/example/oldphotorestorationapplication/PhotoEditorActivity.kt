@@ -34,11 +34,15 @@ class PhotoEditorActivity : AppCompatActivity() {
 
     private fun init() {
         mViewModel = ViewModelProvider(this).get(PhotoViewModel::class.java)
-        val id: Int = intent.getIntExtra("photoId", -1)
+        val id: Long = intent.getLongExtra("photoId", -1)
         if (id > 0) {
             mViewModel
                 .findPhotoById(id)
                 .observe(this, { currentPhoto -> currentPhoto?.let { setView(currentPhoto) } })
+
+            mViewModel
+                .findFacesByPhotoId(id)
+                .observe(this, {faces -> binding.faceTry.setImageBitmap(faces[0].face)})
         }
     }
 
