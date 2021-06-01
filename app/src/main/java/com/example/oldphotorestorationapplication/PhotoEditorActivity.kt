@@ -10,6 +10,7 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NavUtils
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.oldphotorestorationapplication.data.Photo
 import com.example.oldphotorestorationapplication.data.PhotoViewModel
 import com.example.oldphotorestorationapplication.databinding.PhotoEditorBinding
@@ -28,10 +29,9 @@ class PhotoEditorActivity : AppCompatActivity() {
 
         adapterFaces = FacesRecyclerViewAdapter()
         binding.facesRecyclerView.adapter = adapterFaces
-
-        init()
         setContentView(view)
 
+        init()
 
         if (supportActionBar != null) {
             supportActionBar?.setDisplayHomeAsUpEnabled(true);
@@ -87,6 +87,8 @@ class PhotoEditorActivity : AppCompatActivity() {
         binding.editTextDescription.setText(photo.description)
         binding.editTextDate.setText(photo.date)
         binding.editTextLocation.setText(photo.location)
+
+        binding.facesRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
 
         binding.buttonSave.setOnClickListener {
             editingPhoto = updatePhotoInfo(photo)
