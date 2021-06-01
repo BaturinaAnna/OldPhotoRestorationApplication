@@ -176,6 +176,7 @@ class PhotoRestorationSettingsActivity :
                                     name = null
                                 ))
                             }
+                            Log.d("ANNA", "FACES SIZE IN SETTINGS ${faces.size}")
                             mViewModel.addPhotoWithFaces(photoToInsert, faces)
                         }
                         finish()

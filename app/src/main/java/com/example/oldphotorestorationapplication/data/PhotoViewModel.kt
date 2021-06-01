@@ -1,11 +1,11 @@
 package com.example.oldphotorestorationapplication.data
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
 class PhotoViewModel(application: Application) : AndroidViewModel(application) {
     val allData: LiveData<List<Photo>>
@@ -23,7 +23,13 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun addPhotoWithFaces(photo: Photo, faces: List<Face>){
-        viewModelScope.launch(Dispatchers.IO) { repository.addPhotoWithFaces(photo, faces) }
+        CoroutineScope(Dispatchers.IO + SupervisorJob()).launch{
+                val idInsertedPhoto = repository.addPhoto(photo)
+                for(face in faces){
+                    face.idPhoto = idInsertedPhoto
+                    repository.addFace(face)
+                }
+            }
     }
 
     fun updatePhoto(photo: Photo) {

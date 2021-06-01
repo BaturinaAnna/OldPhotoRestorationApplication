@@ -21,10 +21,12 @@
                     android:layout_height="400dp"
                     android:layout_gravity="center" />
 
-                <ImageView
-                    android:id="@+id/faceTry"
-                    android:layout_width="200dp"
-                    android:layout_height="200dp"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/facesRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:orientation="horizontal"/>
 
                 <EditText
                     android:id="@+id/editTextTitle"

@@ -19,13 +19,19 @@ class PhotoEditorActivity : AppCompatActivity() {
     private lateinit var binding: PhotoEditorBinding
     private lateinit var mViewModel: PhotoViewModel
     private lateinit var editingPhoto: Photo
+    private lateinit var adapterFaces: FacesRecyclerViewAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = PhotoEditorBinding.inflate(layoutInflater)
         val view = binding.root
-        setContentView(view)
+
+        adapterFaces = FacesRecyclerViewAdapter()
+        binding.facesRecyclerView.adapter = adapterFaces
+
         init()
+        setContentView(view)
+
 
         if (supportActionBar != null) {
             supportActionBar?.setDisplayHomeAsUpEnabled(true);
@@ -42,7 +48,7 @@ class PhotoEditorActivity : AppCompatActivity() {
 
             mViewModel
                 .findFacesByPhotoId(id)
-                .observe(this, {faces -> binding.faceTry.setImageBitmap(faces[0].face)})
+                .observe(this, { faces -> adapterFaces.setData(faces)})
         }
     }
 

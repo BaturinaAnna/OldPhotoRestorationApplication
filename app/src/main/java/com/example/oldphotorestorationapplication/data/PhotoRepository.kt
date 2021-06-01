@@ -1,20 +1,17 @@
 package com.example.oldphotorestorationapplication.data
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 
 class PhotoRepository(private val photoDao: PhotoDao, private val faceDao: FaceDao) {
     val readAllData: LiveData<List<Photo>> = photoDao.readAllData()
 
-    suspend fun addPhoto(photo: Photo) {
-        photoDao.addPhoto(photo)
+    suspend fun addPhoto(photo: Photo):Long {
+        return photoDao.addPhoto(photo)
     }
 
-    suspend fun addPhotoWithFaces(photo: Photo, faces: List<Face>){
-        val idInsertedPhoto = photoDao.addPhoto(photo)
-        for(face in faces){
-            face.idPhoto = idInsertedPhoto
-            faceDao.addFace(face)
-        }
+    suspend fun addFace(face: Face) {
+        faceDao.addFace(face)
     }
 
     suspend fun updatePhoto(photo: Photo) {
@@ -30,6 +27,6 @@ class PhotoRepository(private val photoDao: PhotoDao, private val faceDao: FaceD
     }
 
     fun findFacesByPhotoId(idPhoto: Long): LiveData<List<Face>> {
-        return faceDao.findFacesByPhotoId(idPhoto)
+        return faceDao.findFacesByPhotoId(idPhoto = idPhoto)
     }
 }

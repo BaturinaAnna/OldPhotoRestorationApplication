@@ -1,9 +1,6 @@
 package com.example.oldphotorestorationapplication
 
 import android.view.*
-import android.widget.ShareActionProvider
-import android.widget.Toast
-import androidx.core.app.ShareCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.oldphotorestorationapplication.data.Photo
 import kotlinx.android.synthetic.main.item_layout.view.*
@@ -17,10 +14,10 @@ interface OnPhotoLongClickListener {
     fun onLongPhotoClick(position: Int, view: View): Boolean
 }
 
-class RecyclerViewAdapter(
+class PhotoRecyclerViewAdapter(
     private val clickListener: OnPhotoClickListener,
     private val longClickListener: OnPhotoLongClickListener
-) : RecyclerView.Adapter<RecyclerViewAdapter.RecyclerViewHolder>() {
+) : RecyclerView.Adapter<PhotoRecyclerViewAdapter.RecyclerViewHolder>() {
 
     private var photoList = emptyList<Photo>()
 

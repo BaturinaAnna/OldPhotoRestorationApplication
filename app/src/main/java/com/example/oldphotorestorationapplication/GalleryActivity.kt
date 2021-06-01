@@ -20,23 +20,23 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.app.imagepickerlibrary.*
 import com.example.oldphotorestorationapplication.data.Photo
 import com.example.oldphotorestorationapplication.data.PhotoViewModel
-import com.example.oldphotorestorationapplication.databinding.ActivityMainBinding
+import com.example.oldphotorestorationapplication.databinding.GalleryBinding
 import java.io.File
 import java.io.FileOutputStream
 
 
 class GalleryActivity : AppCompatActivity(), OnPhotoClickListener, OnPhotoLongClickListener, ImagePickerBottomsheet.ItemClickListener, ImagePickerActivityClass.OnResult  {
 
-    private lateinit var binding: ActivityMainBinding
+    private lateinit var binding: GalleryBinding
     private lateinit var mViewModel: PhotoViewModel
     private lateinit var imagePicker: ImagePickerActivityClass
-    private lateinit var adapter: RecyclerViewAdapter
+    private lateinit var adapterPhoto: PhotoRecyclerViewAdapter
     private var foundPhotosList: List<Photo>? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
+        binding = GalleryBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
 
@@ -44,11 +44,11 @@ class GalleryActivity : AppCompatActivity(), OnPhotoClickListener, OnPhotoLongCl
         val layoutManager = GridLayoutManager(this, 2)
         binding.photoRecyclerView.layoutManager = layoutManager
 
-        adapter = RecyclerViewAdapter(this, this)
-        binding.photoRecyclerView.adapter = adapter
+        adapterPhoto = PhotoRecyclerViewAdapter(this, this)
+        binding.photoRecyclerView.adapter = adapterPhoto
 
         mViewModel = ViewModelProvider(this).get(PhotoViewModel::class.java)
-        mViewModel.allData.observe(this, { photo -> adapter.setData(photo) })
+        mViewModel.allData.observe(this, { photo -> adapterPhoto.setData(photo) })
         init()
 
         imagePicker = ImagePickerActivityClass(this, this, this, activityResultRegistry)
@@ -216,11 +216,11 @@ class GalleryActivity : AppCompatActivity(), OnPhotoClickListener, OnPhotoLongCl
                                 foundPhotos.add(it)
                             }
                         }
-                        adapter.setData(foundPhotos)
+                        adapterPhoto.setData(foundPhotos)
                         foundPhotosList = foundPhotos
                     } else {
                         foundPhotosList = mViewModel.allData.value
-                        mViewModel.allData.value?.let { adapter.setData(it) }
+                        mViewModel.allData.value?.let { adapterPhoto.setData(it) }
                     }
                     return true
                 }
