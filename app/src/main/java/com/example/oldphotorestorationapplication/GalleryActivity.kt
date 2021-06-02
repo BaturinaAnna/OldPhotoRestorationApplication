@@ -48,7 +48,7 @@ class GalleryActivity : AppCompatActivity(), OnPhotoClickListener, OnPhotoLongCl
         binding.photoRecyclerView.adapter = adapterPhoto
 
         mViewModel = ViewModelProvider(this).get(PhotoViewModel::class.java)
-        mViewModel.allData.observe(this, { photo -> adapterPhoto.setData(photo) })
+        mViewModel.allPhotos.observe(this, { photo -> adapterPhoto.setData(photo) })
         init()
 
         imagePicker = ImagePickerActivityClass(this, this, this, activityResultRegistry)
@@ -105,7 +105,7 @@ class GalleryActivity : AppCompatActivity(), OnPhotoClickListener, OnPhotoLongCl
 
     override fun onPhotoClick(position: Int, view: View) {
         val photo = when(foundPhotosList){
-            null -> mViewModel.allData.value?.get(position)
+            null -> mViewModel.allPhotos.value?.get(position)
             else -> foundPhotosList!![position]
         }
         val intent = Intent(view.context, PhotoEditorActivity::class.java)
@@ -127,7 +127,7 @@ class GalleryActivity : AppCompatActivity(), OnPhotoClickListener, OnPhotoLongCl
         popupMenu.setOnMenuItemClickListener {
             when(it.itemId){
                 R.id.deletePhotoMenu -> {
-                    val photo = mViewModel.allData.value?.get(position)
+                    val photo = mViewModel.allPhotos.value?.get(position)
                     val builder: AlertDialog.Builder = AlertDialog.Builder(this)
                     builder.setPositiveButton("Yes") { _, _ ->
                         mViewModel.deletePhoto(photo!!)
@@ -140,7 +140,7 @@ class GalleryActivity : AppCompatActivity(), OnPhotoClickListener, OnPhotoLongCl
                     true
                 }
                 R.id.sharePhotoMenu -> {
-                    val photo = mViewModel.allData.value?.get(position)
+                    val photo = mViewModel.allPhotos.value?.get(position)
                     shareBitmap(photo!!.restoredPhoto)
                     true
                 }
@@ -202,7 +202,7 @@ class GalleryActivity : AppCompatActivity(), OnPhotoClickListener, OnPhotoLongCl
 
                 override fun onQueryTextChange(newText: String?): Boolean {
                     if (newText!!.trim().isNotEmpty()){
-                        val allPhotos = mViewModel.allData.value
+                        val allPhotos = mViewModel.allPhotos.value
                         val foundPhotos = mutableListOf<Photo>()
                         val query: String = newText.lowercase()
                         allPhotos?.forEach {
@@ -219,8 +219,8 @@ class GalleryActivity : AppCompatActivity(), OnPhotoClickListener, OnPhotoLongCl
                         adapterPhoto.setData(foundPhotos)
                         foundPhotosList = foundPhotos
                     } else {
-                        foundPhotosList = mViewModel.allData.value
-                        mViewModel.allData.value?.let { adapterPhoto.setData(it) }
+                        foundPhotosList = mViewModel.allPhotos.value
+                        mViewModel.allPhotos.value?.let { adapterPhoto.setData(it) }
                     }
                     return true
                 }

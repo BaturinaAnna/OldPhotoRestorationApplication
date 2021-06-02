@@ -1,21 +1,22 @@
 package com.example.oldphotorestorationapplication.data
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.*
 
 class PhotoViewModel(application: Application) : AndroidViewModel(application) {
-    val allData: LiveData<List<Photo>>
+    val allPhotos: LiveData<List<Photo>>
+    val allFaces: LiveData<List<Face>>
     private val repository: PhotoRepository
 
     init {
         val photoDao = PhotoDatabase.getDatabase().photoDao()
         val faceDao = PhotoDatabase.getDatabase().faceDao()
         repository = PhotoRepository(photoDao, faceDao)
-        allData = repository.readAllData
+        allPhotos = repository.readAllPhoto
+        allFaces = repository.readAllFaces
     }
 
     fun addPhoto(photo: Photo) {
@@ -46,5 +47,13 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
 
     fun  findFacesByPhotoId(idPhoto: Long): LiveData<List<Face>> {
         return repository.findFacesByPhotoId(idPhoto)
+    }
+
+    fun findFaceById(id: Long): LiveData<Face> {
+        return repository.findFaceById(id)
+    }
+
+    fun updateFace(face: Face) {
+        viewModelScope.launch(Dispatchers.IO) { repository.updateFace(face) }
     }
 }

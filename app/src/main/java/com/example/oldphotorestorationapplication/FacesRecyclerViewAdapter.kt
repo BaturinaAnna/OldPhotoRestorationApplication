@@ -9,7 +9,14 @@ import com.example.oldphotorestorationapplication.data.Face
 import kotlinx.android.synthetic.main.face_layout.view.*
 import kotlinx.android.synthetic.main.item_layout.view.*
 
-class FacesRecyclerViewAdapter() : RecyclerView.Adapter<FacesRecyclerViewAdapter.RecyclerViewHolder>() {
+
+interface OnFaceClickListener {
+    fun onFaceClick(position: Int, view: View)
+}
+
+class FacesRecyclerViewAdapter(
+    private val clickListener: OnFaceClickListener
+) : RecyclerView.Adapter<FacesRecyclerViewAdapter.RecyclerViewHolder>() {
 
     private var faceList = emptyList<Face>()
 
@@ -22,6 +29,7 @@ class FacesRecyclerViewAdapter() : RecyclerView.Adapter<FacesRecyclerViewAdapter
     override fun onBindViewHolder(holder: RecyclerViewHolder, position: Int) {
         val currentItem = faceList[position]
         holder.itemView.faceItemImageView.setImageBitmap(currentItem.face)
+        holder.itemView.setOnClickListener { clickListener.onFaceClick(position, holder.itemView) }
     }
 
     override fun getItemCount(): Int {

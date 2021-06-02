@@ -1,27 +1,35 @@
 package com.example.oldphotorestorationapplication
 
+import android.R
+import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.View
+import android.widget.LinearLayout
+import android.widget.PopupWindow
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import com.app.imagepickerlibrary.*
 import com.example.oldphotorestorationapplication.data.Face
 import com.example.oldphotorestorationapplication.data.Photo
 import com.example.oldphotorestorationapplication.data.PhotoViewModel
 import com.example.oldphotorestorationapplication.databinding.RestorationSettingsBinding
-import java.io.File
-import java.io.IOException
-import java.util.concurrent.TimeUnit
-import java.util.zip.ZipInputStream
+import com.example.oldphotorestorationapplication.databinding.WaitingPopupWindowBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.*
+import java.io.File
+import java.io.IOException
+import java.util.concurrent.TimeUnit
+import java.util.zip.ZipInputStream
+
 
 class PhotoRestorationSettingsActivity :
     AppCompatActivity(),
@@ -53,11 +61,24 @@ class PhotoRestorationSettingsActivity :
             true
         }
         binding.buttonRestore.setOnClickListener {
+            val bindingPopupWindow = WaitingPopupWindowBinding.inflate(layoutInflater)
+            val popupWindow = PopupWindow(
+                bindingPopupWindow.root,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+            popupWindow.showAtLocation(
+                binding.root,
+                Gravity.CENTER,
+                0,
+                0
+            )
+
             GlobalScope.launch {
                 uploadPhoto(
                     imagePath,
                     binding.switchRemoveScratches.isChecked.toString(),
-                    "http://192.168.39.20:8080/OldPhotoRestoration_war_exploded/restoration-servlet"
+                    "http://192.168.52.228:8080/OldPhotoRestoration_war_exploded/restoration-servlet"
                 )
             }
         }
@@ -95,7 +116,7 @@ class PhotoRestorationSettingsActivity :
             //                setTextAppearance(R.style.fontForNotificationLandingPage)
             //            }
             // To customize bottomsheet style
-            setBottomSheetBackgroundStyle(R.drawable.drawable_bottom_sheet_dialog)
+//            setBottomSheetBackgroundStyle(R.drawable.drawable_bottom_sheet_dialog)
         }
     }
 

@@ -17,7 +17,7 @@
 
                 <androidx.viewpager.widget.ViewPager
                     android:id="@+id/viewPager"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="400dp"
                     android:layout_gravity="center" />
 

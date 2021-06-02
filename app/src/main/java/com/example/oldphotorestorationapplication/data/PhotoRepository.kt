@@ -4,7 +4,8 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 
 class PhotoRepository(private val photoDao: PhotoDao, private val faceDao: FaceDao) {
-    val readAllData: LiveData<List<Photo>> = photoDao.readAllData()
+    val readAllPhoto: LiveData<List<Photo>> = photoDao.readAllData()
+    val readAllFaces: LiveData<List<Face>> = faceDao.readAllFaces()
 
     suspend fun addPhoto(photo: Photo):Long {
         return photoDao.addPhoto(photo)
@@ -28,5 +29,13 @@ class PhotoRepository(private val photoDao: PhotoDao, private val faceDao: FaceD
 
     fun findFacesByPhotoId(idPhoto: Long): LiveData<List<Face>> {
         return faceDao.findFacesByPhotoId(idPhoto = idPhoto)
+    }
+
+    fun findFaceById(id: Long): LiveData<Face> {
+        return faceDao.findFaceById(id = id)
+    }
+
+    suspend fun updateFace(face: Face) {
+        faceDao.updateFace(face)
     }
 }
