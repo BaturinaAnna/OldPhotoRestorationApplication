@@ -1,9 +1,7 @@
 package com.example.oldphotorestorationapplication
 
 import android.R
-import android.app.AlertDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.widget.*
@@ -22,6 +20,7 @@ class PhotoEditorActivity : AppCompatActivity(), OnFaceClickListener {
     private lateinit var mViewModel: PhotoViewModel
     private lateinit var editingPhoto: Photo
     private lateinit var adapterFaces: FacesRecyclerViewAdapter
+    private lateinit var popupWindow: PopupWindow
     private lateinit var facesList: List<Face>
     private lateinit var namesList: List<String>
 
@@ -73,17 +72,16 @@ class PhotoEditorActivity : AppCompatActivity(), OnFaceClickListener {
 
     override fun onBackPressed() {
         if (checkUnsavedChanges(editingPhoto)) {
-            val builder: AlertDialog.Builder =
-                this@PhotoEditorActivity.let { AlertDialog.Builder(it) }
-            builder.setPositiveButton("Yes") { _, _ ->
-                editingPhoto = updatePhotoInfo(editingPhoto)
-                mViewModel.updatePhoto(editingPhoto)
-                Toast.makeText(applicationContext, "Changes saved", Toast.LENGTH_SHORT).show()
-                finish()
-            }
-            builder.setNegativeButton("No") { _, _ -> finish() }
-            builder.setMessage("There are unsaved changes. Do you want to save them?")
-            builder.create().show()
+            showAlertDialog(
+                context = this@PhotoEditorActivity,
+                message = "There are unsaved changes. Do you want to save them?",
+                actionsPositive = { _, _ ->
+                        editingPhoto = updatePhotoInfo(editingPhoto)
+                        mViewModel.updatePhoto(editingPhoto)
+                        Toast.makeText(applicationContext, "Changes saved", Toast.LENGTH_SHORT).show()
+                        finish() },
+                actionsNegative = { _, _ -> finish() },
+            )
         } else {
             finish()
         }
@@ -109,17 +107,15 @@ class PhotoEditorActivity : AppCompatActivity(), OnFaceClickListener {
         }
 
         binding.buttonDelete.setOnClickListener {
-            val builder: AlertDialog.Builder =
-                this@PhotoEditorActivity.let { AlertDialog.Builder(it) }
-            builder.setPositiveButton("Yes") { _, _ ->
-                mViewModel.deletePhoto(photo)
-                Toast.makeText(applicationContext, "Successfully removed", Toast.LENGTH_SHORT)
-                    .show()
-                finish()
-            }
-            builder.setNegativeButton("No") { _, _ -> }
-            builder.setMessage("Are you sure you want to delete this photo?")
-            builder.create().show()
+            showAlertDialog(
+                context = this@PhotoEditorActivity,
+                message = "Are you sure you want to delete this photo?",
+                actionsPositive = { _, _ ->
+                    mViewModel.deletePhoto(photo)
+                    Toast.makeText(applicationContext, "Successfully removed", Toast.LENGTH_SHORT).show()
+                    finish() },
+                actionsNegative = { _, _ -> }
+            )
         }
     }
 
@@ -188,25 +184,52 @@ class PhotoEditorActivity : AppCompatActivity(), OnFaceClickListener {
 
     override fun onFaceClick(position: Int, view: View) {
         val face = facesList[position]
+
         val bindingFacePopupWindow = FacePopupWindowBinding.inflate(layoutInflater)
-        val popupWindow =
+        popupWindow =
             PopupWindow(
                 bindingFacePopupWindow.root,
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT,
-                true
-            )
+                true)
+        popupWindow.setOnDismissListener {
+            if (bindingFacePopupWindow.autoCompleteTextFaceName.text.toString() != face.name) {
+                showAlertDialog(
+                    context = this@PhotoEditorActivity,
+                    message = "There are unsaved changes. Do you want to save them?",
+                    actionsPositive = { _, _ ->
+                        face.name = bindingFacePopupWindow.autoCompleteTextFaceName.text.toString()
+                        mViewModel.updateFace(face)
+                        Toast.makeText(applicationContext, "Changes saved", Toast.LENGTH_SHORT).show() },
+                    actionsNegative = { _, _ -> }
+                )
+            }
+        }
         popupWindow.showAtLocation(binding.root, Gravity.CENTER, 0, 0)
         bindingFacePopupWindow.imageView.setImageBitmap(face.face)
 
         val arrayAdapter = ArrayAdapter(this, R.layout.simple_list_item_1, namesList)
 
         bindingFacePopupWindow.autoCompleteTextFaceName.setAdapter(arrayAdapter)
-        if (face.name != null) {
-            bindingFacePopupWindow.autoCompleteTextFaceName.setText(face.name)
-        }
 
-        bindingFacePopupWindow.buttonCancel.setOnClickListener { popupWindow.dismiss() }
+        face.name.let { bindingFacePopupWindow.autoCompleteTextFaceName.setText(face.name) }
+
+        bindingFacePopupWindow.buttonCancel.setOnClickListener {
+            if (bindingFacePopupWindow.autoCompleteTextFaceName.text.toString() != face.name) {
+                showAlertDialog(
+                    context = this@PhotoEditorActivity,
+                    message = "There are unsaved changes. Do you want to save them?",
+                    actionsPositive = {_, _ ->
+                        face.name = bindingFacePopupWindow.autoCompleteTextFaceName.text.toString()
+                        mViewModel.updateFace(face)
+                        Toast.makeText(applicationContext, "Changes saved", Toast.LENGTH_SHORT).show()
+                        popupWindow.dismiss()},
+                    actionsNegative = { _, _ -> popupWindow.dismiss()},
+                )
+            } else{
+                popupWindow.dismiss()
+            }
+        }
 
         bindingFacePopupWindow.buttonSave.setOnClickListener {
             if (bindingFacePopupWindow.autoCompleteTextFaceName.text.toString() != face.name) {

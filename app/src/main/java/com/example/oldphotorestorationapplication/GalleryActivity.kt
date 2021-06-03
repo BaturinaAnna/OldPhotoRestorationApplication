@@ -128,15 +128,14 @@ class GalleryActivity : AppCompatActivity(), OnPhotoClickListener, OnPhotoLongCl
             when(it.itemId){
                 R.id.deletePhotoMenu -> {
                     val photo = mViewModel.allPhotos.value?.get(position)
-                    val builder: AlertDialog.Builder = AlertDialog.Builder(this)
-                    builder.setPositiveButton("Yes") { _, _ ->
-                        mViewModel.deletePhoto(photo!!)
-                        Toast.makeText(applicationContext, "Successfully removed", Toast.LENGTH_SHORT)
-                            .show()
-                    }
-                    builder.setNegativeButton("No") { _, _ -> }
-                    builder.setMessage("Are you sure you want to delete this photo?")
-                    builder.create().show()
+                    showAlertDialog(
+                        context = this@GalleryActivity,
+                        message = "Are you sure you want to delete this photo?",
+                        actionsPositive = { _, _ ->
+                            mViewModel.deletePhoto(photo!!)
+                            Toast.makeText(applicationContext, "Successfully removed", Toast.LENGTH_SHORT).show() },
+                        actionsNegative = { _, _ -> },
+                    )
                     true
                 }
                 R.id.sharePhotoMenu -> {
