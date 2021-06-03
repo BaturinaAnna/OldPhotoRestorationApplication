@@ -1,7 +1,8 @@
-package com.example.oldphotorestorationapplication.data
+package com.example.oldphotorestorationapplication.data.photo
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import com.example.oldphotorestorationapplication.data.photo.Photo
 
 @Dao
 interface PhotoDao {

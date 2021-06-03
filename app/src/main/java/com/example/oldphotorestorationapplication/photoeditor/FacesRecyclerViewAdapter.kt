@@ -1,13 +1,12 @@
-package com.example.oldphotorestorationapplication
+package com.example.oldphotorestorationapplication.photoeditor
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.oldphotorestorationapplication.data.Face
+import com.example.oldphotorestorationapplication.R
+import com.example.oldphotorestorationapplication.data.face.Face
 import kotlinx.android.synthetic.main.face_layout.view.*
-import kotlinx.android.synthetic.main.item_layout.view.*
 
 
 interface OnFaceClickListener {

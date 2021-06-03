@@ -1,4 +1,4 @@
-package com.example.oldphotorestorationapplication
+package com.example.oldphotorestorationapplication.photoeditor
 
 import android.R
 import android.os.Bundle
@@ -8,16 +8,17 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.oldphotorestorationapplication.data.Face
-import com.example.oldphotorestorationapplication.data.Photo
-import com.example.oldphotorestorationapplication.data.PhotoViewModel
+import com.example.oldphotorestorationapplication.ViewPagerAdapter
+import com.example.oldphotorestorationapplication.data.face.Face
+import com.example.oldphotorestorationapplication.data.photo.Photo
 import com.example.oldphotorestorationapplication.databinding.FacePopupWindowBinding
 import com.example.oldphotorestorationapplication.databinding.PhotoEditorBinding
+import com.example.oldphotorestorationapplication.showAlertDialog
 import kotlinx.android.synthetic.main.face_popup_window.*
 
 class PhotoEditorActivity : AppCompatActivity(), OnFaceClickListener {
     private lateinit var binding: PhotoEditorBinding
-    private lateinit var mViewModel: PhotoViewModel
+    private lateinit var mViewModel: PhotoEditorViewModel
     private lateinit var editingPhoto: Photo
     private lateinit var bindingFacePopupWindow: FacePopupWindowBinding
     private lateinit var adapterFaces: FacesRecyclerViewAdapter
@@ -42,7 +43,7 @@ class PhotoEditorActivity : AppCompatActivity(), OnFaceClickListener {
     }
 
     private fun init() {
-        mViewModel = ViewModelProvider(this).get(PhotoViewModel::class.java)
+        mViewModel = ViewModelProvider(this).get(PhotoEditorViewModel::class.java)
         val id: Long = intent.getLongExtra("photoId", -1)
         if (id > 0) {
             mViewModel

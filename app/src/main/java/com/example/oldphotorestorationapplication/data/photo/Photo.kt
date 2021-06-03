@@ -1,4 +1,4 @@
-package com.example.oldphotorestorationapplication.data
+package com.example.oldphotorestorationapplication.data.photo
 
 import android.graphics.Bitmap
 import androidx.room.ColumnInfo

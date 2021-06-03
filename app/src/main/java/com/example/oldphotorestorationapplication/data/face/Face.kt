@@ -1,4 +1,4 @@
-package com.example.oldphotorestorationapplication.data
+package com.example.oldphotorestorationapplication.data.face
 
 import android.graphics.Bitmap
 import androidx.room.ColumnInfo
@@ -6,6 +6,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.ForeignKey.CASCADE
 import androidx.room.PrimaryKey
+import com.example.oldphotorestorationapplication.data.photo.Photo
 
 @Entity(tableName = "face",
         foreignKeys = [

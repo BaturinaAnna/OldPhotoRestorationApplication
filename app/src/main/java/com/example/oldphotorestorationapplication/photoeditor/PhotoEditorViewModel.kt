@@ -1,12 +1,17 @@
-package com.example.oldphotorestorationapplication.data
+package com.example.oldphotorestorationapplication.photoeditor
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.*
+import com.example.oldphotorestorationapplication.data.PhotoDatabase
+import com.example.oldphotorestorationapplication.data.PhotoRepository
+import com.example.oldphotorestorationapplication.data.face.Face
+import com.example.oldphotorestorationapplication.data.photo.Photo
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
-class PhotoViewModel(application: Application) : AndroidViewModel(application) {
+class PhotoEditorViewModel (application: Application) : AndroidViewModel(application) {
     val allPhotos: LiveData<List<Photo>>
     val allFaces: LiveData<List<Face>>
     private val repository: PhotoRepository
@@ -17,20 +22,6 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
         repository = PhotoRepository(photoDao, faceDao)
         allPhotos = repository.readAllPhoto
         allFaces = repository.readAllFaces
-    }
-
-    fun addPhoto(photo: Photo) {
-        viewModelScope.launch(Dispatchers.IO) { repository.addPhoto(photo) }
-    }
-
-    fun addPhotoWithFaces(photo: Photo, faces: List<Face>){
-        CoroutineScope(Dispatchers.IO + SupervisorJob()).launch{
-                val idInsertedPhoto = repository.addPhoto(photo)
-                for(face in faces){
-                    face.idPhoto = idInsertedPhoto
-                    repository.addFace(face)
-                }
-            }
     }
 
     fun updatePhoto(photo: Photo) {
@@ -47,10 +38,6 @@ class PhotoViewModel(application: Application) : AndroidViewModel(application) {
 
     fun  findFacesByPhotoId(idPhoto: Long): LiveData<List<Face>> {
         return repository.findFacesByPhotoId(idPhoto)
-    }
-
-    fun findFaceById(id: Long): LiveData<Face> {
-        return repository.findFaceById(id)
     }
 
     fun updateFace(face: Face) {

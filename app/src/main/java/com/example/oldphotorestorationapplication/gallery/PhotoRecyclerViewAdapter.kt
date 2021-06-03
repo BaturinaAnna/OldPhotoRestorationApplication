@@ -2,7 +2,7 @@ package com.example.oldphotorestorationapplication
 
 import android.view.*
 import androidx.recyclerview.widget.RecyclerView
-import com.example.oldphotorestorationapplication.data.Photo
+import com.example.oldphotorestorationapplication.data.photo.Photo
 import kotlinx.android.synthetic.main.item_layout.view.*
 
 

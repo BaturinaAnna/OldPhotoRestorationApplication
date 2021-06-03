@@ -23,22 +23,22 @@
         android:supportsRtl="true"
         android:usesCleartextTraffic="true"
         android:theme="@style/Theme.OldPhotoRestorationApplication">
-        <activity android:name=".GalleryActivity">
+        <activity android:name=".gallery.GalleryActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-    <activity android:name=".PhotoEditorActivity">
+    <activity android:name=".photoeditor.PhotoEditorActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".GalleryActivity" />
+                android:value=".gallery.GalleryActivity" />
         </activity>
-        <activity android:name=".PhotoRestorationSettingsActivity">
+        <activity android:name=".photorestorationsettings.PhotoRestorationSettingsActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".GalleryActivity" />
+                android:value=".gallery.GalleryActivity" />
         </activity>
 <!--        <provider-->
 <!--&lt;!&ndash;            tools:replace="android:authorities"&ndash;&gt;-->

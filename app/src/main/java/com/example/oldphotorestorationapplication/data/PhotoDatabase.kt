@@ -5,8 +5,12 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.example.oldphotorestorationapplication.App
+import com.example.oldphotorestorationapplication.data.face.Face
+import com.example.oldphotorestorationapplication.data.face.FaceDao
+import com.example.oldphotorestorationapplication.data.photo.Photo
+import com.example.oldphotorestorationapplication.data.photo.PhotoDao
 
-@Database(entities = [Photo::class, Face::class], version = 7)
+@Database(entities = [Photo::class, Face::class], version = 8)
 @TypeConverters(Converters::class)
 abstract class PhotoDatabase : RoomDatabase() {
     abstract fun photoDao(): PhotoDao

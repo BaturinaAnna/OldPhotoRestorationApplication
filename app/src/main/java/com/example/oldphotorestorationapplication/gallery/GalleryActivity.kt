@@ -1,7 +1,6 @@
-package com.example.oldphotorestorationapplication
+package com.example.oldphotorestorationapplication.gallery
 
 
-import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
@@ -13,14 +12,16 @@ import android.widget.PopupMenu
 import android.widget.SearchView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.app.imagepickerlibrary.*
-import com.example.oldphotorestorationapplication.data.Photo
-import com.example.oldphotorestorationapplication.data.PhotoViewModel
+import com.example.oldphotorestorationapplication.*
+import com.example.oldphotorestorationapplication.R
+import com.example.oldphotorestorationapplication.data.photo.Photo
 import com.example.oldphotorestorationapplication.databinding.GalleryBinding
+import com.example.oldphotorestorationapplication.photoeditor.PhotoEditorActivity
+import com.example.oldphotorestorationapplication.photorestorationsettings.PhotoRestorationSettingsActivity
 import java.io.File
 import java.io.FileOutputStream
 
@@ -28,7 +29,7 @@ import java.io.FileOutputStream
 class GalleryActivity : AppCompatActivity(), OnPhotoClickListener, OnPhotoLongClickListener, ImagePickerBottomsheet.ItemClickListener, ImagePickerActivityClass.OnResult  {
 
     private lateinit var binding: GalleryBinding
-    private lateinit var mViewModel: PhotoViewModel
+    private lateinit var mViewModel: GalleryViewModel
     private lateinit var imagePicker: ImagePickerActivityClass
     private lateinit var adapterPhoto: PhotoRecyclerViewAdapter
     private var foundPhotosList: List<Photo>? = null
@@ -47,7 +48,7 @@ class GalleryActivity : AppCompatActivity(), OnPhotoClickListener, OnPhotoLongCl
         adapterPhoto = PhotoRecyclerViewAdapter(this, this)
         binding.photoRecyclerView.adapter = adapterPhoto
 
-        mViewModel = ViewModelProvider(this).get(PhotoViewModel::class.java)
+        mViewModel = ViewModelProvider(this).get(GalleryViewModel::class.java)
         mViewModel.allPhotos.observe(this, { photo -> adapterPhoto.setData(photo) })
         init()
 

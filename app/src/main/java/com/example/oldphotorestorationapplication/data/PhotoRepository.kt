@@ -1,7 +1,10 @@
 package com.example.oldphotorestorationapplication.data
 
-import android.util.Log
 import androidx.lifecycle.LiveData
+import com.example.oldphotorestorationapplication.data.face.Face
+import com.example.oldphotorestorationapplication.data.face.FaceDao
+import com.example.oldphotorestorationapplication.data.photo.Photo
+import com.example.oldphotorestorationapplication.data.photo.PhotoDao
 
 class PhotoRepository(private val photoDao: PhotoDao, private val faceDao: FaceDao) {
     val readAllPhoto: LiveData<List<Photo>> = photoDao.readAllData()

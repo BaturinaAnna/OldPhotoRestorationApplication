@@ -1,4 +1,4 @@
-package com.example.oldphotorestorationapplication
+package com.example.oldphotorestorationapplication.photorestorationsettings
 
 import android.content.Intent
 import android.graphics.BitmapFactory
@@ -10,9 +10,8 @@ import android.widget.PopupWindow
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.app.imagepickerlibrary.*
-import com.example.oldphotorestorationapplication.data.Face
-import com.example.oldphotorestorationapplication.data.Photo
-import com.example.oldphotorestorationapplication.data.PhotoViewModel
+import com.example.oldphotorestorationapplication.data.face.Face
+import com.example.oldphotorestorationapplication.data.photo.Photo
 import com.example.oldphotorestorationapplication.databinding.RestorationSettingsBinding
 import com.example.oldphotorestorationapplication.databinding.WaitingPopupWindowBinding
 import com.example.oldphotorestorationapplication.network.NetworkRepository
@@ -27,7 +26,7 @@ class PhotoRestorationSettingsActivity :
     ImagePickerActivityClass.OnResult {
     private lateinit var binding: RestorationSettingsBinding
     private lateinit var imagePath: String
-    private lateinit var mViewModel: PhotoViewModel
+    private lateinit var mViewModel: PhotoRestorationSettingsViewModel
     private lateinit var imagePicker: ImagePickerActivityClass
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,7 +34,7 @@ class PhotoRestorationSettingsActivity :
         binding = RestorationSettingsBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
-        mViewModel = ViewModelProvider(this).get(PhotoViewModel::class.java)
+        mViewModel = ViewModelProvider(this).get(PhotoRestorationSettingsViewModel::class.java)
         init()
 
         imagePicker = ImagePickerActivityClass(this, this, this, activityResultRegistry)
@@ -87,11 +86,13 @@ class PhotoRestorationSettingsActivity :
                     val faces: ArrayList<Face> = ArrayList()
                     for (faceByteArray in listOfPhotos.subList(1, listOfPhotos.size))
                     {
-                        faces.add(Face(
+                        faces.add(
+                            Face(
                             face = BitmapFactory.decodeByteArray(faceByteArray, 0, faceByteArray.size),
                             idPhoto = null,
                             name = null
-                        ))
+                        )
+                        )
                     }
                     mViewModel.addPhotoWithFaces(photoToInsert, faces)
                 }
