@@ -19,6 +19,7 @@ class PhotoEditorActivity : AppCompatActivity(), OnFaceClickListener {
     private lateinit var binding: PhotoEditorBinding
     private lateinit var mViewModel: PhotoViewModel
     private lateinit var editingPhoto: Photo
+    private lateinit var bindingFacePopupWindow: FacePopupWindowBinding
     private lateinit var adapterFaces: FacesRecyclerViewAdapter
     private lateinit var popupWindow: PopupWindow
     private lateinit var facesList: List<Face>
@@ -120,72 +121,23 @@ class PhotoEditorActivity : AppCompatActivity(), OnFaceClickListener {
     }
 
     private fun checkUnsavedChanges(photo: Photo): Boolean {
-        return with(binding.editTextTitle.text.toString().trim()) {
-            when {
-                isNotEmpty() && (this != photo.title) -> true
-                isEmpty() && (photo.title != null) -> true
-                else -> false
-            }
-        } ||
-            with(binding.editTextDescription.text.toString().trim()) {
-                when {
-                    isNotEmpty() && (this != photo.description) -> true
-                    isEmpty() && (photo.description != null) -> true
-                    else -> false
-                }
-            } ||
-            with(binding.editTextDate.text.toString().trim()) {
-                when {
-                    isNotEmpty() && (this != photo.date) -> true
-                    isEmpty() && (photo.date != null) -> true
-                    else -> false
-                }
-            } ||
-            with(binding.editTextLocation.text.toString().trim()) {
-                when {
-                    isNotEmpty() && (this != photo.location) -> true
-                    isEmpty() && (photo.location != null) -> true
-                    else -> false
-                }
-            }
+        return checkUnsavedChangesTextField(binding.editTextTitle, photo.title) ||
+                checkUnsavedChangesTextField(binding.editTextDescription, photo.description)||
+                checkUnsavedChangesTextField(binding.editTextDate, photo.date) ||
+                checkUnsavedChangesTextField(binding.editTextLocation, photo.location);
     }
 
     private fun updatePhotoInfo(photo: Photo): Photo {
-        photo.title =
-            with(binding.editTextTitle.text.toString().trim()) {
-                when {
-                    isNotEmpty() -> binding.editTextTitle.text.toString()
-                    else -> null
-                }
-            }
-        photo.description =
-            with(binding.editTextDescription.text.toString().trim()) {
-                when {
-                    isNotEmpty() -> binding.editTextDescription.text.toString()
-                    else -> null
-                }
-            }
-        photo.date =
-            with(binding.editTextDate.text.toString().trim()) {
-                when {
-                    isNotEmpty() -> binding.editTextDate.text.toString()
-                    else -> null
-                }
-            }
-        photo.location =
-            with(binding.editTextLocation.text.toString().trim()) {
-                when {
-                    isNotEmpty() -> binding.editTextLocation.text.toString()
-                    else -> null
-                }
-            }
+        photo.title = getValueToUpdateTextField(binding.editTextTitle)
+        photo.description = getValueToUpdateTextField(binding.editTextDescription)
+        photo.date = getValueToUpdateTextField(binding.editTextDate)
+        photo.location = getValueToUpdateTextField(binding.editTextLocation)
         return photo
     }
 
     override fun onFaceClick(position: Int, view: View) {
-        val face = facesList[position]
-
-        val bindingFacePopupWindow = FacePopupWindowBinding.inflate(layoutInflater)
+        var face = facesList[position]
+        bindingFacePopupWindow = FacePopupWindowBinding.inflate(layoutInflater)
         popupWindow =
             PopupWindow(
                 bindingFacePopupWindow.root,
@@ -193,12 +145,12 @@ class PhotoEditorActivity : AppCompatActivity(), OnFaceClickListener {
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 true)
         popupWindow.setOnDismissListener {
-            if (bindingFacePopupWindow.autoCompleteTextFaceName.text.toString() != face.name) {
+            if (checkUnsavedChangesFace(face)) {
                 showAlertDialog(
                     context = this@PhotoEditorActivity,
                     message = "There are unsaved changes. Do you want to save them?",
                     actionsPositive = { _, _ ->
-                        face.name = bindingFacePopupWindow.autoCompleteTextFaceName.text.toString()
+                        face = updateFaceInfo(face)
                         mViewModel.updateFace(face)
                         Toast.makeText(applicationContext, "Changes saved", Toast.LENGTH_SHORT).show() },
                     actionsNegative = { _, _ -> }
@@ -215,12 +167,12 @@ class PhotoEditorActivity : AppCompatActivity(), OnFaceClickListener {
         face.name.let { bindingFacePopupWindow.autoCompleteTextFaceName.setText(face.name) }
 
         bindingFacePopupWindow.buttonCancel.setOnClickListener {
-            if (bindingFacePopupWindow.autoCompleteTextFaceName.text.toString() != face.name) {
+            if (checkUnsavedChangesFace(face)) {
                 showAlertDialog(
                     context = this@PhotoEditorActivity,
                     message = "There are unsaved changes. Do you want to save them?",
                     actionsPositive = {_, _ ->
-                        face.name = bindingFacePopupWindow.autoCompleteTextFaceName.text.toString()
+                        face = updateFaceInfo(face)
                         mViewModel.updateFace(face)
                         Toast.makeText(applicationContext, "Changes saved", Toast.LENGTH_SHORT).show()
                         popupWindow.dismiss()},
@@ -232,11 +184,39 @@ class PhotoEditorActivity : AppCompatActivity(), OnFaceClickListener {
         }
 
         bindingFacePopupWindow.buttonSave.setOnClickListener {
-            if (bindingFacePopupWindow.autoCompleteTextFaceName.text.toString() != face.name) {
-                face.name = bindingFacePopupWindow.autoCompleteTextFaceName.text.toString()
+            if (checkUnsavedChangesFace(face)) {
+                face = updateFaceInfo(face)
             }
             mViewModel.updateFace(face)
             popupWindow.dismiss()
+        }
+    }
+
+    private fun checkUnsavedChangesFace(face: Face): Boolean {
+        return checkUnsavedChangesTextField(bindingFacePopupWindow.autoCompleteTextFaceName, face.name)
+    }
+
+    private fun updateFaceInfo(face: Face): Face {
+        face.name = getValueToUpdateTextField(bindingFacePopupWindow.autoCompleteTextFaceName)
+        return face
+    }
+
+    private fun getValueToUpdateTextField(textView: TextView): String?{
+        return with(textView.text.toString().trim()) {
+            when {
+                isNotEmpty() -> textView.text.toString()
+                else -> null
+            }
+        }
+    }
+
+    private fun checkUnsavedChangesTextField(textView: TextView, currentValueInDB: String?): Boolean{
+        return with(textView.text.toString().trim()) {
+            when {
+                isNotEmpty() && (this != currentValueInDB) -> true
+                isEmpty() && (currentValueInDB != null) -> true
+                else -> false
+            }
         }
     }
 }
