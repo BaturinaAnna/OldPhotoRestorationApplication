@@ -1,15 +1,10 @@
 package com.example.oldphotorestorationapplication
 
-import android.R
-import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.Gravity
-import android.view.LayoutInflater
-import android.view.View
 import android.widget.LinearLayout
 import android.widget.PopupWindow
 import androidx.appcompat.app.AppCompatActivity
@@ -20,15 +15,10 @@ import com.example.oldphotorestorationapplication.data.Photo
 import com.example.oldphotorestorationapplication.data.PhotoViewModel
 import com.example.oldphotorestorationapplication.databinding.RestorationSettingsBinding
 import com.example.oldphotorestorationapplication.databinding.WaitingPopupWindowBinding
-import kotlinx.coroutines.Dispatchers
+import com.example.oldphotorestorationapplication.network.NetworkRepository
+import com.example.oldphotorestorationapplication.network.RestorationNetwork
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import okhttp3.*
-import java.io.File
-import java.io.IOException
-import java.util.concurrent.TimeUnit
-import java.util.zip.ZipInputStream
 
 
 class PhotoRestorationSettingsActivity :
@@ -75,11 +65,37 @@ class PhotoRestorationSettingsActivity :
             )
 
             GlobalScope.launch {
-                uploadPhoto(
-                    imagePath,
+                val networkRepository = NetworkRepository(RestorationNetwork())
+                val listOfPhotos = networkRepository.restorePhoto(imagePath,
                     binding.switchRemoveScratches.isChecked.toString(),
-                    "http://192.168.52.228:8080/OldPhotoRestoration_war_exploded/restoration-servlet"
-                )
+                    "http://192.168.45.230:8080/OldPhotoRestoration_war_exploded/restoration-servlet")
+                val bitmapRestoredPhoto = BitmapFactory.decodeByteArray(listOfPhotos[0],
+                            0,
+                            listOfPhotos[0].size)
+                val photoToInsert =
+                    Photo(
+                        BitmapFactory.decodeFile(imagePath),
+                        bitmapRestoredPhoto,
+                        null,
+                        null,
+                        null,
+                        null
+                    )
+                if (listOfPhotos.size == 1){
+                    mViewModel.addPhoto(photoToInsert)
+                } else {
+                    val faces: ArrayList<Face> = ArrayList()
+                    for (faceByteArray in listOfPhotos.subList(1, listOfPhotos.size))
+                    {
+                        faces.add(Face(
+                            face = BitmapFactory.decodeByteArray(faceByteArray, 0, faceByteArray.size),
+                            idPhoto = null,
+                            name = null
+                        ))
+                    }
+                    mViewModel.addPhotoWithFaces(photoToInsert, faces)
+                }
+                finish()
             }
         }
     }
@@ -137,71 +153,4 @@ class PhotoRestorationSettingsActivity :
         binding.photoToRestore.setImageBitmap(BitmapFactory.decodeFile(item?.path))
     }
     //    IMAGE PICKER
-
-    private suspend fun uploadPhoto(imagePath: String, removeScratches: String, url: String) =
-        withContext(Dispatchers.IO) {
-            val file = File(imagePath)
-            val image: RequestBody = RequestBody.create(MediaType.parse("image/*"), file)
-            val requestBody: RequestBody =
-                MultipartBody.Builder()
-                    .setType(MultipartBody.FORM)
-                    .addFormDataPart("photoToRestore", imagePath, image)
-                    .addFormDataPart("removeScratches", removeScratches)
-                    .build()
-            val request: Request? = Request.Builder().url(url).post(requestBody).build()
-            val okHttpClient: OkHttpClient =
-                OkHttpClient.Builder()
-                    .readTimeout(1, TimeUnit.HOURS)
-                    .writeTimeout(1, TimeUnit.HOURS)
-                    .connectTimeout(1, TimeUnit.HOURS)
-                    .build()
-
-            val call: Call = okHttpClient.newCall(request)
-
-            call.enqueue(
-                object : Callback {
-                    override fun onFailure(call: Call?, e: IOException) {
-                        Log.d("ANNA", e.toString())
-                    }
-
-                    @Throws(IOException::class)
-                    override fun onResponse(call: Call?, response: Response) {
-                        val listOfPhotos =
-                            ZipInputStream(response.body()?.byteStream()).use { zipInputStream ->
-                                generateSequence { zipInputStream.nextEntry }
-                                    .filterNot { it.isDirectory }
-                                    .map { zipInputStream.readBytes() }
-                                    .toList()
-                            }
-                        val bitmapRestoredPhoto = BitmapFactory.decodeByteArray(listOfPhotos[0],
-                            0,
-                            listOfPhotos[0].size)
-                        val photoToInsert =
-                            Photo(
-                                BitmapFactory.decodeFile(imagePath),
-                                bitmapRestoredPhoto,
-                                null,
-                                null,
-                                null,
-                                null
-                            )
-                        if (listOfPhotos.size == 1){
-                            mViewModel.addPhoto(photoToInsert)
-                        } else {
-                            val faces: ArrayList<Face> = ArrayList()
-                            for (faceByteArray in listOfPhotos.subList(1, listOfPhotos.size))
-                            {
-                                faces.add(Face(
-                                    face = BitmapFactory.decodeByteArray(faceByteArray, 0, faceByteArray.size),
-                                    idPhoto = null,
-                                    name = null
-                                ))
-                            }
-                            mViewModel.addPhotoWithFaces(photoToInsert, faces)
-                        }
-                        finish()
-                    }
-                }
-            )
-        }
 }
