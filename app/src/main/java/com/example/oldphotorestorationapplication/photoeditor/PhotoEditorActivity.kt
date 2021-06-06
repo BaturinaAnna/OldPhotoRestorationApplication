@@ -62,7 +62,7 @@ class PhotoEditorActivity : AppCompatActivity(), OnFaceClickListener {
 
             mViewModel.allFaces.observe(
                 this,
-                { faces -> namesList = faces.map { it.name }.toList().filterNotNull() }
+                { faces -> namesList = faces.map { it.name }.filterNotNull().toSet().toList() }
             )
         }
     }
