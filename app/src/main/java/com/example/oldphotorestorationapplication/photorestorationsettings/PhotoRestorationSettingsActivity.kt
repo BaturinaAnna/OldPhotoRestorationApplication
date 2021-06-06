@@ -4,20 +4,10 @@ import android.content.Intent
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
-import android.view.Gravity
-import android.widget.LinearLayout
-import android.widget.PopupWindow
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.app.imagepickerlibrary.*
-import com.example.oldphotorestorationapplication.data.face.Face
-import com.example.oldphotorestorationapplication.data.photo.Photo
 import com.example.oldphotorestorationapplication.databinding.RestorationSettingsBinding
-import com.example.oldphotorestorationapplication.databinding.WaitingPopupWindowBinding
-import com.example.oldphotorestorationapplication.network.NetworkRepository
-import com.example.oldphotorestorationapplication.network.RestorationNetwork
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
 
 class PhotoRestorationSettingsActivity :
@@ -50,54 +40,8 @@ class PhotoRestorationSettingsActivity :
             true
         }
         binding.buttonRestore.setOnClickListener {
-            val bindingPopupWindow = WaitingPopupWindowBinding.inflate(layoutInflater)
-            val popupWindow = PopupWindow(
-                bindingPopupWindow.root,
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            )
-            popupWindow.showAtLocation(
-                binding.root,
-                Gravity.CENTER,
-                0,
-                0
-            )
-
-            GlobalScope.launch {
-                val networkRepository = NetworkRepository(RestorationNetwork())
-                val listOfPhotos = networkRepository.restorePhoto(imagePath,
-                    binding.switchRemoveScratches.isChecked.toString(),
-                    "http://192.168.45.230:8080/OldPhotoRestoration_war_exploded/restoration-servlet")
-                val bitmapRestoredPhoto = BitmapFactory.decodeByteArray(listOfPhotos[0],
-                            0,
-                            listOfPhotos[0].size)
-                val photoToInsert =
-                    Photo(
-                        BitmapFactory.decodeFile(imagePath),
-                        bitmapRestoredPhoto,
-                        null,
-                        null,
-                        null,
-                        null
-                    )
-                if (listOfPhotos.size == 1){
-                    mViewModel.addPhoto(photoToInsert)
-                } else {
-                    val faces: ArrayList<Face> = ArrayList()
-                    for (faceByteArray in listOfPhotos.subList(1, listOfPhotos.size))
-                    {
-                        faces.add(
-                            Face(
-                            face = BitmapFactory.decodeByteArray(faceByteArray, 0, faceByteArray.size),
-                            idPhoto = null,
-                            name = null
-                        )
-                        )
-                    }
-                    mViewModel.addPhotoWithFaces(photoToInsert, faces)
-                }
-                finish()
-            }
+            mViewModel.restoreAndSavePhoto(imagePath, binding.switchRemoveScratches.isChecked.toString())
+            finish()
         }
     }
 
