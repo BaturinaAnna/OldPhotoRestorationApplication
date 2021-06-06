@@ -2,7 +2,7 @@ package com.example.oldphotorestorationapplication.data.photo
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
-import com.example.oldphotorestorationapplication.data.photo.Photo
+import com.example.oldphotorestorationapplication.data.photowithfaces.PhotoWithFaces
 
 @Dao
 interface PhotoDao {
@@ -18,6 +18,6 @@ interface PhotoDao {
     @Query("SELECT * FROM photo")
     fun readAllData(): LiveData<List<Photo>>
 
-    @Query("SELECT * FROM photo WHERE id = :id")
+    @Query("SELECT * FROM photo WHERE idPhoto = :id")
     fun findPhotoById(id: Long): LiveData<Photo>
 }

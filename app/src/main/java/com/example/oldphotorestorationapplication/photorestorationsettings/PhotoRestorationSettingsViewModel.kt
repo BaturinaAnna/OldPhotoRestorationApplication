@@ -21,7 +21,8 @@ class PhotoRestorationSettingsViewModel(application: Application) : AndroidViewM
     init {
         val photoDao = PhotoDatabase.getDatabase().photoDao()
         val faceDao = PhotoDatabase.getDatabase().faceDao()
-        repositoryPhoto = PhotoRepository(photoDao, faceDao)
+        val photoAndFacesDao = PhotoDatabase.getDatabase().photoAndFacesDao()
+        repositoryPhoto = PhotoRepository(photoDao, faceDao, photoAndFacesDao)
         val restorationNetwork = RestorationNetwork()
         repositoryNetwork = NetworkRepository(restorationNetwork)
     }
@@ -37,7 +38,7 @@ class PhotoRestorationSettingsViewModel(application: Application) : AndroidViewM
                 for (faceByteArray in restoredPhotoList.subList(1, restoredPhotoList.size)) {
                     val face = Face(
                         face = BitmapFactory.decodeByteArray(faceByteArray, 0, faceByteArray.size),
-                        idPhoto = idInsertedPhoto,
+                        idPhotoFace = idInsertedPhoto,
                         name = null)
                     repositoryPhoto.addFace(face)
                 }

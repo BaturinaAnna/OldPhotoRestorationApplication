@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.*
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -19,9 +20,14 @@ import com.app.imagepickerlibrary.*
 import com.example.oldphotorestorationapplication.*
 import com.example.oldphotorestorationapplication.R
 import com.example.oldphotorestorationapplication.data.photo.Photo
+import com.example.oldphotorestorationapplication.data.photowithfaces.PhotoWithFaces
 import com.example.oldphotorestorationapplication.databinding.GalleryBinding
 import com.example.oldphotorestorationapplication.photoeditor.PhotoEditorActivity
 import com.example.oldphotorestorationapplication.photorestorationsettings.PhotoRestorationSettingsActivity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 
@@ -32,6 +38,7 @@ class GalleryActivity : AppCompatActivity(), OnPhotoClickListener, OnPhotoLongCl
     private lateinit var mViewModel: GalleryViewModel
     private lateinit var imagePicker: ImagePickerActivityClass
     private lateinit var adapterPhoto: PhotoRecyclerViewAdapter
+    private lateinit var allPhotoWithFaces: List<PhotoWithFaces>
     private var foundPhotosList: List<Photo>? = null
 
 
@@ -50,6 +57,9 @@ class GalleryActivity : AppCompatActivity(), OnPhotoClickListener, OnPhotoLongCl
 
         mViewModel = ViewModelProvider(this).get(GalleryViewModel::class.java)
         mViewModel.allPhotos.observe(this, { photo -> adapterPhoto.setData(photo) })
+        mViewModel.allPhotoWithFaces.observe(this, { photoWithFaces ->
+            allPhotoWithFaces = photoWithFaces
+        })
         init()
 
         imagePicker = ImagePickerActivityClass(this, this, this, activityResultRegistry)
@@ -110,7 +120,7 @@ class GalleryActivity : AppCompatActivity(), OnPhotoClickListener, OnPhotoLongCl
             else -> foundPhotosList!![position]
         }
         val intent = Intent(view.context, PhotoEditorActivity::class.java)
-        intent.putExtra("photoId", photo?.id)
+        intent.putExtra("photoId", photo?.idPhoto)
         view.context.startActivity(intent)
     }
 
@@ -202,18 +212,28 @@ class GalleryActivity : AppCompatActivity(), OnPhotoClickListener, OnPhotoLongCl
 
                 override fun onQueryTextChange(newText: String?): Boolean {
                     if (newText!!.trim().isNotEmpty()){
-                        val allPhotos = mViewModel.allPhotos.value
                         val foundPhotos = mutableListOf<Photo>()
                         val query: String = newText.lowercase()
-                        allPhotos?.forEach {
-                            if (it.title?.lowercase()?.contains(query) == true) {
-                                foundPhotos.add(it)
-                            } else if (it.description?.lowercase()?.contains(query) == true){
-                                foundPhotos.add(it)
-                            } else if (it.date?.lowercase()?.contains(query) == true){
-                                foundPhotos.add(it)
-                            } else if (it.location?.lowercase()?.contains(query) == true){
-                                foundPhotos.add(it)
+                        allPhotoWithFaces.forEach {
+                            if (it.photo.title?.lowercase()?.contains(query) == true) {
+                                foundPhotos.add(it.photo)
+                            } else if (it.photo.description?.lowercase()?.contains(query) == true){
+                                foundPhotos.add(it.photo)
+                            } else if (it.photo.date?.lowercase()?.contains(query) == true){
+                                foundPhotos.add(it.photo)
+                            } else if (it.photo.location?.lowercase()?.contains(query) == true){
+                                foundPhotos.add(it.photo)
+                            } else {
+                                val names = it.faces.map{it.name}.toList()
+                                val photo = it.photo
+                                names.let {
+                                    for(name in names){
+                                        if (name?.lowercase()?.contains(query) == true){
+                                            foundPhotos.add(photo)
+                                            break
+                                        }
+                                    }
+                                }
                             }
                         }
                         adapterPhoto.setData(foundPhotos)

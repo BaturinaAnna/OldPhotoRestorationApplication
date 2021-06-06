@@ -12,10 +12,7 @@ interface FaceDao {
     @Update
     suspend fun updateFace(face: Face)
 
-    @Query("SELECT * FROM face WHERE idPhoto = :idPhoto")
-    fun findFacesByPhotoId(idPhoto: Long): LiveData<List<Face>>
-
-    @Query("SELECT * FROM face WHERE id = :id")
+    @Query("SELECT * FROM face WHERE idFace= :id")
     fun findFaceById(id: Long): LiveData<Face>
 
     @Query("SELECT * FROM face")

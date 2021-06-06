@@ -5,10 +5,16 @@ import com.example.oldphotorestorationapplication.data.face.Face
 import com.example.oldphotorestorationapplication.data.face.FaceDao
 import com.example.oldphotorestorationapplication.data.photo.Photo
 import com.example.oldphotorestorationapplication.data.photo.PhotoDao
+import com.example.oldphotorestorationapplication.data.photowithfaces.PhotoWithFaces
+import com.example.oldphotorestorationapplication.data.photowithfaces.PhotoWithFacesDao
 
-class PhotoRepository(private val photoDao: PhotoDao, private val faceDao: FaceDao) {
+class PhotoRepository(private val photoDao: PhotoDao,
+                      private val faceDao: FaceDao,
+                      private val photoWithFacesDao: PhotoWithFacesDao
+) {
     val readAllPhoto: LiveData<List<Photo>> = photoDao.readAllData()
     val readAllFaces: LiveData<List<Face>> = faceDao.readAllFaces()
+    val readAllPhotoWithFaces: LiveData<List<PhotoWithFaces>> = photoWithFacesDao.readAllPhotoWithFaces()
 
     suspend fun addPhoto(photo: Photo):Long {
         return photoDao.addPhoto(photo)
@@ -31,12 +37,12 @@ class PhotoRepository(private val photoDao: PhotoDao, private val faceDao: FaceD
     }
 
     fun findFacesByPhotoId(idPhoto: Long): LiveData<List<Face>> {
-        return faceDao.findFacesByPhotoId(idPhoto = idPhoto)
+        return photoWithFacesDao.findFacesByPhotoId(idPhoto = idPhoto)
     }
 
-    fun findFaceById(id: Long): LiveData<Face> {
-        return faceDao.findFaceById(id = id)
-    }
+//    fun findFaceById(id: Long): LiveData<Face> {
+//        return faceDao.findFaceById(id = id)
+//    }
 
     suspend fun updateFace(face: Face) {
         faceDao.updateFace(face)

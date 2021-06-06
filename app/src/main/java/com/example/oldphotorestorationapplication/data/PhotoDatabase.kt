@@ -9,12 +9,14 @@ import com.example.oldphotorestorationapplication.data.face.Face
 import com.example.oldphotorestorationapplication.data.face.FaceDao
 import com.example.oldphotorestorationapplication.data.photo.Photo
 import com.example.oldphotorestorationapplication.data.photo.PhotoDao
+import com.example.oldphotorestorationapplication.data.photowithfaces.PhotoWithFacesDao
 
-@Database(entities = [Photo::class, Face::class], version = 8)
+@Database(entities = [Photo::class, Face::class], version = 9)
 @TypeConverters(Converters::class)
 abstract class PhotoDatabase : RoomDatabase() {
     abstract fun photoDao(): PhotoDao
     abstract fun faceDao(): FaceDao
+    abstract fun photoAndFacesDao(): PhotoWithFacesDao
 
     companion object {
         @Volatile private var INSTANCE: PhotoDatabase? = null

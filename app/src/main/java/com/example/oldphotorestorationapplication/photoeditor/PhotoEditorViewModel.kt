@@ -20,7 +20,8 @@ class PhotoEditorViewModel (application: Application) : AndroidViewModel(applica
     init {
         val photoDao = PhotoDatabase.getDatabase().photoDao()
         val faceDao = PhotoDatabase.getDatabase().faceDao()
-        repositoryPhoto = PhotoRepository(photoDao, faceDao)
+        val photoAndFacesDao = PhotoDatabase.getDatabase().photoAndFacesDao()
+        repositoryPhoto = PhotoRepository(photoDao, faceDao, photoAndFacesDao)
         allPhotos = repositoryPhoto.readAllPhoto
         allFaces = repositoryPhoto.readAllFaces
     }

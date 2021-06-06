@@ -11,13 +11,13 @@ import com.example.oldphotorestorationapplication.data.photo.Photo
 @Entity(tableName = "face",
         foreignKeys = [
             ForeignKey(entity = Photo::class,
-                parentColumns = ["id"],
-                childColumns = ["idPhoto"],
+                parentColumns = ["idPhoto"],
+                childColumns = ["idPhotoFace"],
                 onDelete = CASCADE)])
 data class Face(
     @ColumnInfo(name = "face") val face: Bitmap,
     @ColumnInfo(name = "name") var name: String?,
-    @ColumnInfo(name = "idPhoto") var idPhoto: Long?
+    @ColumnInfo(name = "idPhotoFace") var idPhotoFace: Long?
 ) {
-    @PrimaryKey(autoGenerate = true) var id: Long = 0
+    @PrimaryKey(autoGenerate = true) var idFace: Long = 0
 }
