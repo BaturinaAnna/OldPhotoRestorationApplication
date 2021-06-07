@@ -22,6 +22,7 @@ import com.example.oldphotorestorationapplication.R
 import com.example.oldphotorestorationapplication.data.photo.Photo
 import com.example.oldphotorestorationapplication.data.photowithfaces.PhotoWithFaces
 import com.example.oldphotorestorationapplication.databinding.GalleryBinding
+import com.example.oldphotorestorationapplication.people.PeopleGalleryActivity
 import com.example.oldphotorestorationapplication.photoeditor.PhotoEditorActivity
 import com.example.oldphotorestorationapplication.photorestorationsettings.PhotoRestorationSettingsActivity
 import kotlinx.coroutines.CoroutineScope
@@ -129,6 +130,8 @@ class GalleryActivity : AppCompatActivity(), OnPhotoClickListener, OnPhotoLongCl
         binding.bottomNavigation.setOnNavigationItemSelectedListener{
             when(it.itemId){
                 R.id.ic_people -> {
+                    val intent = Intent(this, PeopleGalleryActivity::class.java)
+                    startActivity(intent)
                     true
                 }
                 R.id.ic_photos -> {
