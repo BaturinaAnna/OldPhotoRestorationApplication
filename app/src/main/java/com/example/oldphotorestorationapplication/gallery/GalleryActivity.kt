@@ -126,9 +126,22 @@ class GalleryActivity : AppCompatActivity(), OnPhotoClickListener, OnPhotoLongCl
 
 
     private fun init() {
-        binding.buttonRestore.setOnClickListener{
-                val fragment = ImagePickerBottomsheet()
-                fragment.show(supportFragmentManager, bottomSheetActionFragment)
+        binding.bottomNavigation.setOnNavigationItemSelectedListener{
+            when(it.itemId){
+                R.id.ic_people -> {
+                    true
+                }
+                R.id.ic_photos -> {
+                    binding.photoRecyclerView.scrollToPosition(0)
+                    true
+                }
+                R.id.ic_restore -> {
+                    val fragment = ImagePickerBottomsheet()
+                    fragment.show(supportFragmentManager, bottomSheetActionFragment)
+                    true
+                }
+                else -> {false}
+            }
         }
     }
 

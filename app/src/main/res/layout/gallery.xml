@@ -8,14 +8,18 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/photoRecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavigation"
+        android:layout_marginBottom="56dp"/>
 
-    <Button
-        android:id="@+id/buttonRestore"
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Restore Photo"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/photoRecyclerView"
+        app:menu="@menu/bottom_menu"
+        android:background="#DFDBB5"
+        app:itemIconTint="#775348"
+        app:itemTextColor="#775348"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
