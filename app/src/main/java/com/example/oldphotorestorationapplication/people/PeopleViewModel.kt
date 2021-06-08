@@ -13,7 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class PeopleViewModel(application: Application) : AndroidViewModel(application) {
-        val allFaces: LiveData<List<Face>>
+        val allFacesWithNames: LiveData<List<Face>>
         private val repository: PhotoRepository
 
         init {
@@ -21,6 +21,6 @@ class PeopleViewModel(application: Application) : AndroidViewModel(application) 
             val faceDao = PhotoDatabase.getDatabase().faceDao()
             val photoAndFacesDao = PhotoDatabase.getDatabase().photoAndFacesDao()
             repository = PhotoRepository(photoDao, faceDao, photoAndFacesDao)
-            allFaces = repository.readAllFaces
+            allFacesWithNames = repository.readAllFacesWithNames
         }
 }

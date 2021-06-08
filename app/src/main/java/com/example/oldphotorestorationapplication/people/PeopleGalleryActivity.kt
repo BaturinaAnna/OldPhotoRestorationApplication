@@ -12,11 +12,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.app.imagepickerlibrary.*
 import com.example.oldphotorestorationapplication.PhotoRecyclerViewAdapter
 import com.example.oldphotorestorationapplication.R
+import com.example.oldphotorestorationapplication.data.face.Face
 import com.example.oldphotorestorationapplication.databinding.GalleryBinding
 import com.example.oldphotorestorationapplication.databinding.PeopleGalleryActivityBinding
+import com.example.oldphotorestorationapplication.facedetails.FaceDetailsActivity
 import com.example.oldphotorestorationapplication.gallery.GalleryActivity
 import com.example.oldphotorestorationapplication.photoeditor.PhotoEditorActivity
 import com.example.oldphotorestorationapplication.photorestorationsettings.PhotoRestorationSettingsActivity
+import kotlinx.android.synthetic.main.people_gallery_activity.*
 
 class PeopleGalleryActivity: AppCompatActivity(), OnPersonClickListener, ImagePickerBottomsheet.ItemClickListener, ImagePickerActivityClass.OnResult{
     private lateinit var binding: PeopleGalleryActivityBinding
@@ -38,7 +41,7 @@ class PeopleGalleryActivity: AppCompatActivity(), OnPersonClickListener, ImagePi
         binding.peopleRecyclerView.adapter = adapterPeople
 
         mViewModel = ViewModelProvider(this).get(PeopleViewModel::class.java)
-        mViewModel.allFaces.observe(this, { faces -> adapterPeople.setData(faces)})
+        mViewModel.allFacesWithNames.observe(this, { faces -> adapterPeople.setData(faces)})
 
         init()
 
@@ -48,7 +51,10 @@ class PeopleGalleryActivity: AppCompatActivity(), OnPersonClickListener, ImagePi
     }
 
     override fun onPersonClick(position: Int, view: View) {
-        Toast.makeText(applicationContext, "HI I AM PERSON", Toast.LENGTH_SHORT).show()
+        val face = adapterPeople.getFaceByPosition(position)
+        val intent = Intent(view.context, FaceDetailsActivity::class.java)
+        intent.putExtra("faceId", face?.idFace)
+        view.context.startActivity(intent)
     }
 
     private fun init(){

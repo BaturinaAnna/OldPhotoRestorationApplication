@@ -29,12 +29,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".people.PeopleGalleryActivity">
-        </activity>
         <activity android:name=".photoeditor.PhotoEditorActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".gallery.GalleryActivity" />
+        </activity>
+        <activity android:name=".people.PeopleGalleryActivity">
+        </activity>
+        <activity android:name=".facedetails.FaceDetailsActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".people.PeopleGalleryActivity" />
         </activity>
         <activity android:name=".photorestorationsettings.PhotoRestorationSettingsActivity">
             <meta-data

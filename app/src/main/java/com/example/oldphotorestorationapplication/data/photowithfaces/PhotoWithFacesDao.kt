@@ -5,6 +5,7 @@ import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Transaction
 import com.example.oldphotorestorationapplication.data.face.Face
+import com.example.oldphotorestorationapplication.data.photo.Photo
 
 @Dao
 interface PhotoWithFacesDao {

@@ -17,4 +17,7 @@ interface FaceDao {
 
     @Query("SELECT * FROM face")
     fun readAllFaces(): LiveData<List<Face>>
+
+    @Query("SELECT * FROM face WHERE face.name IS NOT NULL")
+    fun readAllFacesWithNames(): LiveData<List<Face>>
 }

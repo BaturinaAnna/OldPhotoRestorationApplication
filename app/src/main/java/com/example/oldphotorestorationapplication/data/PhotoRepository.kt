@@ -15,6 +15,7 @@ class PhotoRepository(private val photoDao: PhotoDao,
     val readAllPhoto: LiveData<List<Photo>> = photoDao.readAllData()
     val readAllFaces: LiveData<List<Face>> = faceDao.readAllFaces()
     val readAllPhotoWithFaces: LiveData<List<PhotoWithFaces>> = photoWithFacesDao.readAllPhotoWithFaces()
+    val readAllFacesWithNames: LiveData<List<Face>> = faceDao.readAllFacesWithNames()
 
     suspend fun addPhoto(photo: Photo):Long {
         return photoDao.addPhoto(photo)
@@ -40,9 +41,9 @@ class PhotoRepository(private val photoDao: PhotoDao,
         return photoWithFacesDao.findFacesByPhotoId(idPhoto = idPhoto)
     }
 
-//    fun findFaceById(id: Long): LiveData<Face> {
-//        return faceDao.findFaceById(id = id)
-//    }
+    fun findFaceById(id: Long): LiveData<Face> {
+        return faceDao.findFaceById(id = id)
+    }
 
     suspend fun updateFace(face: Face) {
         faceDao.updateFace(face)
