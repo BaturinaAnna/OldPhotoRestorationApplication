@@ -3,11 +3,14 @@ package com.example.oldphotorestorationapplication.facedetails
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.viewModelScope
 import com.example.oldphotorestorationapplication.data.PhotoDatabase
 import com.example.oldphotorestorationapplication.data.PhotoRepository
 import com.example.oldphotorestorationapplication.data.face.Face
 import com.example.oldphotorestorationapplication.data.photo.Photo
 import com.example.oldphotorestorationapplication.data.photowithfaces.PhotoWithFaces
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class FaceDetailsViewModel(application: Application) : AndroidViewModel(application){
 //    val allFacesWithNames: LiveData<List<Face>>
@@ -25,6 +28,10 @@ class FaceDetailsViewModel(application: Application) : AndroidViewModel(applicat
 
     fun findFaceById(id: Long): LiveData<Face> {
         return repositoryPhoto.findFaceById(id)
+    }
+
+    fun deletePhoto(photo: Photo) {
+        viewModelScope.launch(Dispatchers.IO) { repositoryPhoto.deletePhoto(photo) }
     }
 
 //    fun findPhotosByName(name: String): LiveData<List<Photo>>{

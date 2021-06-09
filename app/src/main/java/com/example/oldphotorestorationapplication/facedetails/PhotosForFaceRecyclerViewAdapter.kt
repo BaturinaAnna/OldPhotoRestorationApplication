@@ -13,7 +13,17 @@ import kotlinx.android.synthetic.main.item_person_layout.view.personName
 import kotlinx.android.synthetic.main.item_photo_for_face.view.*
 import kotlinx.android.synthetic.main.person_editor.view.*
 
-class PhotosForFaceRecyclerViewAdapter(): RecyclerView.Adapter<PhotosForFaceRecyclerViewAdapter.RecyclerViewHolder>() {
+interface OnPhotoForFaceClickListener {
+    fun onPhotoForFaceClick(position: Int, view: View)
+}
+
+interface OnPhotoForFaceLongClickListener {
+    fun onPhotoForFaceLongClick(position: Int, view: View): Boolean
+}
+class PhotosForFaceRecyclerViewAdapter(
+    private val clickListener: OnPhotoForFaceClickListener,
+    private val longClickListener: OnPhotoForFaceLongClickListener
+): RecyclerView.Adapter<PhotosForFaceRecyclerViewAdapter.RecyclerViewHolder>() {
 
     private var photosList = emptyList<Photo>()
 
@@ -26,6 +36,8 @@ class PhotosForFaceRecyclerViewAdapter(): RecyclerView.Adapter<PhotosForFaceRecy
     override fun onBindViewHolder(holder: RecyclerViewHolder, position: Int) {
         val currentItem = photosList[position]
         holder.itemView.photoForFace.setImageBitmap(currentItem.restoredPhoto)
+        holder.itemView.setOnClickListener{ clickListener.onPhotoForFaceClick(position, holder.itemView) }
+        holder.itemView.setOnLongClickListener { longClickListener.onPhotoForFaceLongClick(position, holder.itemView) }
     }
 
     override fun getItemCount(): Int {
