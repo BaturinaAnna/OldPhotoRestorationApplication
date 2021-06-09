@@ -46,16 +46,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".gallery.GalleryActivity" />
         </activity>
-<!--        <provider-->
-<!--&lt;!&ndash;            tools:replace="android:authorities"&ndash;&gt;-->
-<!--            android:name="androidx.core.content.FileProvider"-->
-<!--            android:authorities="${applicationId}.provider"-->
-<!--            android:exported="false"-->
-<!--            android:grantUriPermissions="true">-->
-<!--            <meta-data-->
-<!--&lt;!&ndash;                tools:replace="android:resource"&ndash;&gt;-->
-<!--                android:name="android.support.FILE_PROVIDER_PATHS"-->
-<!--                android:resource="@xml/provider_paths" />-->
-<!--        </provider>-->
+        <provider
+            android:name=".ShareFileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
     </application>
     </manifest>
