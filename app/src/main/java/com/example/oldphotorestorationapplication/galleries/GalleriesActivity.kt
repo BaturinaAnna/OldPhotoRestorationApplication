@@ -1,81 +1,59 @@
-package com.example.oldphotorestorationapplication.people
+package com.example.oldphotorestorationapplication.galleries
 
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.view.View
-import android.widget.Toast
+import android.view.Menu
+import android.view.MenuItem
+import android.widget.SearchView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.fragment.app.Fragment
+import com.app.imagepickerlibrary.ImagePickerActivityClass
+import com.app.imagepickerlibrary.ImagePickerBottomsheet
 import com.app.imagepickerlibrary.*
-import com.example.oldphotorestorationapplication.PhotoRecyclerViewAdapter
 import com.example.oldphotorestorationapplication.R
-import com.example.oldphotorestorationapplication.data.face.Face
-import com.example.oldphotorestorationapplication.databinding.GalleryBinding
-import com.example.oldphotorestorationapplication.databinding.PeopleGalleryActivityBinding
-import com.example.oldphotorestorationapplication.facedetails.FaceDetailsActivity
-import com.example.oldphotorestorationapplication.gallery.GalleryActivity
-import com.example.oldphotorestorationapplication.photoeditor.PhotoEditorActivity
+import com.example.oldphotorestorationapplication.databinding.GalleriesBinding
+import com.example.oldphotorestorationapplication.gallery.PhotoGalleryFragment
+import com.example.oldphotorestorationapplication.people.PeopleGalleryFragment
 import com.example.oldphotorestorationapplication.photorestorationsettings.PhotoRestorationSettingsActivity
-import kotlinx.android.synthetic.main.people_gallery_activity.*
 
-class PeopleGalleryActivity: AppCompatActivity(), OnPersonClickListener, ImagePickerBottomsheet.ItemClickListener, ImagePickerActivityClass.OnResult{
-    private lateinit var binding: PeopleGalleryActivityBinding
+class GalleriesActivity: AppCompatActivity(), ImagePickerBottomsheet.ItemClickListener, ImagePickerActivityClass.OnResult {
+
+    private lateinit var binding: GalleriesBinding
     private lateinit var imagePicker: ImagePickerActivityClass
-    private lateinit var adapterPeople: PeopleRecyclerViewAdapter
-    private lateinit var mViewModel: PeopleViewModel
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = PeopleGalleryActivityBinding.inflate(layoutInflater)
+        binding = GalleriesBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
 
-        // in this method '2' represents number of columns to be displayed in grid view.
-        val layoutManager = LinearLayoutManager(this)
-        binding.peopleRecyclerView.layoutManager = layoutManager
+        val photoGalleryFragment = PhotoGalleryFragment()
+        val peopleGalleryFragment = PeopleGalleryFragment()
 
-        adapterPeople = PeopleRecyclerViewAdapter(this)
-        binding.peopleRecyclerView.adapter = adapterPeople
+        setCurrentFragment(photoGalleryFragment)
 
-        mViewModel = ViewModelProvider(this).get(PeopleViewModel::class.java)
-        mViewModel.allFacesWithNames.observe(this, { faces -> adapterPeople.setData(faces)})
-
-        init()
-
-        imagePicker = ImagePickerActivityClass(this, this, this, activityResultRegistry)
-        imagePicker.cropOptions(true)
-
-    }
-
-    override fun onPersonClick(position: Int, view: View) {
-        val face = adapterPeople.getFaceByPosition(position)
-        val intent = Intent(view.context, FaceDetailsActivity::class.java)
-        intent.putExtra("faceId", face?.idFace)
-        view.context.startActivity(intent)
-    }
-
-    private fun init(){
         binding.bottomNavigation.setOnNavigationItemSelectedListener{
             when(it.itemId){
-                R.id.ic_people -> {
-                    binding.peopleRecyclerView.scrollToPosition(0)
-                    true
-                }
-                R.id.ic_photos -> {
-                    val intent = Intent(this, GalleryActivity::class.java)
-                    startActivity(intent)
-                    true
-                }
+                R.id.ic_people -> setCurrentFragment(peopleGalleryFragment)
+                R.id.ic_photos -> setCurrentFragment(photoGalleryFragment)
                 R.id.ic_restore -> {
                     val fragment = ImagePickerBottomsheet()
                     fragment.show(supportFragmentManager, bottomSheetActionFragment)
-                    true
                 }
-                else -> {false}
             }
+            true
+        }
+
+        imagePicker = ImagePickerActivityClass(this, this, this, activityResultRegistry)
+        imagePicker.cropOptions(true)
+    }
+
+    private fun setCurrentFragment(fragment: Fragment){
+        supportFragmentManager.beginTransaction().apply {
+            replace(R.id.fragment_container, fragment)
+            commit()
         }
     }
 

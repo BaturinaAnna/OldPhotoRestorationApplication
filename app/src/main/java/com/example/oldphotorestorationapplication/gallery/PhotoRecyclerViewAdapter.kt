@@ -1,13 +1,9 @@
 package com.example.oldphotorestorationapplication
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.view.*
 import androidx.recyclerview.widget.RecyclerView
 import com.example.oldphotorestorationapplication.data.photo.Photo
-import kotlinx.android.synthetic.main.item_layout.view.*
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
+import kotlinx.android.synthetic.main.photo_item.view.*
 
 
 interface OnPhotoClickListener {
@@ -27,7 +23,7 @@ class PhotoRecyclerViewAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerViewHolder {
         val view: View =
-            LayoutInflater.from(parent.context).inflate(R.layout.item_layout, parent, false)
+            LayoutInflater.from(parent.context).inflate(R.layout.photo_item, parent, false)
         return RecyclerViewHolder(view)
     }
 

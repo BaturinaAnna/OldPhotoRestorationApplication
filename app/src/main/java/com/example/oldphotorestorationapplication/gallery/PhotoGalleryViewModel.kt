@@ -13,7 +13,7 @@ import com.example.oldphotorestorationapplication.data.photowithfaces.PhotoWithF
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class GalleryViewModel (application: Application) : AndroidViewModel(application) {
+class PhotoGalleryViewModel (application: Application) : AndroidViewModel(application) {
     val allPhotos: LiveData<List<Photo>>
     val allPhotoWithFaces: LiveData<List<PhotoWithFaces>>
     private val repository: PhotoRepository

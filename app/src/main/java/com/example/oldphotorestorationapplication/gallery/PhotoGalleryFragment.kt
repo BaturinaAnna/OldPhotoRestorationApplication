@@ -1,66 +1,52 @@
 package com.example.oldphotorestorationapplication.gallery
 
-
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.net.Uri
-import android.os.*
-import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
+import android.os.Bundle
+import android.view.*
 import android.widget.PopupMenu
 import android.widget.SearchView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.app.imagepickerlibrary.*
 import com.example.oldphotorestorationapplication.*
-import com.example.oldphotorestorationapplication.R
 import com.example.oldphotorestorationapplication.data.photo.Photo
 import com.example.oldphotorestorationapplication.data.photowithfaces.PhotoWithFaces
-import com.example.oldphotorestorationapplication.databinding.GalleryBinding
-import com.example.oldphotorestorationapplication.people.PeopleGalleryActivity
+import com.example.oldphotorestorationapplication.databinding.PhotoGalleryFragmentBinding
 import com.example.oldphotorestorationapplication.photoeditor.PhotoEditorActivity
-import com.example.oldphotorestorationapplication.photorestorationsettings.PhotoRestorationSettingsActivity
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 
-
-class GalleryActivity : AppCompatActivity(), OnPhotoClickListener, OnPhotoLongClickListener, ImagePickerBottomsheet.ItemClickListener, ImagePickerActivityClass.OnResult  {
-
-    private lateinit var binding: GalleryBinding
-    private lateinit var mViewModel: GalleryViewModel
-    private lateinit var imagePicker: ImagePickerActivityClass
+class PhotoGalleryFragment: Fragment(R.layout.photo_gallery_fragment), OnPhotoClickListener,
+    OnPhotoLongClickListener {
+    private lateinit var binding: PhotoGalleryFragmentBinding
     private lateinit var adapterPhoto: PhotoRecyclerViewAdapter
+    private lateinit var mViewModel: PhotoGalleryViewModel
     private lateinit var allPhotoWithFaces: List<PhotoWithFaces>
     private var foundPhotosList: List<Photo>? = null
 
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = GalleryBinding.inflate(layoutInflater)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = PhotoGalleryFragmentBinding.inflate(layoutInflater)
         val view = binding.root
-        setContentView(view)
+        init()
+        return view
+    }
 
-        val layoutManager = GridLayoutManager(this, 2, GridLayoutManager.VERTICAL, false)
+    private fun init(){
+        val layoutManager = GridLayoutManager(this.context, 2)
         binding.photoRecyclerView.layoutManager = layoutManager
 
         adapterPhoto = PhotoRecyclerViewAdapter(this, this)
         binding.photoRecyclerView.adapter = adapterPhoto
 
-        mViewModel = ViewModelProvider(this).get(GalleryViewModel::class.java)
-        mViewModel.allPhotos.observe(this, { photos ->
+        mViewModel = ViewModelProvider(this).get(PhotoGalleryViewModel::class.java)
+        mViewModel.allPhotos.observe(viewLifecycleOwner, { photos ->
 //            val compressedPhotos = photos.map{
 //                Photo(initialPhoto = it.initialPhoto,
 //                    restoredPhoto = resizeImage(it.restoredPhoto),
@@ -73,111 +59,40 @@ class GalleryActivity : AppCompatActivity(), OnPhotoClickListener, OnPhotoLongCl
 //            adapterPhoto.setData(compressedPhotos)
             adapterPhoto.setData(photos)
         })
-        mViewModel.allPhotoWithFaces.observe(this, { photoWithFaces ->
+        mViewModel.allPhotoWithFaces.observe(viewLifecycleOwner, { photoWithFaces ->
             allPhotoWithFaces = photoWithFaces
         })
-        init()
 
-        imagePicker = ImagePickerActivityClass(this, this, this, activityResultRegistry)
-        imagePicker.cropOptions(true)
-
+        setHasOptionsMenu(true)
     }
-
-    //IMAGE PICKER
-
-    override fun onItemClick(item: String?) {
-        when {
-            item.toString() == bottomSheetActionCamera -> {
-                imagePicker.takePhotoFromCamera()
-            }
-            item.toString() == bottomSheetActionGallary -> {
-                imagePicker.choosePhotoFromGallery()
-            }
-        }
-    }
-
-    //Override this method for customization of bottomsheet
-    override fun doCustomisations(fragment: ImagePickerBottomsheet) {
-        fragment.apply {
-            //Customize button text
-            setButtonText(cameraButtonText = "Select Camera", galleryButtonText = "Select Gallery", cancelButtonText = "Cancel")
-            //Customize button text color
-//            setButtonColors(galleryButtonColor = ContextCompat.getColor(requireContext(), R.color.white))
-            //For more customization make a style in your styles xml and pass it to this method. (This will override above method result).
-//            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-//                setTextAppearance(R.style.fontForNotificationLandingPage)
-//            }
-            //To customize bottomsheet style
-            setBottomSheetBackgroundStyle(R.drawable.drawable_bottom_sheet_dialog)
-        }
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        imagePicker.onActivityResult(requestCode, resultCode, data)
-    }
-
-    override fun returnString(item: Uri?) {
-        val intent = Intent(this, PhotoRestorationSettingsActivity::class.java)
-        intent.putExtra("imagePath", item?.path)
-        startActivity(intent)
-    }
-
-    //IMAGE PICKER
-
 
     override fun onPhotoClick(position: Int) {
         val photo = when(foundPhotosList){
             null -> mViewModel.allPhotos.value?.get(position)
             else -> foundPhotosList!![position]
         }
-        val intent = Intent(this, PhotoEditorActivity::class.java)
+        val intent = Intent(this.context, PhotoEditorActivity::class.java)
         intent.putExtra("photoId", photo?.idPhoto)
         this.startActivity(intent)
     }
 
-
-    private fun init() {
-        binding.bottomNavigation.setOnNavigationItemSelectedListener{
-            when(it.itemId){
-                R.id.ic_people -> {
-                    val intent = Intent(this, PeopleGalleryActivity::class.java)
-                    startActivity(intent)
-                    true
-                }
-                R.id.ic_photos -> {
-                    binding.photoRecyclerView.scrollToPosition(0)
-                    true
-                }
-                R.id.ic_restore -> {
-                    val fragment = ImagePickerBottomsheet()
-                    fragment.show(supportFragmentManager, bottomSheetActionFragment)
-                    true
-                }
-                else -> {false}
-            }
-        }
-    }
-
     override fun onLongPhotoClick(position: Int, view: View): Boolean {
-        val popupMenu = PopupMenu(applicationContext, view)
+        val popupMenu = PopupMenu(this.context, view)
         popupMenu.inflate(R.menu.menu)
         popupMenu.setOnMenuItemClickListener {
             when(it.itemId){
                 R.id.deletePhotoMenu -> {
                     val photo = mViewModel.allPhotos.value?.get(position)
-                    showAlertDialog(
-                        context = this@GalleryActivity,
-                        message = "Are you sure you want to delete this photo?",
-                        actionsPositive = { _, _ ->
-                            mViewModel.deletePhoto(photo!!)
-                            Toast.makeText(applicationContext, "Successfully removed", Toast.LENGTH_SHORT).show() },
-                        actionsNegative = { _, _ -> },
-                    )
+                    this.context?.let { context ->
+                        showAlertDialog(
+                            context = context,
+                            message = "Are you sure you want to delete this photo?",
+                            actionsPositive = { _, _ ->
+                                mViewModel.deletePhoto(photo!!)
+                                Toast.makeText(context, "Successfully removed", Toast.LENGTH_SHORT).show() },
+                            actionsNegative = { _, _ -> },
+                        )
+                    }
                     true
                 }
                 R.id.sharePhotoMenu -> {
@@ -193,19 +108,18 @@ class GalleryActivity : AppCompatActivity(), OnPhotoClickListener, OnPhotoLongCl
     }
 
     private fun shareBitmap(bitmap: Bitmap) {
-        val cachePath = File(externalCacheDir, "my_images/")
+        val cachePath = File(activity?.externalCacheDir, "my_images/")
         cachePath.mkdirs()
 
         //create png file
         val file = File(cachePath, "photo.png")
-        val fileOutputStream: FileOutputStream
-        fileOutputStream = FileOutputStream(file)
+        val fileOutputStream = FileOutputStream(file)
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream)
         fileOutputStream.flush()
         fileOutputStream.close()
 
         val myImageFileUri =
-            FileProvider.getUriForFile(this, applicationContext.packageName + ".provider", file)
+            this.context?.let { FileProvider.getUriForFile(it, this.requireContext().packageName + ".provider", file) }
 
         val intent = Intent(Intent.ACTION_SEND)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
@@ -216,9 +130,9 @@ class GalleryActivity : AppCompatActivity(), OnPhotoClickListener, OnPhotoLongCl
     }
 
     @ExperimentalStdlibApi
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu_search, menu)
-        val menuItem = menu?.findItem(R.id.search)
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_search, menu)
+        val menuItem = menu.findItem(R.id.search)
         if(menuItem != null){
             val searchView = menuItem.actionView as SearchView
 
@@ -277,6 +191,6 @@ class GalleryActivity : AppCompatActivity(), OnPhotoClickListener, OnPhotoLongCl
                 }
             })
         }
-        return super.onCreateOptionsMenu(menu)
+        super.onCreateOptionsMenu(menu,inflater)
     }
 }

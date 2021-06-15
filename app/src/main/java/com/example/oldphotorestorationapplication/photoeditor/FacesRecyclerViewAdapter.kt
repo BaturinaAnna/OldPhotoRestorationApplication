@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.oldphotorestorationapplication.R
 import com.example.oldphotorestorationapplication.data.face.Face
-import kotlinx.android.synthetic.main.face_layout.view.*
+import kotlinx.android.synthetic.main.face_item.view.*
 
 
 interface OnFaceClickListener {
@@ -21,7 +21,7 @@ class FacesRecyclerViewAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerViewHolder {
         val view: View =
-            LayoutInflater.from(parent.context).inflate(R.layout.face_layout, parent, false)
+            LayoutInflater.from(parent.context).inflate(R.layout.face_item, parent, false)
         return RecyclerViewHolder(view)
     }
 
