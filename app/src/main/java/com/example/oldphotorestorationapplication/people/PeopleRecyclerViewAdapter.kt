@@ -48,6 +48,7 @@ class PeopleRecyclerViewAdapter(private val clickListener: OnPersonClickListener
 
     private fun groupPeopleByNames(people: List<Face>) {
         mapNamesWithFaces(people)
+        peopleList.clear()
         mapNameFace.forEach { (t, u) ->
             peopleList.add(u[0])
         }
@@ -55,6 +56,10 @@ class PeopleRecyclerViewAdapter(private val clickListener: OnPersonClickListener
 
     fun getFaceByPosition(position: Int): Face{
         return mapNameFace.values.toList()[position][0]
+    }
+
+    fun getMapNameFace(): Map<String?, List<Face>>{
+        return mapNameFace
     }
 
     inner class RecyclerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
