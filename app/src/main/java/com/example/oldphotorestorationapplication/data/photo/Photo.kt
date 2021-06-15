@@ -16,5 +16,21 @@ data class Photo(
 ) {
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name="idPhoto") var idPhoto: Long = 0
+
+    constructor(id: Long,
+                initialPhoto: Bitmap,
+                restoredPhoto: Bitmap,
+                title: String?,
+                description: String?,
+                date: String?,
+                location: String?):
+            this(initialPhoto = initialPhoto,
+                restoredPhoto = restoredPhoto,
+                title = title,
+                description = description,
+                date = date,
+                location = location){
+        idPhoto = id
+    }
 }
 

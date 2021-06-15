@@ -4,6 +4,8 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -19,6 +21,27 @@ fun convertToFile(bitmap: Bitmap, context: Context): File {
     fos.close()
     return file
 }
+
+
+//fun compressBitmap(originalBitmap: Bitmap): Bitmap {
+//    val out = ByteArrayOutputStream()
+//    originalBitmap.compress(Bitmap.CompressFormat.PNG, 0, out)
+//    return BitmapFactory.decodeStream(ByteArrayInputStream(out.toByteArray()))
+//}
+
+fun resizeImage(image: Bitmap): Bitmap {
+    val width = image.width
+    val height = image.height
+
+    val scaleWidth = width / 10
+    val scaleHeight = height / 10
+
+    if (image.byteCount <= 1000000)
+        return image
+
+    return Bitmap.createScaledBitmap(image, scaleWidth, scaleHeight, false)
+}
+
 
 fun showAlertDialog(message: String,
                     textPositive: String = "Yes",

@@ -3,6 +3,7 @@ package com.example.oldphotorestorationapplication.gallery
 
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.*
 import android.util.Log
@@ -16,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.app.imagepickerlibrary.*
 import com.example.oldphotorestorationapplication.*
 import com.example.oldphotorestorationapplication.R
@@ -29,6 +31,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 
@@ -49,15 +53,26 @@ class GalleryActivity : AppCompatActivity(), OnPhotoClickListener, OnPhotoLongCl
         val view = binding.root
         setContentView(view)
 
-        // in this method '2' represents number of columns to be displayed in grid view.
-        val layoutManager = GridLayoutManager(this, 2)
+        val layoutManager = GridLayoutManager(this, 2, GridLayoutManager.VERTICAL, false)
         binding.photoRecyclerView.layoutManager = layoutManager
 
         adapterPhoto = PhotoRecyclerViewAdapter(this, this)
         binding.photoRecyclerView.adapter = adapterPhoto
 
         mViewModel = ViewModelProvider(this).get(GalleryViewModel::class.java)
-        mViewModel.allPhotos.observe(this, { photo -> adapterPhoto.setData(photo) })
+        mViewModel.allPhotos.observe(this, { photos ->
+//            val compressedPhotos = photos.map{
+//                Photo(initialPhoto = it.initialPhoto,
+//                    restoredPhoto = resizeImage(it.restoredPhoto),
+//                    title = it.title,
+//                    description = it.description,
+//                    date = it.date,
+//                    location = it.location,
+//                    id = it.idPhoto)
+//            }
+//            adapterPhoto.setData(compressedPhotos)
+            adapterPhoto.setData(photos)
+        })
         mViewModel.allPhotoWithFaces.observe(this, { photoWithFaces ->
             allPhotoWithFaces = photoWithFaces
         })
@@ -115,14 +130,14 @@ class GalleryActivity : AppCompatActivity(), OnPhotoClickListener, OnPhotoLongCl
     //IMAGE PICKER
 
 
-    override fun onPhotoClick(position: Int, view: View) {
+    override fun onPhotoClick(position: Int) {
         val photo = when(foundPhotosList){
             null -> mViewModel.allPhotos.value?.get(position)
             else -> foundPhotosList!![position]
         }
-        val intent = Intent(view.context, PhotoEditorActivity::class.java)
+        val intent = Intent(this, PhotoEditorActivity::class.java)
         intent.putExtra("photoId", photo?.idPhoto)
-        view.context.startActivity(intent)
+        this.startActivity(intent)
     }
 
 

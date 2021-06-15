@@ -18,6 +18,7 @@ import com.example.oldphotorestorationapplication.people.PeopleRecyclerViewAdapt
 import com.example.oldphotorestorationapplication.people.PeopleViewModel
 import com.example.oldphotorestorationapplication.photoeditor.PhotoEditorActivity
 import com.example.oldphotorestorationapplication.photoeditor.PhotoEditorViewModel
+import com.example.oldphotorestorationapplication.resizeImage
 import com.example.oldphotorestorationapplication.showAlertDialog
 import java.io.File
 import java.io.FileOutputStream
@@ -61,7 +62,16 @@ class FaceDetailsActivity: AppCompatActivity(), OnPhotoForFaceClickListener, OnP
                 mViewModel.allPhotoWithFaces.observe(this, { photos ->
                     listPhotosWithFace = photos.filter {
                         it.faces.any { it.name == currentFace.name}
-                    }.map{it.photo}.toList()
+                    }.map{
+                        it.photo
+//                        Photo(initialPhoto = it.photo.initialPhoto,
+//                            restoredPhoto = resizeImage(it.photo.restoredPhoto),
+//                            title = it.photo.title,
+//                            description = it.photo.description,
+//                            date = it.photo.date,
+//                            location = it.photo.location,
+//                            id = it.photo.idPhoto)
+                    }
                     adapterPhotos.setData(listPhotosWithFace)
             })
         }

@@ -1,13 +1,17 @@
 package com.example.oldphotorestorationapplication
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.view.*
 import androidx.recyclerview.widget.RecyclerView
 import com.example.oldphotorestorationapplication.data.photo.Photo
 import kotlinx.android.synthetic.main.item_layout.view.*
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
 
 
 interface OnPhotoClickListener {
-    fun onPhotoClick(position: Int, view: View)
+    fun onPhotoClick(position: Int)
 }
 
 interface OnPhotoLongClickListener {
@@ -19,7 +23,7 @@ class PhotoRecyclerViewAdapter(
     private val longClickListener: OnPhotoLongClickListener
 ) : RecyclerView.Adapter<PhotoRecyclerViewAdapter.RecyclerViewHolder>() {
 
-    private var photoList = emptyList<Photo>()
+    private var photoList = ArrayList<Photo>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerViewHolder {
         val view: View =
@@ -30,7 +34,7 @@ class PhotoRecyclerViewAdapter(
     override fun onBindViewHolder(holder: RecyclerViewHolder, position: Int) {
         val currentItem = photoList[position]
         holder.itemView.photoItemImageView.setImageBitmap(currentItem.restoredPhoto)
-        holder.itemView.setOnClickListener { clickListener.onPhotoClick(position, holder.itemView) }
+        holder.itemView.setOnClickListener { clickListener.onPhotoClick(position) }
         holder.itemView.setOnLongClickListener{longClickListener.onLongPhotoClick(position, holder.itemView)}
     }
 
@@ -39,7 +43,12 @@ class PhotoRecyclerViewAdapter(
     }
 
     fun setData(photo: List<Photo>) {
-        this.photoList = photo
+        photoList.clear()
+        photoList.addAll(photo)
+//        photoList.addAll(photo)
+//        photoList.addAll(photo)
+//        photoList.addAll(photo)
+//        photoList.addAll(photo)
         notifyDataSetChanged()
     }
 
