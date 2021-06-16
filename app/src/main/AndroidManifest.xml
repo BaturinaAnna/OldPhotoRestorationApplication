@@ -23,15 +23,17 @@
         android:supportsRtl="true"
         android:usesCleartextTraffic="true"
         android:theme="@style/Theme.OldPhotoRestorationApplication">
-        <activity android:name=".galleries.GalleriesActivity">
+
+        <activity android:name=".authentication.AuthenticationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <activity android:name=".photoeditor.PhotoEditorActivity">
-        </activity>
+        <activity android:name=".galleries.GalleriesActivity" />
+
+        <activity android:name=".photoeditor.PhotoEditorActivity" />
 
         <activity android:name=".facedetails.FaceDetailsActivity">
             <meta-data
@@ -39,8 +41,8 @@
                 android:value=".galleries.GalleriesActivity" />
         </activity>
 
-        <activity android:name=".photorestorationsettings.PhotoRestorationSettingsActivity">
-        </activity>
+        <activity android:name=".photorestorationsettings.PhotoRestorationSettingsActivity" />
+
         <provider
             android:name=".ShareFileProvider"
             android:authorities="${applicationId}.provider"
@@ -50,5 +52,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
+
     </application>
     </manifest>

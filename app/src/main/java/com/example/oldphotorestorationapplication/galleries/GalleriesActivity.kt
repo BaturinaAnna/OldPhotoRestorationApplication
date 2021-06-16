@@ -3,15 +3,15 @@ package com.example.oldphotorestorationapplication.galleries
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.view.Menu
 import android.view.MenuItem
-import android.widget.SearchView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.app.imagepickerlibrary.ImagePickerActivityClass
 import com.app.imagepickerlibrary.ImagePickerBottomsheet
 import com.app.imagepickerlibrary.*
 import com.example.oldphotorestorationapplication.R
+import com.example.oldphotorestorationapplication.authentication.AuthenticationActivity
 import com.example.oldphotorestorationapplication.databinding.GalleriesBinding
 import com.example.oldphotorestorationapplication.gallery.PhotoGalleryFragment
 import com.example.oldphotorestorationapplication.people.PeopleGalleryFragment
@@ -21,6 +21,7 @@ class GalleriesActivity: AppCompatActivity(), ImagePickerBottomsheet.ItemClickLi
 
     private lateinit var binding: GalleriesBinding
     private lateinit var imagePicker: ImagePickerActivityClass
+    private lateinit var mViewModel: GalleriesViewModel
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,6 +29,8 @@ class GalleriesActivity: AppCompatActivity(), ImagePickerBottomsheet.ItemClickLi
         binding = GalleriesBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
+
+        mViewModel = ViewModelProvider(this).get(GalleriesViewModel::class.java)
 
         val photoGalleryFragment = PhotoGalleryFragment()
         val peopleGalleryFragment = PeopleGalleryFragment()
@@ -100,4 +103,15 @@ class GalleriesActivity: AppCompatActivity(), ImagePickerBottomsheet.ItemClickLi
         startActivity(intent)
     }
     //IMAGE PICKER
+
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.signOut){
+            mViewModel.signOut()
+            val intent = Intent(this, AuthenticationActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+        return super.onOptionsItemSelected(item)
+    }
 }

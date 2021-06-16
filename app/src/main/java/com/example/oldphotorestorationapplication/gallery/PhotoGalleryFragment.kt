@@ -131,7 +131,7 @@ class PhotoGalleryFragment: Fragment(R.layout.photo_gallery_fragment), OnPhotoCl
 
     @ExperimentalStdlibApi
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_search, menu)
+        inflater.inflate(R.menu.main_menu, menu)
         val menuItem = menu.findItem(R.id.search)
         if(menuItem != null){
             val searchView = menuItem.actionView as SearchView

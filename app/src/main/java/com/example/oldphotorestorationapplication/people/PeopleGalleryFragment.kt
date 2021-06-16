@@ -2,7 +2,6 @@ package com.example.oldphotorestorationapplication.people
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.SearchView
 import androidx.fragment.app.Fragment
@@ -10,8 +9,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.oldphotorestorationapplication.R
 import com.example.oldphotorestorationapplication.data.face.Face
-import com.example.oldphotorestorationapplication.data.photo.Photo
-import com.example.oldphotorestorationapplication.data.photowithfaces.PhotoWithFaces
 import com.example.oldphotorestorationapplication.databinding.PeopleGalleryFragmentBinding
 import com.example.oldphotorestorationapplication.facedetails.FaceDetailsActivity
 
@@ -57,7 +54,7 @@ class PeopleGalleryFragment: Fragment(R.layout.people_gallery_fragment), OnPerso
 
     @ExperimentalStdlibApi
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_search, menu)
+        inflater.inflate(R.menu.main_menu, menu)
         val menuItem = menu.findItem(R.id.search)
         if(menuItem != null){
             val searchView = menuItem.actionView as SearchView

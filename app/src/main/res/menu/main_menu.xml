@@ -8,4 +8,12 @@
         android:icon="@drawable/ic_baseline_search_24"
         app:actionViewClass="android.widget.SearchView"
         app:showAsAction="collapseActionView|ifRoom" />
+
+    <item
+        android:id="@+id/signOut"
+        android:title="SignOut"
+        android:layout_height="?attr/actionBarSize"
+        android:icon="@drawable/ic_baseline_exit"
+        app:showAsAction="collapseActionView|ifRoom"
+    />
 </menu>
