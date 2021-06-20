@@ -1,10 +1,9 @@
-package com.example.oldphotorestorationapplication.people
+package com.example.oldphotorestorationapplication.peoplegallery
 
 import android.view.*
 import androidx.recyclerview.widget.RecyclerView
 import com.example.oldphotorestorationapplication.R
 import com.example.oldphotorestorationapplication.data.face.Face
-import kotlinx.android.synthetic.main.photo_item.view.*
 import kotlinx.android.synthetic.main.item_person_layout.view.*
 
 interface OnPersonClickListener {

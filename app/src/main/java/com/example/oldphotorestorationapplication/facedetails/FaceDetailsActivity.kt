@@ -14,11 +14,7 @@ import com.example.oldphotorestorationapplication.R
 import com.example.oldphotorestorationapplication.data.face.Face
 import com.example.oldphotorestorationapplication.data.photo.Photo
 import com.example.oldphotorestorationapplication.databinding.PersonEditorBinding
-import com.example.oldphotorestorationapplication.people.PeopleRecyclerViewAdapter
-import com.example.oldphotorestorationapplication.people.PeopleViewModel
 import com.example.oldphotorestorationapplication.photoeditor.PhotoEditorActivity
-import com.example.oldphotorestorationapplication.photoeditor.PhotoEditorViewModel
-import com.example.oldphotorestorationapplication.resizeImage
 import com.example.oldphotorestorationapplication.showAlertDialog
 import java.io.File
 import java.io.FileOutputStream

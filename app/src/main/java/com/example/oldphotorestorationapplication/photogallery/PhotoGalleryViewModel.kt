@@ -1,11 +1,9 @@
-package com.example.oldphotorestorationapplication.gallery
+package com.example.oldphotorestorationapplication.photogallery
 
 import android.app.Application
-import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
-import com.example.oldphotorestorationapplication.App
 import com.example.oldphotorestorationapplication.data.PhotoDatabase
 import com.example.oldphotorestorationapplication.data.PhotoRepository
 import com.example.oldphotorestorationapplication.data.photo.Photo

@@ -1,6 +1,5 @@
-package com.example.oldphotorestorationapplication.people
+package com.example.oldphotorestorationapplication.peoplegallery
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.*
 import android.widget.SearchView
@@ -10,7 +9,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.oldphotorestorationapplication.R
 import com.example.oldphotorestorationapplication.data.face.Face
 import com.example.oldphotorestorationapplication.databinding.PeopleGalleryFragmentBinding
-import com.example.oldphotorestorationapplication.facedetails.FaceDetailsActivity
+import com.example.oldphotorestorationapplication.galleries.GalleriesActivity
+
 
 class PeopleGalleryFragment: Fragment(R.layout.people_gallery_fragment), OnPersonClickListener{
 
@@ -42,14 +42,13 @@ class PeopleGalleryFragment: Fragment(R.layout.people_gallery_fragment), OnPerso
         setHasOptionsMenu(true)
     }
 
+
     override fun onPersonClick(position: Int, view: View) {
         val face = when(foundFacesList){
             null -> adapterPeople.getFaceByPosition(position)
             else -> foundFacesList!![position]
         }
-        val intent = Intent(view.context, FaceDetailsActivity::class.java)
-        intent.putExtra("faceId", face.idFace)
-        view.context.startActivity(intent)
+        (activity as GalleriesActivity).openPersonDetails(face.idFace)
     }
 
     @ExperimentalStdlibApi

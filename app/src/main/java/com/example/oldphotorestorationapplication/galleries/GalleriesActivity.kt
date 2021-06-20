@@ -1,10 +1,12 @@
 package com.example.oldphotorestorationapplication.galleries
 
 import android.content.Intent
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.app.imagepickerlibrary.ImagePickerActivityClass
@@ -13,9 +15,13 @@ import com.app.imagepickerlibrary.*
 import com.example.oldphotorestorationapplication.R
 import com.example.oldphotorestorationapplication.authentication.AuthenticationActivity
 import com.example.oldphotorestorationapplication.databinding.GalleriesBinding
-import com.example.oldphotorestorationapplication.gallery.PhotoGalleryFragment
-import com.example.oldphotorestorationapplication.people.PeopleGalleryFragment
+import com.example.oldphotorestorationapplication.facedetails.FaceDetailsActivity
+import com.example.oldphotorestorationapplication.photogallery.PhotoGalleryFragment
+import com.example.oldphotorestorationapplication.peoplegallery.PeopleGalleryFragment
+import com.example.oldphotorestorationapplication.photoeditor.PhotoEditorActivity
 import com.example.oldphotorestorationapplication.photorestorationsettings.PhotoRestorationSettingsActivity
+import java.io.File
+import java.io.FileOutputStream
 
 class GalleriesActivity: AppCompatActivity(), ImagePickerBottomsheet.ItemClickListener, ImagePickerActivityClass.OnResult {
 
@@ -58,6 +64,40 @@ class GalleriesActivity: AppCompatActivity(), ImagePickerBottomsheet.ItemClickLi
             replace(R.id.fragment_container, fragment)
             commit()
         }
+    }
+
+    internal fun openPersonDetails(idFace: Long){
+        val intent = Intent(this@GalleriesActivity, FaceDetailsActivity::class.java)
+        intent.putExtra("faceId", idFace)
+        this.startActivity(intent)
+    }
+
+    internal fun shareBitmap(bitmap: Bitmap) {
+        val cachePath = File(externalCacheDir, "my_images/")
+        cachePath.mkdirs()
+
+        //create png file
+        val file = File(cachePath, "photo.png")
+        val fileOutputStream = FileOutputStream(file)
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream)
+        fileOutputStream.flush()
+        fileOutputStream.close()
+
+        val myImageFileUri =
+            FileProvider.getUriForFile(this, applicationContext.getPackageName() + ".provider", file)
+
+        val intent = Intent(Intent.ACTION_SEND)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        intent.putExtra(Intent.EXTRA_STREAM, myImageFileUri)
+        intent.type = "image/png"
+        startActivity(Intent.createChooser(intent, "Share to: "))
+    }
+
+    internal fun openPhotoDetails(idPhoto: Long?){
+        val intent = Intent(this@GalleriesActivity, PhotoEditorActivity::class.java)
+        intent.putExtra("photoId", idPhoto)
+        this.startActivity(intent)
     }
 
     //IMAGE PICKER

@@ -33,9 +33,7 @@ class SignUpFragment : Fragment(R.layout.authentication_sign_up_fragment) {
     private fun init() {
         mViewModel = ViewModelProvider(this).get(AuthenticationViewModel::class.java)
         if (mViewModel.checkIfCurrentUser()) {
-            val intent = Intent(this.context, GalleriesActivity::class.java)
-            startActivity(intent)
-            activity?.finish()
+            (activity as AuthenticationActivity).goToGalleryActivity()
         }
 
         binding.buttonSignUp.setOnClickListener {
@@ -45,9 +43,7 @@ class SignUpFragment : Fragment(R.layout.authentication_sign_up_fragment) {
                 mViewModel.signUpUser(email, password).observe(viewLifecycleOwner) { authResult ->
                     when (authResult) {
                         is AuthResult.Success -> {
-                            val intent = Intent(this.context, GalleriesActivity::class.java)
-                            startActivity(intent)
-                            activity?.finish()
+                            (activity as AuthenticationActivity).goToGalleryActivity()
                         }
                         is AuthResult.Error ->
                             authResult.message?.let {
@@ -60,7 +56,7 @@ class SignUpFragment : Fragment(R.layout.authentication_sign_up_fragment) {
         }
 
         binding.goToSignIn.setOnClickListener {
-            goToSignInFragment()
+            (activity as AuthenticationActivity).goToSignIn()
         }
     }
 
@@ -75,13 +71,5 @@ class SignUpFragment : Fragment(R.layout.authentication_sign_up_fragment) {
             return false
         }
         return true
-    }
-
-    private fun goToSignInFragment() {
-        val signInFragment = SignInFragment()
-        activity?.supportFragmentManager?.beginTransaction()?.apply {
-            replace(R.id.fragment_auth_container, signInFragment)
-            commit()
-        }
     }
 }

@@ -1,4 +1,4 @@
-package com.example.oldphotorestorationapplication.gallery
+package com.example.oldphotorestorationapplication.photogallery
 
 import android.content.Intent
 import android.graphics.Bitmap
@@ -15,6 +15,7 @@ import com.example.oldphotorestorationapplication.*
 import com.example.oldphotorestorationapplication.data.photo.Photo
 import com.example.oldphotorestorationapplication.data.photowithfaces.PhotoWithFaces
 import com.example.oldphotorestorationapplication.databinding.PhotoGalleryFragmentBinding
+import com.example.oldphotorestorationapplication.galleries.GalleriesActivity
 import com.example.oldphotorestorationapplication.photoeditor.PhotoEditorActivity
 import java.io.File
 import java.io.FileOutputStream
@@ -71,9 +72,7 @@ class PhotoGalleryFragment: Fragment(R.layout.photo_gallery_fragment), OnPhotoCl
             null -> mViewModel.allPhotos.value?.get(position)
             else -> foundPhotosList!![position]
         }
-        val intent = Intent(this.context, PhotoEditorActivity::class.java)
-        intent.putExtra("photoId", photo?.idPhoto)
-        this.startActivity(intent)
+        (activity as GalleriesActivity).openPhotoDetails(photo?.idPhoto)
     }
 
     override fun onLongPhotoClick(position: Int, view: View): Boolean {
@@ -97,7 +96,7 @@ class PhotoGalleryFragment: Fragment(R.layout.photo_gallery_fragment), OnPhotoCl
                 }
                 R.id.sharePhotoMenu -> {
                     val photo = mViewModel.allPhotos.value?.get(position)
-                    shareBitmap(photo!!.restoredPhoto)
+                    (activity as GalleriesActivity).shareBitmap(photo!!.restoredPhoto)
                     true
                 }
                 else -> true
@@ -105,28 +104,6 @@ class PhotoGalleryFragment: Fragment(R.layout.photo_gallery_fragment), OnPhotoCl
         }
         popupMenu.show()
         return true
-    }
-
-    private fun shareBitmap(bitmap: Bitmap) {
-        val cachePath = File(activity?.externalCacheDir, "my_images/")
-        cachePath.mkdirs()
-
-        //create png file
-        val file = File(cachePath, "photo.png")
-        val fileOutputStream = FileOutputStream(file)
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream)
-        fileOutputStream.flush()
-        fileOutputStream.close()
-
-        val myImageFileUri =
-            this.context?.let { FileProvider.getUriForFile(it, this.requireContext().packageName + ".provider", file) }
-
-        val intent = Intent(Intent.ACTION_SEND)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        intent.putExtra(Intent.EXTRA_STREAM, myImageFileUri)
-        intent.type = "image/png"
-        startActivity(Intent.createChooser(intent, "Share to: "))
     }
 
     @ExperimentalStdlibApi

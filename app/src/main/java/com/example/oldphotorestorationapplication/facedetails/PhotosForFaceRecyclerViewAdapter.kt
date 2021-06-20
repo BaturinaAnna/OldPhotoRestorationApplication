@@ -5,13 +5,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.oldphotorestorationapplication.R
-import com.example.oldphotorestorationapplication.data.face.Face
 import com.example.oldphotorestorationapplication.data.photo.Photo
-import com.example.oldphotorestorationapplication.people.PeopleRecyclerViewAdapter
-import kotlinx.android.synthetic.main.item_person_layout.view.*
-import kotlinx.android.synthetic.main.item_person_layout.view.personName
 import kotlinx.android.synthetic.main.item_photo_for_face.view.*
-import kotlinx.android.synthetic.main.person_editor.view.*
 
 interface OnPhotoForFaceClickListener {
     fun onPhotoForFaceClick(position: Int, view: View)
