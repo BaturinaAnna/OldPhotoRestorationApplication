@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
@@ -19,6 +20,7 @@ import com.example.oldphotorestorationapplication.peoplegallery.PeopleGalleryFra
 import com.example.oldphotorestorationapplication.photoeditor.PhotoEditorActivity
 import com.example.oldphotorestorationapplication.photogallery.PhotoGalleryFragment
 import com.example.oldphotorestorationapplication.photorestorationsettings.PhotoRestorationSettingsActivity
+import com.example.oldphotorestorationapplication.showAlertDialog
 import java.io.File
 import java.io.FileOutputStream
 
@@ -181,10 +183,17 @@ class GalleriesActivity :
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.signOut) {
-            mViewModel.signOut()
-            val intent = Intent(this, AuthenticationActivity::class.java)
-            startActivity(intent)
-            finish()
+            showAlertDialog(
+                context = this@GalleriesActivity,
+                message = "Are you sure you want to sign out?",
+                actionsPositive = { _, _ ->
+                    mViewModel.signOut()
+                    val intent = Intent(this, AuthenticationActivity::class.java)
+                    startActivity(intent)
+                    finish() },
+                actionsNegative = {_, _ ->},
+            )
+
         }
         return super.onOptionsItemSelected(item)
     }
