@@ -7,8 +7,10 @@ import com.example.oldphotorestorationapplication.data.PhotoDatabase
 import com.example.oldphotorestorationapplication.data.PhotoRepository
 import com.example.oldphotorestorationapplication.data.face.Face
 import com.example.oldphotorestorationapplication.data.photo.Photo
+import com.example.oldphotorestorationapplication.firebase.realtimedatabase.FirebaseRealtimeDatabaseRepository
 import com.example.oldphotorestorationapplication.network.NetworkRepository
 import com.example.oldphotorestorationapplication.network.RestorationNetwork
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -43,6 +45,13 @@ class PhotoRestorationSettingsViewModel(application: Application) : AndroidViewM
                     repositoryPhoto.addFace(face)
                 }
             }
+
+            FirebaseRealtimeDatabaseRepository()
+                .addPhotoToUser(
+                    bitmapOldPhoto,
+                    bitmapRestoredPhoto,
+                    restoredPhotoList.subList(1, restoredPhotoList.size)
+                )
         }
     }
 }

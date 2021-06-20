@@ -2,13 +2,13 @@ package com.example.oldphotorestorationapplication.galleries
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import com.example.oldphotorestorationapplication.firebase.FireBaseRepository
+import com.example.oldphotorestorationapplication.firebase.firebaseauth.FirebaseAuthRepository
 
 class GalleriesViewModel(application: Application) : AndroidViewModel(application) {
-    private val fireBaseRepository: FireBaseRepository = FireBaseRepository()
+    private val firebaseAuthRepository: FirebaseAuthRepository = FirebaseAuthRepository()
 
     fun signOut(){
-        fireBaseRepository.signOut()
+        firebaseAuthRepository.signOut()
     }
 
 }

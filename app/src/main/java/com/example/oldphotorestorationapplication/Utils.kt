@@ -22,6 +22,13 @@ fun convertToFile(bitmap: Bitmap, context: Context): File {
     return file
 }
 
+fun Bitmap.toByteArray(): ByteArray{
+    val byteArrayOutputStream = ByteArrayOutputStream()
+    this.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
+    return byteArrayOutputStream.toByteArray()
+}
+
+
 
 //fun compressBitmap(originalBitmap: Bitmap): Bitmap {
 //    val out = ByteArrayOutputStream()
@@ -29,18 +36,18 @@ fun convertToFile(bitmap: Bitmap, context: Context): File {
 //    return BitmapFactory.decodeStream(ByteArrayInputStream(out.toByteArray()))
 //}
 
-fun resizeImage(image: Bitmap): Bitmap {
-    val width = image.width
-    val height = image.height
-
-    val scaleWidth = width / 10
-    val scaleHeight = height / 10
-
-    if (image.byteCount <= 1000000)
-        return image
-
-    return Bitmap.createScaledBitmap(image, scaleWidth, scaleHeight, false)
-}
+//fun resizeImage(image: Bitmap): Bitmap {
+//    val width = image.width
+//    val height = image.height
+//
+//    val scaleWidth = width / 10
+//    val scaleHeight = height / 10
+//
+//    if (image.byteCount <= 1000000)
+//        return image
+//
+//    return Bitmap.createScaledBitmap(image, scaleWidth, scaleHeight, false)
+//}
 
 
 fun showAlertDialog(message: String,

@@ -1,11 +1,11 @@
-package com.example.oldphotorestorationapplication.firebase
+package com.example.oldphotorestorationapplication.firebase.firebaseauth
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import com.example.oldphotorestorationapplication.firebase.firebaseauth.AuthResult
 import com.google.firebase.auth.*
 
 
-class FireBaseRepository {
+class FirebaseAuthRepository {
 
     private val firebaseAuth = FirebaseAuth.getInstance()
 

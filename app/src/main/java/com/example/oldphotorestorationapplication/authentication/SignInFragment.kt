@@ -1,6 +1,5 @@
 package com.example.oldphotorestorationapplication.authentication
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,8 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.oldphotorestorationapplication.R
 import com.example.oldphotorestorationapplication.databinding.AuthenticationSignInFragmentBinding
-import com.example.oldphotorestorationapplication.firebase.AuthResult
-import com.example.oldphotorestorationapplication.galleries.GalleriesActivity
+import com.example.oldphotorestorationapplication.firebase.firebaseauth.AuthResult
 
 
 class SignInFragment : Fragment(R.layout.authentication_sign_in_fragment) {
