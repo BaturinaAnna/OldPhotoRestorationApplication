@@ -4,31 +4,35 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.app.imagepickerlibrary.ImagePickerActivityClass
-import com.app.imagepickerlibrary.ImagePickerBottomsheet
 import com.app.imagepickerlibrary.*
 import com.example.oldphotorestorationapplication.R
 import com.example.oldphotorestorationapplication.authentication.AuthenticationActivity
 import com.example.oldphotorestorationapplication.databinding.GalleriesBinding
 import com.example.oldphotorestorationapplication.facedetails.FaceDetailsActivity
-import com.example.oldphotorestorationapplication.photogallery.PhotoGalleryFragment
 import com.example.oldphotorestorationapplication.peoplegallery.PeopleGalleryFragment
 import com.example.oldphotorestorationapplication.photoeditor.PhotoEditorActivity
+import com.example.oldphotorestorationapplication.photogallery.PhotoGalleryFragment
 import com.example.oldphotorestorationapplication.photorestorationsettings.PhotoRestorationSettingsActivity
 import java.io.File
 import java.io.FileOutputStream
 
-class GalleriesActivity: AppCompatActivity(), ImagePickerBottomsheet.ItemClickListener, ImagePickerActivityClass.OnResult {
+class GalleriesActivity :
+    AppCompatActivity(),
+    ImagePickerBottomsheet.ItemClickListener,
+    ImagePickerActivityClass.OnResult {
+
+    enum class DisplayedFragment { PEOPLE, PHOTOS }
 
     private lateinit var binding: GalleriesBinding
     private lateinit var imagePicker: ImagePickerActivityClass
     private lateinit var mViewModel: GalleriesViewModel
-
+    private lateinit var currentFragmentType: DisplayedFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,8 +47,8 @@ class GalleriesActivity: AppCompatActivity(), ImagePickerBottomsheet.ItemClickLi
 
         setCurrentFragment(photoGalleryFragment)
 
-        binding.bottomNavigation.setOnNavigationItemSelectedListener{
-            when(it.itemId){
+        binding.bottomNavigation.setOnNavigationItemSelectedListener {
+            when (it.itemId) {
                 R.id.ic_people -> setCurrentFragment(peopleGalleryFragment)
                 R.id.ic_photos -> setCurrentFragment(photoGalleryFragment)
                 R.id.ic_restore -> {
@@ -54,21 +58,43 @@ class GalleriesActivity: AppCompatActivity(), ImagePickerBottomsheet.ItemClickLi
             }
             true
         }
-
         imagePicker = ImagePickerActivityClass(this, this, this, activityResultRegistry)
         imagePicker.cropOptions(true)
     }
 
-    private fun setCurrentFragment(fragment: Fragment){
+    override fun onResume() {
+        super.onResume()
+        when (intent.getSerializableExtra("currentFragment")) {
+            DisplayedFragment.PHOTOS -> setCurrentFragment(PhotoGalleryFragment())
+            DisplayedFragment.PEOPLE -> setCurrentFragment(PeopleGalleryFragment())
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        intent.putExtra("currentFragment", currentFragmentType)
+    }
+
+    private fun setCurrentFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction().apply {
             replace(R.id.fragment_container, fragment)
             commit()
         }
+        when (fragment) {
+            is PeopleGalleryFragment -> currentFragmentType = DisplayedFragment.PEOPLE
+            is PhotoGalleryFragment -> currentFragmentType = DisplayedFragment.PHOTOS
+        }
     }
 
-    internal fun openPersonDetails(idFace: Long){
+    internal fun openPersonDetails(idFace: Long) {
         val intent = Intent(this@GalleriesActivity, FaceDetailsActivity::class.java)
         intent.putExtra("faceId", idFace)
+        this.startActivity(intent)
+    }
+
+    internal fun openPhotoDetails(idPhoto: Long?) {
+        val intent = Intent(this@GalleriesActivity, PhotoEditorActivity::class.java)
+        intent.putExtra("photoId", idPhoto)
         this.startActivity(intent)
     }
 
@@ -76,7 +102,7 @@ class GalleriesActivity: AppCompatActivity(), ImagePickerBottomsheet.ItemClickLi
         val cachePath = File(externalCacheDir, "my_images/")
         cachePath.mkdirs()
 
-        //create png file
+        // create png file
         val file = File(cachePath, "photo.png")
         val fileOutputStream = FileOutputStream(file)
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream)
@@ -84,7 +110,11 @@ class GalleriesActivity: AppCompatActivity(), ImagePickerBottomsheet.ItemClickLi
         fileOutputStream.close()
 
         val myImageFileUri =
-            FileProvider.getUriForFile(this, applicationContext.getPackageName() + ".provider", file)
+            FileProvider.getUriForFile(
+                this,
+                applicationContext.getPackageName() + ".provider",
+                file
+            )
 
         val intent = Intent(Intent.ACTION_SEND)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
@@ -94,13 +124,7 @@ class GalleriesActivity: AppCompatActivity(), ImagePickerBottomsheet.ItemClickLi
         startActivity(Intent.createChooser(intent, "Share to: "))
     }
 
-    internal fun openPhotoDetails(idPhoto: Long?){
-        val intent = Intent(this@GalleriesActivity, PhotoEditorActivity::class.java)
-        intent.putExtra("photoId", idPhoto)
-        this.startActivity(intent)
-    }
-
-    //IMAGE PICKER
+    // IMAGE PICKER
     override fun onItemClick(item: String?) {
         when {
             item.toString() == bottomSheetActionCamera -> {
@@ -112,23 +136,34 @@ class GalleriesActivity: AppCompatActivity(), ImagePickerBottomsheet.ItemClickLi
         }
     }
 
-    //Override this method for customization of bottomsheet
+    // Override this method for customization of bottomsheet
     override fun doCustomisations(fragment: ImagePickerBottomsheet) {
         fragment.apply {
-            //Customize button text
-            setButtonText(cameraButtonText = "Select Camera", galleryButtonText = "Select Gallery", cancelButtonText = "Cancel")
-            //Customize button text color
-//            setButtonColors(galleryButtonColor = ContextCompat.getColor(requireContext(), R.color.white))
-            //For more customization make a style in your styles xml and pass it to this method. (This will override above method result).
-//            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-//                setTextAppearance(R.style.fontForNotificationLandingPage)
-//            }
-            //To customize bottomsheet style
+            // Customize button text
+            setButtonText(
+                cameraButtonText = "Select Camera",
+                galleryButtonText = "Select Gallery",
+                cancelButtonText = "Cancel"
+            )
+            // Customize button text color
+            //            setButtonColors(galleryButtonColor =
+            // ContextCompat.getColor(requireContext(), R.color.white))
+            // For more customization make a style in your styles xml and pass it to this method.
+            // (This will override above method result).
+            //            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M)
+            // {
+            //                setTextAppearance(R.style.fontForNotificationLandingPage)
+            //            }
+            // To customize bottomsheet style
             setBottomSheetBackgroundStyle(R.drawable.drawable_bottom_sheet_dialog)
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
@@ -142,11 +177,10 @@ class GalleriesActivity: AppCompatActivity(), ImagePickerBottomsheet.ItemClickLi
         intent.putExtra("imagePath", item?.path)
         startActivity(intent)
     }
-    //IMAGE PICKER
-
+    // IMAGE PICKER
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.signOut){
+        if (item.itemId == R.id.signOut) {
             mViewModel.signOut()
             val intent = Intent(this, AuthenticationActivity::class.java)
             startActivity(intent)

@@ -22,6 +22,7 @@ import java.io.FileOutputStream
 
 class PhotoGalleryFragment: Fragment(R.layout.photo_gallery_fragment), OnPhotoClickListener,
     OnPhotoLongClickListener {
+
     private lateinit var binding: PhotoGalleryFragmentBinding
     private lateinit var adapterPhoto: PhotoRecyclerViewAdapter
     private lateinit var mViewModel: PhotoGalleryViewModel

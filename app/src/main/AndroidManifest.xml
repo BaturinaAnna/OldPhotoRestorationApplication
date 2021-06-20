@@ -35,11 +35,11 @@
 
         <activity android:name=".photoeditor.PhotoEditorActivity" />
 
-        <activity android:name=".facedetails.FaceDetailsActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".galleries.GalleriesActivity" />
-        </activity>
+        <activity android:name=".facedetails.FaceDetailsActivity"/>
+<!--            <meta-data-->
+<!--                android:name="android.support.PARENT_ACTIVITY"-->
+<!--                android:value=".galleries.GalleriesActivity" />-->
+<!--        </activity>-->
 
         <activity android:name=".photorestorationsettings.PhotoRestorationSettingsActivity" />
 

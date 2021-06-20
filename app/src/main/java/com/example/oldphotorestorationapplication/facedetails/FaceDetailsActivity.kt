@@ -3,6 +3,7 @@ package com.example.oldphotorestorationapplication.facedetails
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.PopupMenu
 import android.widget.Toast
@@ -40,6 +41,10 @@ class FaceDetailsActivity: AppCompatActivity(), OnPhotoForFaceClickListener, OnP
         binding.recyclerViewPhotosForFace.adapter = adapterPhotos
 
         mViewModel = ViewModelProvider(this).get(FaceDetailsViewModel::class.java)
+
+        if (supportActionBar != null) {
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        }
 
         init()
     }
@@ -83,6 +88,11 @@ class FaceDetailsActivity: AppCompatActivity(), OnPhotoForFaceClickListener, OnP
         val intent = Intent(view.context, PhotoEditorActivity::class.java)
         intent.putExtra("photoId", photo.idPhoto)
         view.context.startActivity(intent)
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
     }
 
     override fun onPhotoForFaceLongClick(position: Int, view: View): Boolean {
