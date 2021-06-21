@@ -5,10 +5,16 @@ import android.content.Context
 import android.content.DialogInterface
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import com.google.android.gms.tasks.Task
+import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
+import kotlin.coroutines.cancellation.CancellationException
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 fun convertToFile(bitmap: Bitmap, context: Context): File {
     val file = File(context.cacheDir, "imageToRestore")
@@ -27,8 +33,6 @@ fun Bitmap.toByteArray(): ByteArray{
     this.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
     return byteArrayOutputStream.toByteArray()
 }
-
-
 
 //fun compressBitmap(originalBitmap: Bitmap): Bitmap {
 //    val out = ByteArrayOutputStream()

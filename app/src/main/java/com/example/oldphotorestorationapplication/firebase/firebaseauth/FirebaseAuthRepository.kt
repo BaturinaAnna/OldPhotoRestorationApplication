@@ -14,6 +14,11 @@ class FirebaseAuthRepository {
         return currentUser != null
     }
 
+    fun getCurrentUserId(): String? {
+        return firebaseAuth.currentUser?.uid
+    }
+
+
     fun signUpUser(email: String, password: String): MutableLiveData<AuthResult<FirebaseUser?>>{
         val authResult: MutableLiveData<AuthResult<FirebaseUser?>> = MutableLiveData(AuthResult.Error(null))
         firebaseAuth.createUserWithEmailAndPassword(email, password)
