@@ -1,25 +1,15 @@
 package com.example.oldphotorestorationapplication.photorestorationsettings
 
 import android.app.Application
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MutableLiveData
-import com.example.oldphotorestorationapplication.authentication.AuthenticationActivity
-import com.example.oldphotorestorationapplication.data.PhotoDatabase
-import com.example.oldphotorestorationapplication.data.PhotoRepository
-import com.example.oldphotorestorationapplication.data.face.Face
-import com.example.oldphotorestorationapplication.data.photo.Photo
-import com.example.oldphotorestorationapplication.firebase.firebaseauth.AuthResult
 import com.example.oldphotorestorationapplication.firebase.firebaseauth.FirebaseAuthRepository
 import com.example.oldphotorestorationapplication.firebase.realtimedatabase.FirebaseRealtimeDatabaseRepository
 import com.example.oldphotorestorationapplication.firebase.storage.FirebaseStorageRepository
 import com.example.oldphotorestorationapplication.firebase.storage.FirebaseStorageResult
 import com.example.oldphotorestorationapplication.network.NetworkRepository
 import com.example.oldphotorestorationapplication.network.RestorationNetwork
-import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -50,7 +40,6 @@ class PhotoRestorationSettingsViewModel(application: Application) : AndroidViewM
                 userId = idUser,
                 initialPhoto = Path(imagePath).readBytes(),
                 restoredPhoto = restoredPhotoList[0])
-
             if (addingPhotoResult.second is FirebaseStorageResult.Success &&
                     addingPhotoResult.third is FirebaseStorageResult.Success ){
                 firebaseRealtimeDatabaseRepository.addPhotoToUser(

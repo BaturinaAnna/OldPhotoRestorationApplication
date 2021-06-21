@@ -3,6 +3,7 @@ package com.example.oldphotorestorationapplication.photogallery
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.PopupMenu
 import android.widget.SearchView
@@ -61,6 +62,14 @@ class PhotoGalleryFragment: Fragment(R.layout.photo_gallery_fragment), OnPhotoCl
 //            adapterPhoto.setData(compressedPhotos)
             adapterPhoto.setData(photos)
         })
+
+        //TRY FIREBASE
+        mViewModel.getAllPhoto().observe(viewLifecycleOwner, { photos ->
+            Log.d("ANNA", photos?.size.toString())
+            adapterPhoto.setData(photos)
+        })
+        //TRY FIREBASE
+
         mViewModel.allPhotoWithFaces.observe(viewLifecycleOwner, { photoWithFaces ->
             allPhotoWithFaces = photoWithFaces
         })

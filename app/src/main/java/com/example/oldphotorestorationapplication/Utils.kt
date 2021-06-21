@@ -5,16 +5,9 @@ import android.content.Context
 import android.content.DialogInterface
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import com.google.android.gms.tasks.Task
-import kotlinx.coroutines.suspendCancellableCoroutine
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.FileOutputStream
-import kotlin.coroutines.cancellation.CancellationException
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
-import kotlin.coroutines.suspendCoroutine
+import java.io.*
+import java.net.HttpURLConnection
+import java.net.URL
 
 fun convertToFile(bitmap: Bitmap, context: Context): File {
     val file = File(context.cacheDir, "imageToRestore")
@@ -32,6 +25,21 @@ fun Bitmap.toByteArray(): ByteArray{
     val byteArrayOutputStream = ByteArrayOutputStream()
     this.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
     return byteArrayOutputStream.toByteArray()
+}
+
+fun getBitmapFromURL(src: String?): Bitmap? {
+    return try {
+        val url = URL(src)
+        val connection: HttpURLConnection = url
+            .openConnection() as HttpURLConnection
+        connection.doInput = true
+        connection.connect()
+        val input: InputStream = connection.inputStream
+        BitmapFactory.decodeStream(input)
+    } catch (e: IOException) {
+        e.printStackTrace()
+        null
+    }
 }
 
 //fun compressBitmap(originalBitmap: Bitmap): Bitmap {

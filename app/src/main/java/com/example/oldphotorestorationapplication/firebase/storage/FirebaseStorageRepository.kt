@@ -2,13 +2,8 @@ package com.example.oldphotorestorationapplication.firebase.storage
 
 import android.net.Uri
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import com.google.android.gms.tasks.Task
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
-import com.google.firebase.storage.UploadTask
-import kotlinx.coroutines.*
 import kotlinx.coroutines.tasks.await
 import java.lang.Exception
 import java.util.*
@@ -39,23 +34,27 @@ class FirebaseStorageRepository {
     private suspend fun addImage(image: ByteArray, pathReference: StorageReference): FirebaseStorageResult<Uri?> {
         Log.d("ANNA", pathReference.path)
         var addingImageResult: FirebaseStorageResult<Uri?> = FirebaseStorageResult.Error(null)
-        pathReference
-            .putBytes(image)
-            .continueWithTask { task ->
-                if (!task.isSuccessful) {
-                    task.exception?.let {
-                        throw it
+        try{
+            pathReference
+                .putBytes(image)
+                .continueWithTask { task ->
+                    if (!task.isSuccessful) {
+                        task.exception?.let {
+                            throw it
+                        }
+                    } else {
+                        pathReference.downloadUrl
                     }
-                } else {
-                    pathReference.downloadUrl
-                }
-            }.addOnCompleteListener { task ->
-                addingImageResult = if (task.isSuccessful) {
-                    FirebaseStorageResult.Success(task.result)
-                } else {
-                    FirebaseStorageResult.Error(task.exception?.message)
-                }
-            }.await()
+                }.addOnCompleteListener { task ->
+                    addingImageResult = if (task.isSuccessful) {
+                        FirebaseStorageResult.Success(task.result)
+                    } else {
+                        FirebaseStorageResult.Error(task.exception?.message)
+                    }
+                }.await()
+            } catch (e: Exception){
+                addingImageResult =FirebaseStorageResult.Error(e.message)
+            }
         return addingImageResult
     }
 }

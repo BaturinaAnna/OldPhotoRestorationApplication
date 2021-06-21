@@ -16,11 +16,13 @@ import com.example.oldphotorestorationapplication.R
 import com.example.oldphotorestorationapplication.authentication.AuthenticationActivity
 import com.example.oldphotorestorationapplication.databinding.GalleriesBinding
 import com.example.oldphotorestorationapplication.facedetails.FaceDetailsActivity
+import com.example.oldphotorestorationapplication.firebase.realtimedatabase.FirebaseRealtimeDatabaseRepository
 import com.example.oldphotorestorationapplication.peoplegallery.PeopleGalleryFragment
 import com.example.oldphotorestorationapplication.photoeditor.PhotoEditorActivity
 import com.example.oldphotorestorationapplication.photogallery.PhotoGalleryFragment
 import com.example.oldphotorestorationapplication.photorestorationsettings.PhotoRestorationSettingsActivity
 import com.example.oldphotorestorationapplication.showAlertDialog
+import kotlinx.android.synthetic.main.person_editor.*
 import java.io.File
 import java.io.FileOutputStream
 
@@ -48,6 +50,17 @@ class GalleriesActivity :
         val peopleGalleryFragment = PeopleGalleryFragment()
 
         setCurrentFragment(photoGalleryFragment)
+
+
+        //DELETE
+//        Log.d("ANNA", "HERE NOW")
+//        val db = FirebaseRealtimeDatabaseRepository()
+//        db.getAllPhotos("R5O9JeSsMSd7kq9TRIt2GzRPN7v1").observe(this){photos ->
+//            photos.forEach {
+//                Log.d("ANNA", "PHOTO $it")
+//            }
+//        }
+        //DELETE
 
         binding.bottomNavigation.setOnNavigationItemSelectedListener {
             when (it.itemId) {
