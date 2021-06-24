@@ -3,11 +3,11 @@ package com.example.oldphotorestorationapplication.firebase.realtimedatabase
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.oldphotorestorationapplication.data.photo.Photo
-import com.example.oldphotorestorationapplication.data.photo.PhotoFirebase
+import com.example.oldphotorestorationapplication.data.firebase.photo.PhotoFirebase
 import com.example.oldphotorestorationapplication.getBitmapFromURL
 import com.google.firebase.database.*
 import kotlinx.coroutines.*
+import kotlinx.coroutines.tasks.await
 
 class FirebaseRealtimeDatabaseRepository {
 
@@ -31,11 +31,8 @@ class FirebaseRealtimeDatabaseRepository {
             .setValue(photoRestoredUri)
     }
 
-    fun generateNextId(idUser: String): String?{
-        return firebaseRealtimeDatabase
-            .child("users/$idUser/photos")
-            .push()
-            .key
+    fun generateNextId(idUser: String): String? {
+        return firebaseRealtimeDatabase.child("users/$idUser/photos").push().key
     }
 
     fun addFaceToPhoto(idUser: String, idPhoto: String, idFace: Long, faceUri: String) {
@@ -63,55 +60,101 @@ class FirebaseRealtimeDatabaseRepository {
         return allPhoto
     }
 
+//    fun getPhotos(idUser: String, startPhotoId: String, limit: Int): LiveData<List<PhotoFirebase>> {
+//        val allPhoto: MutableLiveData<List<PhotoFirebase>> = MutableLiveData()
+//        firebaseRealtimeDatabase
+//            .child("users/$idUser/photos")
+//            .startAt(startPhotoId)
+//            .limitToFirst(limit)
+//            .addValueEventListener(
+//                object : ValueEventListener {
+//                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+//                        CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
+//                            allPhoto.postValue(toPhotos(dataSnapshot))
+//                        }
+//                    }
+//                    override fun onCancelled(databaseError: DatabaseError) {
+//                        Log.w("firebase", databaseError.toException())
+//                    }
+//                }
+//            )
+//        return allPhoto
+//    }
 
-    fun getNextPhoto(idUser: String, currentPhotoId: String): LiveData<PhotoFirebase>{
-        val nextPhotoId: MutableLiveData<PhotoFirebase> = MutableLiveData()
-        firebaseRealtimeDatabase
-            .child("users/$idUser/photos")
-            .orderByKey()
-            .startAfter(currentPhotoId)
-            .limitToFirst(1)
-            .addValueEventListener(
-                object : ValueEventListener {
-                    override fun onDataChange(dataSnapshot: DataSnapshot) {
-                        CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
-                            nextPhotoId.postValue(toPhotos(dataSnapshot)[0])
-                        }
-                    }
-                    override fun onCancelled(databaseError: DatabaseError) {
-                        Log.w("firebase", databaseError.toException())
-                    }
-                }
-            )
-        return nextPhotoId
+    suspend fun getPhotos(idUser: String, startPhotoId: String, limit: Int): List<PhotoFirebase> {
+        var allPhoto: List<PhotoFirebase> = ArrayList()
+        CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
+            val dataSnapshot = firebaseRealtimeDatabase
+                .child("users/$idUser/photos")
+                .orderByKey()
+                .startAt(startPhotoId)
+                .limitToFirst(limit)
+                .get()
+                .await()
+            allPhoto = toPhotos(dataSnapshot)
+        }.join()
+        return allPhoto
     }
 
-    fun getPrevPhoto(idUser: String, currentPhotoId: String): LiveData<PhotoFirebase>{
-        val nextPhotoId: MutableLiveData<PhotoFirebase> = MutableLiveData()
-        firebaseRealtimeDatabase
-            .child("users/$idUser/photos")
-            .orderByKey()
-            .endBefore(currentPhotoId)
-            .limitToLast(1)
-            .addValueEventListener(
-                object : ValueEventListener {
-                    override fun onDataChange(dataSnapshot: DataSnapshot) {
-                        CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
-                            nextPhotoId.postValue(toPhotos(dataSnapshot)[0])
-                        }
-                    }
-                    override fun onCancelled(databaseError: DatabaseError) {
-                        Log.w("firebase", databaseError.toException())
-                    }
+    suspend fun getFirstPhotoId(idUser: String): String? {
+        var id: String? = null
+        CoroutineScope(Dispatchers.IO + SupervisorJob())
+            .launch {
+                val dataSnapshot =
+                    firebaseRealtimeDatabase
+                        .child("users/$idUser/photos")
+                        .orderByKey()
+                        .limitToFirst(1)
+                        .get()
+                        .await()
+                val list = dataSnapshot.children.map {  it.key.toString()}
+                if (list.isNotEmpty()){
+                    id = list[0]
                 }
-            )
-        return nextPhotoId
+            }
+            .join()
+        return id
     }
 
+    suspend fun getNextPhotoId(idUser: String, currentPhotoId: String): String {
+        var id = ""
+        CoroutineScope(Dispatchers.IO + SupervisorJob())
+            .launch {
+                val dataSnapshot =
+                    firebaseRealtimeDatabase
+                        .child("users/$idUser/photos")
+                        .orderByKey()
+                        .startAfter(currentPhotoId)
+                        .limitToFirst(1)
+                        .get()
+                        .await()
+                id = dataSnapshot.children.map {  it.key.toString()}[0]
+            }
+            .join()
+        return id
+    }
+
+    suspend fun getPrevPhotoId(idUser: String, currentPhotoId: String): String {
+        var id = ""
+        CoroutineScope(Dispatchers.IO + SupervisorJob())
+            .launch {
+                val dataSnapshot =
+                    firebaseRealtimeDatabase
+                        .child("users/$idUser/photos")
+                        .orderByKey()
+                        .endBefore(currentPhotoId)
+                        .limitToLast(1)
+                        .get()
+                        .await()
+                id = dataSnapshot.children.map {  it.key.toString()}[0]
+            }
+            .join()
+        return id
+    }
 
     private fun toPhotos(dataSnapshot: DataSnapshot): List<PhotoFirebase> {
         return dataSnapshot.children.map {
-            val idPhoto= it.key
+            val idPhoto = it.key
             var initial = ""
             var restored = ""
 
@@ -123,13 +166,15 @@ class FirebaseRealtimeDatabaseRepository {
             }
             PhotoFirebase(
                 idPhoto = idPhoto!!,
-                initialPhoto = getBitmapFromURL(initial)!!,
-                restoredPhoto = getBitmapFromURL(restored)!!,
+                initialPhoto = getBitmapFromURL(initial),
+                restoredPhoto = getBitmapFromURL(restored),
                 title = null,
                 description = null,
                 date = null,
                 location = null
             )
+
+
         }
     }
 }

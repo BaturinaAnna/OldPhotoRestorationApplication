@@ -37,6 +37,7 @@ class PhotoRestorationSettingsViewModel(application: Application) : AndroidViewM
             val restoredPhotoList = repositoryNetwork.restorePhoto(imagePath, removeScratches)
             val idUser = firebaseAuthRepository.getCurrentUserId()!!
             val idPhoto = firebaseRealtimeDatabaseRepository.generateNextId(idUser)
+
             val addingPhotoResult = firebaseStorageRepository.addPhotoToUser(
                 userId = idUser,
                 idPhoto = idPhoto!!,

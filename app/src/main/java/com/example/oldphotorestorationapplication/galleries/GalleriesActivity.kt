@@ -4,7 +4,6 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -16,27 +15,35 @@ import com.example.oldphotorestorationapplication.R
 import com.example.oldphotorestorationapplication.authentication.AuthenticationActivity
 import com.example.oldphotorestorationapplication.databinding.GalleriesBinding
 import com.example.oldphotorestorationapplication.facedetails.FaceDetailsActivity
-import com.example.oldphotorestorationapplication.firebase.realtimedatabase.FirebaseRealtimeDatabaseRepository
 import com.example.oldphotorestorationapplication.peoplegallery.PeopleGalleryFragment
 import com.example.oldphotorestorationapplication.photoeditor.PhotoEditorActivity
 import com.example.oldphotorestorationapplication.photogallery.PhotoGalleryFragment
 import com.example.oldphotorestorationapplication.photorestorationsettings.PhotoRestorationSettingsActivity
 import com.example.oldphotorestorationapplication.showAlertDialog
-import kotlinx.android.synthetic.main.person_editor.*
+import kotlinx.android.synthetic.main.galleries.*
 import java.io.File
 import java.io.FileOutputStream
+import kotlinx.android.synthetic.main.person_editor.*
 
 class GalleriesActivity :
     AppCompatActivity(),
     ImagePickerBottomsheet.ItemClickListener,
     ImagePickerActivityClass.OnResult {
 
-    enum class DisplayedFragment { PEOPLE, PHOTOS }
+    enum class DisplayedFragment {
+        PEOPLE,
+        PHOTOS
+    }
+    enum class ActivityForResult {
+        RESTORATION_SETTING
+    }
 
     private lateinit var binding: GalleriesBinding
     private lateinit var imagePicker: ImagePickerActivityClass
     private lateinit var mViewModel: GalleriesViewModel
     private lateinit var currentFragmentType: DisplayedFragment
+    private val photoGalleryFragment = PhotoGalleryFragment()
+    private val peopleGalleryFragment = PeopleGalleryFragment()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,20 +53,7 @@ class GalleriesActivity :
 
         mViewModel = ViewModelProvider(this).get(GalleriesViewModel::class.java)
 
-        val photoGalleryFragment = PhotoGalleryFragment()
-        val peopleGalleryFragment = PeopleGalleryFragment()
-
         setCurrentFragment(photoGalleryFragment)
-
-
-        //DELETE
-        Log.d("ANNA", "HERE NOW")
-        val db = FirebaseRealtimeDatabaseRepository()
-        db.getPrevPhoto("R5O9JeSsMSd7kq9TRIt2GzRPN7v1", "-Mcx3UGi-rT6QT3CpPS2")
-            .observe(this){photo ->
-            Log.d("ANNA", photo.idPhoto)
-        }
-        //DELETE
 
         binding.bottomNavigation.setOnNavigationItemSelectedListener {
             when (it.itemId) {
@@ -126,7 +120,7 @@ class GalleriesActivity :
         val myImageFileUri =
             FileProvider.getUriForFile(
                 this,
-                applicationContext.getPackageName() + ".provider",
+                applicationContext.packageName + ".provider",
                 file
             )
 
@@ -183,13 +177,20 @@ class GalleriesActivity :
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        imagePicker.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == ActivityForResult.RESTORATION_SETTING.ordinal) {
+            if (currentFragmentType == DisplayedFragment.PHOTOS){
+                photoGalleryFragment.adapterPhoto.refresh()
+            }
+        } else {
+            imagePicker.onActivityResult(requestCode, resultCode, data)
+        }
     }
 
     override fun returnString(item: Uri?) {
         val intent = Intent(this, PhotoRestorationSettingsActivity::class.java)
         intent.putExtra("imagePath", item?.path)
-        startActivity(intent)
+        startActivityForResult(intent, ActivityForResult.RESTORATION_SETTING.ordinal)
+//        startActivity(intent)
     }
     // IMAGE PICKER
 
@@ -202,10 +203,10 @@ class GalleriesActivity :
                     mViewModel.signOut()
                     val intent = Intent(this, AuthenticationActivity::class.java)
                     startActivity(intent)
-                    finish() },
-                actionsNegative = {_, _ ->},
+                    finish()
+                },
+                actionsNegative = { _, _ -> },
             )
-
         }
         return super.onOptionsItemSelected(item)
     }
