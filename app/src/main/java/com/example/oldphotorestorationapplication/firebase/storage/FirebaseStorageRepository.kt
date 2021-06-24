@@ -11,9 +11,8 @@ import java.util.*
 class FirebaseStorageRepository {
     private val firebaseStorageReference = FirebaseStorage.getInstance().reference
 
-    suspend fun addPhotoToUser(userId: String, initialPhoto: ByteArray, restoredPhoto: ByteArray):
-            Triple<Long, FirebaseStorageResult<Uri?>, FirebaseStorageResult<Uri?>> {
-        val idPhoto = UUID.randomUUID().mostSignificantBits and Long.MAX_VALUE
+    suspend fun addPhotoToUser(userId: String, idPhoto: String, initialPhoto: ByteArray, restoredPhoto: ByteArray):
+            Triple<String, FirebaseStorageResult<Uri?>, FirebaseStorageResult<Uri?>> {
 
         val photoReference = firebaseStorageReference.child("$userId/photos/${idPhoto}")
 
@@ -25,7 +24,7 @@ class FirebaseStorageRepository {
         return Triple(idPhoto, addingInitialPhotoResult, addingRestoredPhotoResult)
     }
 
-    suspend fun addFaceForPhoto(userId: String, idPhoto: Long, face: ByteArray): Pair<Long, FirebaseStorageResult<Uri?>> {
+    suspend fun addFaceForPhoto(userId: String, idPhoto: String, face: ByteArray): Pair<Long, FirebaseStorageResult<Uri?>> {
         val idFace = UUID.randomUUID().mostSignificantBits and Long.MAX_VALUE
         val facesReferences = firebaseStorageReference.child("$userId/photos/$idPhoto/$idFace")
         return Pair(idFace, addImage(face, facesReferences))

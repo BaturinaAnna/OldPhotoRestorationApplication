@@ -41,8 +41,8 @@ class PhotoGalleryViewModel (application: Application) : AndroidViewModel(applic
         viewModelScope.launch(Dispatchers.IO) { repository.deletePhoto(photo) }
     }
 
-    fun getAllPhoto(): LiveData<List<Photo>>{
-        return firebaseRealtimeDatabaseRepository.getAllPhotos(firebaseAuthRepository.getCurrentUserId()!!)
-//        irebaseRealtimeDatabaseRepository.getAllPhotos(firebaseAuthRepository.getCurrentUserId()!!)
-    }
+//    fun getAllPhoto(): LiveData<List<Photo>>{
+//        return firebaseRealtimeDatabaseRepository.getAllPhotos(firebaseAuthRepository.getCurrentUserId()!!)
+////        irebaseRealtimeDatabaseRepository.getAllPhotos(firebaseAuthRepository.getCurrentUserId()!!)
+//    }
 }

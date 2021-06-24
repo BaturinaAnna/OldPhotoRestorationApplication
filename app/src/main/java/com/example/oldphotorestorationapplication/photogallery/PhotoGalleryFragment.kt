@@ -64,10 +64,10 @@ class PhotoGalleryFragment: Fragment(R.layout.photo_gallery_fragment), OnPhotoCl
         })
 
         //TRY FIREBASE
-        mViewModel.getAllPhoto().observe(viewLifecycleOwner, { photos ->
-            Log.d("ANNA", photos?.size.toString())
-            adapterPhoto.setData(photos)
-        })
+//        mViewModel.getAllPhoto().observe(viewLifecycleOwner, { photos ->
+//            Log.d("ANNA", photos?.size.toString())
+//            adapterPhoto.setData(photos)
+//        })
         //TRY FIREBASE
 
         mViewModel.allPhotoWithFaces.observe(viewLifecycleOwner, { photoWithFaces ->

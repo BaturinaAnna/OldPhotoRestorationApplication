@@ -11,7 +11,7 @@ import okhttp3.*
 
 class RestorationNetwork {
     private val url: String =
-        "http://192.168.242.3:8080/OldPhotoRestoration_war_exploded/restoration-servlet"
+        "http://192.168.136.161:8080/OldPhotoRestoration_war_exploded/restoration-servlet"
 
     suspend fun restorePhoto(imagePath: String, removeScratches: String): List<ByteArray> {
         val file = File(imagePath)

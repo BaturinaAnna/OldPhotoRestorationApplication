@@ -53,13 +53,12 @@ class GalleriesActivity :
 
 
         //DELETE
-//        Log.d("ANNA", "HERE NOW")
-//        val db = FirebaseRealtimeDatabaseRepository()
-//        db.getAllPhotos("R5O9JeSsMSd7kq9TRIt2GzRPN7v1").observe(this){photos ->
-//            photos.forEach {
-//                Log.d("ANNA", "PHOTO $it")
-//            }
-//        }
+        Log.d("ANNA", "HERE NOW")
+        val db = FirebaseRealtimeDatabaseRepository()
+        db.getPrevPhoto("R5O9JeSsMSd7kq9TRIt2GzRPN7v1", "-Mcx3UGi-rT6QT3CpPS2")
+            .observe(this){photo ->
+            Log.d("ANNA", photo.idPhoto)
+        }
         //DELETE
 
         binding.bottomNavigation.setOnNavigationItemSelectedListener {

@@ -36,12 +36,14 @@ class PhotoRestorationSettingsViewModel(application: Application) : AndroidViewM
         CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
             val restoredPhotoList = repositoryNetwork.restorePhoto(imagePath, removeScratches)
             val idUser = firebaseAuthRepository.getCurrentUserId()!!
+            val idPhoto = firebaseRealtimeDatabaseRepository.generateNextId(idUser)
             val addingPhotoResult = firebaseStorageRepository.addPhotoToUser(
                 userId = idUser,
+                idPhoto = idPhoto!!,
                 initialPhoto = Path(imagePath).readBytes(),
                 restoredPhoto = restoredPhotoList[0])
             if (addingPhotoResult.second is FirebaseStorageResult.Success &&
-                    addingPhotoResult.third is FirebaseStorageResult.Success ){
+                    addingPhotoResult.third is FirebaseStorageResult.Success){
                 firebaseRealtimeDatabaseRepository.addPhotoToUser(
                     idUser = idUser,
                     idPhoto = addingPhotoResult.first,
@@ -72,7 +74,7 @@ class PhotoRestorationSettingsViewModel(application: Application) : AndroidViewM
         }
     }
 
-    private suspend fun saveFaces(faces: List<ByteArray>, idUser: String, idPhoto: Long):
+    private suspend fun saveFaces(faces: List<ByteArray>, idUser: String, idPhoto: String):
             ArrayList<Pair<Long, FirebaseStorageResult<Uri?>>>{
         val addingFacesResults = ArrayList<Pair<Long, FirebaseStorageResult<Uri?>>>()
             for (faceByteArray in faces) {
