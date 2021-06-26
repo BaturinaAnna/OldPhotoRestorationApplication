@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "416667915870",
+    "project_id": "oldphotorestorationapplication",
+    "storage_bucket": "oldphotorestorationapplication.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:416667915870:android:0e03d1a01e5f83048646cf",
+        "android_client_info": {
+          "package_name": "com.example.oldphotorestorationapplication"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "416667915870-1rs1efi3vp960h9udt2i8bso2ri4pbjl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAcxf5f93H3jMjhEj9IKdIZ-wshzz442Ko"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "416667915870-1rs1efi3vp960h9udt2i8bso2ri4pbjl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
