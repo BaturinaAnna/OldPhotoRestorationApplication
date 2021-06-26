@@ -100,11 +100,17 @@ class GalleriesActivity :
         this.startActivity(intent)
     }
 
-    internal fun openPhotoDetails(idPhoto: Long?) {
+    internal fun openPhotoDetails(idPhoto: String) {
         val intent = Intent(this@GalleriesActivity, PhotoEditorActivity::class.java)
         intent.putExtra("photoId", idPhoto)
         this.startActivity(intent)
     }
+
+//    internal fun openPhotoDetails(idPhoto: String?) {
+//        val intent = Intent(this@GalleriesActivity, PhotoEditorActivity::class.java)
+//        intent.putExtra("photoId", idPhoto)
+//        this.startActivity(intent)
+//    }
 
     internal fun shareBitmap(bitmap: Bitmap) {
         val cachePath = File(externalCacheDir, "my_images/")

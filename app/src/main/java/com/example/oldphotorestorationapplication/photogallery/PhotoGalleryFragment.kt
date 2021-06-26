@@ -1,6 +1,7 @@
 package com.example.oldphotorestorationapplication.photogallery
 
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.PopupMenu
 import android.widget.SearchView
@@ -9,8 +10,10 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.ExperimentalPagingApi
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.oldphotorestorationapplication.*
+import com.example.oldphotorestorationapplication.data.firebase.photo.PhotoFirebase
 import com.example.oldphotorestorationapplication.data.photo.Photo
 import com.example.oldphotorestorationapplication.data.photowithfaces.PhotoWithFaces
 import com.example.oldphotorestorationapplication.databinding.PhotoGalleryFragmentBinding
@@ -23,7 +26,7 @@ class PhotoGalleryFragment :
     private lateinit var binding: PhotoGalleryFragmentBinding
     lateinit var adapterPhoto: PhotoPagingDataAdapter
 //    private lateinit var mViewModel: PhotoGalleryViewModel
-    private lateinit val mViewModel: RemoteViewModel
+    private lateinit var mViewModel: RemoteViewModel
     private lateinit var allPhotoWithFaces: List<PhotoWithFaces>
     private var foundPhotosList: List<Photo>? = null
 
@@ -47,6 +50,10 @@ class PhotoGalleryFragment :
         //        adapterPhoto = PhotoRecyclerViewAdapter(this, this)
         val mViewModel = ViewModelProvider(this).get(RemoteViewModel::class.java)
         adapterPhoto = PhotoPagingDataAdapter(this, this)
+
+        adapterPhoto.addLoadStateListener {
+            binding.swipeRefreshLayout.isRefreshing = it.refresh is LoadState.Loading
+        }
 
         mViewModel.photosPaginated.observe(
             viewLifecycleOwner, { photos ->
@@ -74,54 +81,49 @@ class PhotoGalleryFragment :
         //        })
 
 
-        mViewModel.allPhotoWithFaces.observe(
-            viewLifecycleOwner,
-            { photoWithFaces -> allPhotoWithFaces = photoWithFaces }
-        )
+//        mViewModel.allPhotoWithFaces.observe(
+//            viewLifecycleOwner,
+//            { photoWithFaces -> allPhotoWithFaces = photoWithFaces }
+//        )
 
         setHasOptionsMenu(true)
     }
 
     @ExperimentalPagingApi
-    override fun onPhotoClick(position: Int) {
-        val idClickedPhoto =
-            when (foundPhotosList) {
-                null -> adapterPhoto.getItemId(position)
-                else -> foundPhotosList!![position]
-            }
-        (activity as GalleriesActivity).openPhotoDetails(photo?.idPhoto)
+    override fun onPhotoClick(itemClicked: PhotoFirebase) {
+        (activity as GalleriesActivity).openPhotoDetails(itemClicked.idPhoto)
     }
 
     override fun onLongPhotoClick(position: Int, view: View): Boolean {
-        val popupMenu = PopupMenu(this.context, view)
-        popupMenu.inflate(R.menu.menu)
-        popupMenu.setOnMenuItemClickListener {
-            when (it.itemId) {
-                R.id.deletePhotoMenu -> {
-                    val photo = mViewModel.allPhotos.value?.get(position)
-                    this.context?.let { context ->
-                        showAlertDialog(
-                            context = context,
-                            message = "Are you sure you want to delete this photo?",
-                            actionsPositive = { _, _ ->
-                                mViewModel.deletePhoto(photo!!)
-                                Toast.makeText(context, "Successfully removed", Toast.LENGTH_SHORT)
-                                    .show()
-                            },
-                            actionsNegative = { _, _ -> },
-                        )
-                    }
-                    true
-                }
-                R.id.sharePhotoMenu -> {
-                    val photo = mViewModel.allPhotos.value?.get(position)
-                    (activity as GalleriesActivity).shareBitmap(photo!!.restoredPhoto)
-                    true
-                }
-                else -> true
-            }
-        }
-        popupMenu.show()
+//        val popupMenu = PopupMenu(this.context, view)
+//        popupMenu.inflate(R.menu.menu)
+//        popupMenu.setOnMenuItemClickListener {
+//            when (it.itemId) {
+//                R.id.deletePhotoMenu -> {
+//                    val photo = mViewModel.allPhotos.value?.get(position)
+//                    this.context?.let { context ->
+//                        showAlertDialog(
+//                            context = context,
+//                            message = "Are you sure you want to delete this photo?",
+//                            actionsPositive = { _, _ ->
+//                                mViewModel.deletePhoto(photo!!)
+//                                Toast.makeText(context, "Successfully removed", Toast.LENGTH_SHORT)
+//                                    .show()
+//                            },
+//                            actionsNegative = { _, _ -> },
+//                        )
+//                    }
+//                    true
+//                }
+//                R.id.sharePhotoMenu -> {
+//                    val photo = mViewModel.allPhotos.value?.get(position)
+//                    (activity as GalleriesActivity).shareBitmap(photo!!.restoredPhoto)
+//                    true
+//                }
+//                else -> true
+//            }
+//        }
+//        popupMenu.show()
         return true
     }
 
@@ -186,7 +188,7 @@ class PhotoGalleryFragment :
                             //                        adapterPhoto.setData(foundPhotos)
                             foundPhotosList = foundPhotos
                         } else {
-                            foundPhotosList = mViewModel.allPhotos.value
+//                            foundPhotosList = mViewModel.allPhotos.value
                             //                        mViewModel.allPhotos.value?.let {
                             // adapterPhoto.setData(it) }
                         }

@@ -6,8 +6,6 @@ import android.view.ViewGroup
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.example.oldphotorestorationapplication.OnPhotoClickListener
-import com.example.oldphotorestorationapplication.OnPhotoLongClickListener
 import com.example.oldphotorestorationapplication.R
 import com.example.oldphotorestorationapplication.data.firebase.photo.PhotoFirebase
 import kotlinx.android.synthetic.main.photo_item.view.*
@@ -21,7 +19,7 @@ val PHOTO_COMPARATOR = object : DiffUtil.ItemCallback<PhotoFirebase>() {
 }
 
 interface OnPhotoClickListener {
-    fun onPhotoClick(position: Int)
+    fun onPhotoClick(itemClicked: PhotoFirebase)
 }
 
 interface OnPhotoLongClickListener {
@@ -43,10 +41,12 @@ class PhotoPagingDataAdapter(
         val repoItem = getItem(position)
         if (repoItem != null) {
             holder.itemView.photoItemImageView.setImageBitmap(repoItem.restoredPhoto)
-            holder.itemView.setOnClickListener { clickListener.onPhotoClick(position) }
+            holder.itemView.setOnClickListener { clickListener.onPhotoClick(repoItem) }
             holder.itemView.setOnLongClickListener{longClickListener.onLongPhotoClick(position, holder.itemView)}
         }
     }
+
+
 }
 
 class PhotoFirebaseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)

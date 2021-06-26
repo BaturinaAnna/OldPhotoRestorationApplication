@@ -10,6 +10,9 @@ interface PhotoFirebaseDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPhotoList(news: List<PhotoFirebase>)
 
+    @Update
+    suspend fun updatePhoto(photo: PhotoFirebase)
+
     @Query("SELECT * FROM PhotoFirebase")
     fun observePhotoPaginated(): PagingSource<Int, PhotoFirebase>
 

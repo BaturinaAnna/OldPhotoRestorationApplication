@@ -1,8 +1,10 @@
 package com.example.oldphotorestorationapplication.firebase.realtimedatabase
 
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.example.oldphotorestorationapplication.App
 import com.example.oldphotorestorationapplication.data.firebase.photo.PhotoFirebase
 import com.example.oldphotorestorationapplication.getBitmapFromURL
 import com.google.firebase.database.*
@@ -59,6 +61,39 @@ class FirebaseRealtimeDatabaseRepository {
             )
         return allPhoto
     }
+
+    fun setPhotoInfo(idUser: String, idPhoto: String, infoType: String, info: String){
+        firebaseRealtimeDatabase
+            .child("users/$idUser/photos/$idPhoto/$infoType")
+            .setValue(info)
+    }
+
+    fun getPhotoById(idUser: String, idPhoto: String): LiveData<PhotoFirebase> {
+        val photo: MutableLiveData<PhotoFirebase> = MutableLiveData()
+        firebaseRealtimeDatabase
+            .child("users/$idUser/photos/")
+            .orderByKey()
+            .startAt(idPhoto)
+            .limitToFirst(1)
+            .addValueEventListener(
+                object : ValueEventListener {
+                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+                        CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
+                            val ph = toPhotos(dataSnapshot)
+                            Log.d("ANNA", "IN GET PHOTO BY ID $ph")
+                            if (ph.isNotEmpty()){
+                                photo.postValue(toPhotos(dataSnapshot)[0])
+                            }
+                        }
+                    }
+                    override fun onCancelled(databaseError: DatabaseError) {
+                        Log.w("firebase", databaseError.toException())
+                    }
+                }
+            )
+        return photo
+    }
+
 
 //    fun getPhotos(idUser: String, startPhotoId: String, limit: Int): LiveData<List<PhotoFirebase>> {
 //        val allPhoto: MutableLiveData<List<PhotoFirebase>> = MutableLiveData()
