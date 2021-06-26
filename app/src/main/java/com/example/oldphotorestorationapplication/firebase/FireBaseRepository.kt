@@ -1,11 +1,11 @@
-package com.example.oldphotorestorationapplication.firebase.firebaseauth
+package com.example.oldphotorestorationapplication.firebase
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
-import com.example.oldphotorestorationapplication.firebase.firebaseauth.AuthResult
 import com.google.firebase.auth.*
 
 
-class FirebaseAuthRepository {
+class FireBaseRepository {
 
     private val firebaseAuth = FirebaseAuth.getInstance()
 
@@ -13,11 +13,6 @@ class FirebaseAuthRepository {
         val currentUser = firebaseAuth.currentUser
         return currentUser != null
     }
-
-    fun getCurrentUserId(): String? {
-        return firebaseAuth.currentUser?.uid
-    }
-
 
     fun signUpUser(email: String, password: String): MutableLiveData<AuthResult<FirebaseUser?>>{
         val authResult: MutableLiveData<AuthResult<FirebaseUser?>> = MutableLiveData(AuthResult.Error(null))

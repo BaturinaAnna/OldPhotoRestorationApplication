@@ -5,9 +5,10 @@ import android.content.Context
 import android.content.DialogInterface
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import java.io.*
-import java.net.HttpURLConnection
-import java.net.URL
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileOutputStream
 
 fun convertToFile(bitmap: Bitmap, context: Context): File {
     val file = File(context.cacheDir, "imageToRestore")
@@ -21,26 +22,6 @@ fun convertToFile(bitmap: Bitmap, context: Context): File {
     return file
 }
 
-fun Bitmap.toByteArray(): ByteArray{
-    val byteArrayOutputStream = ByteArrayOutputStream()
-    this.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
-    return byteArrayOutputStream.toByteArray()
-}
-
-fun getBitmapFromURL(src: String?): Bitmap? {
-    return try {
-        val url = URL(src)
-        val connection: HttpURLConnection = url
-            .openConnection() as HttpURLConnection
-        connection.doInput = true
-        connection.connect()
-        val input: InputStream = connection.inputStream
-        BitmapFactory.decodeStream(input)
-    } catch (e: IOException) {
-        e.printStackTrace()
-        null
-    }
-}
 
 //fun compressBitmap(originalBitmap: Bitmap): Bitmap {
 //    val out = ByteArrayOutputStream()
@@ -48,18 +29,18 @@ fun getBitmapFromURL(src: String?): Bitmap? {
 //    return BitmapFactory.decodeStream(ByteArrayInputStream(out.toByteArray()))
 //}
 
-//fun resizeImage(image: Bitmap): Bitmap {
-//    val width = image.width
-//    val height = image.height
-//
-//    val scaleWidth = width / 10
-//    val scaleHeight = height / 10
-//
-//    if (image.byteCount <= 1000000)
-//        return image
-//
-//    return Bitmap.createScaledBitmap(image, scaleWidth, scaleHeight, false)
-//}
+fun resizeImage(image: Bitmap): Bitmap {
+    val width = image.width
+    val height = image.height
+
+    val scaleWidth = width / 10
+    val scaleHeight = height / 10
+
+    if (image.byteCount <= 1000000)
+        return image
+
+    return Bitmap.createScaledBitmap(image, scaleWidth, scaleHeight, false)
+}
 
 
 fun showAlertDialog(message: String,

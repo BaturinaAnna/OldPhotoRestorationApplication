@@ -4,7 +4,9 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
@@ -19,30 +21,20 @@ import com.example.oldphotorestorationapplication.photoeditor.PhotoEditorActivit
 import com.example.oldphotorestorationapplication.photogallery.PhotoGalleryFragment
 import com.example.oldphotorestorationapplication.photorestorationsettings.PhotoRestorationSettingsActivity
 import com.example.oldphotorestorationapplication.showAlertDialog
-import kotlinx.android.synthetic.main.galleries.*
 import java.io.File
 import java.io.FileOutputStream
-import kotlinx.android.synthetic.main.person_editor.*
 
 class GalleriesActivity :
     AppCompatActivity(),
     ImagePickerBottomsheet.ItemClickListener,
     ImagePickerActivityClass.OnResult {
 
-    enum class DisplayedFragment {
-        PEOPLE,
-        PHOTOS
-    }
-    enum class ActivityForResult {
-        RESTORATION_SETTING
-    }
+    enum class DisplayedFragment { PEOPLE, PHOTOS }
 
     private lateinit var binding: GalleriesBinding
     private lateinit var imagePicker: ImagePickerActivityClass
     private lateinit var mViewModel: GalleriesViewModel
     private lateinit var currentFragmentType: DisplayedFragment
-    private val photoGalleryFragment = PhotoGalleryFragment()
-    private val peopleGalleryFragment = PeopleGalleryFragment()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,6 +43,9 @@ class GalleriesActivity :
         setContentView(view)
 
         mViewModel = ViewModelProvider(this).get(GalleriesViewModel::class.java)
+
+        val photoGalleryFragment = PhotoGalleryFragment()
+        val peopleGalleryFragment = PeopleGalleryFragment()
 
         setCurrentFragment(photoGalleryFragment)
 
@@ -99,17 +94,11 @@ class GalleriesActivity :
         this.startActivity(intent)
     }
 
-    internal fun openPhotoDetails(idPhoto: String) {
+    internal fun openPhotoDetails(idPhoto: Long?) {
         val intent = Intent(this@GalleriesActivity, PhotoEditorActivity::class.java)
         intent.putExtra("photoId", idPhoto)
         this.startActivity(intent)
     }
-
-//    internal fun openPhotoDetails(idPhoto: String?) {
-//        val intent = Intent(this@GalleriesActivity, PhotoEditorActivity::class.java)
-//        intent.putExtra("photoId", idPhoto)
-//        this.startActivity(intent)
-//    }
 
     internal fun shareBitmap(bitmap: Bitmap) {
         val cachePath = File(externalCacheDir, "my_images/")
@@ -125,7 +114,7 @@ class GalleriesActivity :
         val myImageFileUri =
             FileProvider.getUriForFile(
                 this,
-                applicationContext.packageName + ".provider",
+                applicationContext.getPackageName() + ".provider",
                 file
             )
 
@@ -182,20 +171,13 @@ class GalleriesActivity :
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == ActivityForResult.RESTORATION_SETTING.ordinal) {
-            if (currentFragmentType == DisplayedFragment.PHOTOS){
-                photoGalleryFragment.adapterPhoto.refresh()
-            }
-        } else {
-            imagePicker.onActivityResult(requestCode, resultCode, data)
-        }
+        imagePicker.onActivityResult(requestCode, resultCode, data)
     }
 
     override fun returnString(item: Uri?) {
         val intent = Intent(this, PhotoRestorationSettingsActivity::class.java)
         intent.putExtra("imagePath", item?.path)
-        startActivityForResult(intent, ActivityForResult.RESTORATION_SETTING.ordinal)
-//        startActivity(intent)
+        startActivity(intent)
     }
     // IMAGE PICKER
 
@@ -208,10 +190,10 @@ class GalleriesActivity :
                     mViewModel.signOut()
                     val intent = Intent(this, AuthenticationActivity::class.java)
                     startActivity(intent)
-                    finish()
-                },
-                actionsNegative = { _, _ -> },
+                    finish() },
+                actionsNegative = {_, _ ->},
             )
+
         }
         return super.onOptionsItemSelected(item)
     }

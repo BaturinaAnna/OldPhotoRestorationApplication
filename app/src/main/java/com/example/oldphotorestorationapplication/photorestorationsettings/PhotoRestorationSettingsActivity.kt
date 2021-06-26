@@ -41,8 +41,6 @@ class PhotoRestorationSettingsActivity :
         }
         binding.buttonRestore.setOnClickListener {
             mViewModel.restoreAndSavePhoto(imagePath, binding.switchRemoveScratches.isChecked.toString())
-            val intent = Intent()
-            setResult(RESULT_OK, intent)
             finish()
         }
     }
@@ -100,6 +98,4 @@ class PhotoRestorationSettingsActivity :
         binding.photoToRestore.setImageBitmap(BitmapFactory.decodeFile(item?.path))
     }
     //    IMAGE PICKER
-
-
 }

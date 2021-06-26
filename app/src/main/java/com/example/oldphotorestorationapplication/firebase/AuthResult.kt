@@ -1,4 +1,4 @@
-package com.example.oldphotorestorationapplication.firebase.firebaseauth
+package com.example.oldphotorestorationapplication.firebase
 
 sealed class AuthResult<T>(
     val data: T? = null,
