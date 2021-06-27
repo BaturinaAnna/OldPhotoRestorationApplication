@@ -10,17 +10,11 @@
     app:cardCornerRadius="5dp"
     app:cardElevation="5dp">
 
-    <LinearLayout
+    <ImageView
+        android:id="@+id/faceItemImageView"
+        android:layout_gravity="center"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center">
-
-        <ImageView
-            android:id="@+id/faceItemImageView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:contentDescription="face"
-            android:src="@mipmap/ic_launcher" />
-
-    </LinearLayout>
+        android:contentDescription="face"
+        android:src="@mipmap/ic_launcher" />
 </androidx.cardview.widget.CardView>

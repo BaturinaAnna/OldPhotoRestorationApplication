@@ -41,10 +41,6 @@ class PhotoRecyclerViewAdapter(
     fun setData(photo: List<Photo>) {
         photoList.clear()
         photoList.addAll(photo)
-//        photoList.addAll(photo)
-//        photoList.addAll(photo)
-//        photoList.addAll(photo)
-//        photoList.addAll(photo)
         notifyDataSetChanged()
     }
 

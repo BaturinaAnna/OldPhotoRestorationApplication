@@ -1,13 +1,10 @@
 package com.example.oldphotorestorationapplication.photogallery
 
-import android.content.Intent
-import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.*
 import android.widget.PopupMenu
 import android.widget.SearchView
 import android.widget.Toast
-import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
@@ -16,9 +13,7 @@ import com.example.oldphotorestorationapplication.data.photo.Photo
 import com.example.oldphotorestorationapplication.data.photowithfaces.PhotoWithFaces
 import com.example.oldphotorestorationapplication.databinding.PhotoGalleryFragmentBinding
 import com.example.oldphotorestorationapplication.galleries.GalleriesActivity
-import com.example.oldphotorestorationapplication.photoeditor.PhotoEditorActivity
-import java.io.File
-import java.io.FileOutputStream
+
 
 class PhotoGalleryFragment: Fragment(R.layout.photo_gallery_fragment), OnPhotoClickListener,
     OnPhotoLongClickListener {

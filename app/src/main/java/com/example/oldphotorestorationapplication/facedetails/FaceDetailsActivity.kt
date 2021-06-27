@@ -3,7 +3,6 @@ package com.example.oldphotorestorationapplication.facedetails
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.PopupMenu
 import android.widget.Toast
@@ -130,8 +129,7 @@ class FaceDetailsActivity: AppCompatActivity(), OnPhotoForFaceClickListener, OnP
 
         //create png file
         val file = File(cachePath, "photo.png")
-        val fileOutputStream: FileOutputStream
-        fileOutputStream = FileOutputStream(file)
+        val fileOutputStream = FileOutputStream(file)
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream)
         fileOutputStream.flush()
         fileOutputStream.close()

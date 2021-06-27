@@ -2,7 +2,6 @@ package com.example.oldphotorestorationapplication.data.face
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
-import com.example.oldphotorestorationapplication.data.face.Face
 
 @Dao
 interface FaceDao {

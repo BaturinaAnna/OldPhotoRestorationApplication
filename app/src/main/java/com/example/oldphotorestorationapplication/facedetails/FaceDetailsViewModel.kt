@@ -13,7 +13,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class FaceDetailsViewModel(application: Application) : AndroidViewModel(application){
-//    val allFacesWithNames: LiveData<List<Face>>
     val allPhotoWithFaces: LiveData<List<PhotoWithFaces>>
     private val repositoryPhoto: PhotoRepository
 
@@ -23,7 +22,6 @@ class FaceDetailsViewModel(application: Application) : AndroidViewModel(applicat
         val photoAndFacesDao = PhotoDatabase.getDatabase().photoAndFacesDao()
         repositoryPhoto = PhotoRepository(photoDao, faceDao, photoAndFacesDao)
         allPhotoWithFaces = repositoryPhoto.readAllPhotoWithFaces
-//        allFacesWithNames = repositoryPhoto.readAllFacesWithNames
     }
 
     fun findFaceById(id: Long): LiveData<Face> {
@@ -33,8 +31,4 @@ class FaceDetailsViewModel(application: Application) : AndroidViewModel(applicat
     fun deletePhoto(photo: Photo) {
         viewModelScope.launch(Dispatchers.IO) { repositoryPhoto.deletePhoto(photo) }
     }
-
-//    fun findPhotosByName(name: String): LiveData<List<Photo>>{
-//        return repositoryPhoto.findPhotosByName(name)
-//    }
 }

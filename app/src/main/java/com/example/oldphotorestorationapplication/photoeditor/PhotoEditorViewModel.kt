@@ -8,12 +8,9 @@ import com.example.oldphotorestorationapplication.data.PhotoDatabase
 import com.example.oldphotorestorationapplication.data.PhotoRepository
 import com.example.oldphotorestorationapplication.data.face.Face
 import com.example.oldphotorestorationapplication.data.photo.Photo
-import com.example.oldphotorestorationapplication.network.NetworkRepository
-import com.example.oldphotorestorationapplication.network.RestorationNetwork
 import kotlinx.coroutines.*
 
 class PhotoEditorViewModel (application: Application) : AndroidViewModel(application) {
-//    val allPhotos: LiveData<List<Photo>>
     val allFaces: LiveData<List<Face>>
     private val repositoryPhoto: PhotoRepository
 
@@ -22,7 +19,6 @@ class PhotoEditorViewModel (application: Application) : AndroidViewModel(applica
         val faceDao = PhotoDatabase.getDatabase().faceDao()
         val photoAndFacesDao = PhotoDatabase.getDatabase().photoAndFacesDao()
         repositoryPhoto = PhotoRepository(photoDao, faceDao, photoAndFacesDao)
-//        allPhotos = repositoryPhoto.readAllPhoto
         allFaces = repositoryPhoto.readAllFaces
     }
 

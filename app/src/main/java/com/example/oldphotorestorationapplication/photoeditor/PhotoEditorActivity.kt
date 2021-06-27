@@ -125,7 +125,7 @@ class PhotoEditorActivity : AppCompatActivity(), OnFaceClickListener {
         return checkUnsavedChangesTextField(binding.editTextTitle, photo.title) ||
                 checkUnsavedChangesTextField(binding.editTextDescription, photo.description)||
                 checkUnsavedChangesTextField(binding.editTextDate, photo.date) ||
-                checkUnsavedChangesTextField(binding.editTextLocation, photo.location);
+                checkUnsavedChangesTextField(binding.editTextLocation, photo.location)
     }
 
     private fun updatePhotoInfo(photo: Photo): Photo {
