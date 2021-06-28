@@ -13,8 +13,9 @@ import com.example.oldphotorestorationapplication.data.photo.Photo
 import com.example.oldphotorestorationapplication.data.photowithfaces.PhotoWithFaces
 import com.example.oldphotorestorationapplication.databinding.PhotoGalleryFragmentBinding
 import com.example.oldphotorestorationapplication.galleries.GalleriesActivity
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class PhotoGalleryFragment: Fragment(R.layout.photo_gallery_fragment), OnPhotoClickListener,
     OnPhotoLongClickListener {
 

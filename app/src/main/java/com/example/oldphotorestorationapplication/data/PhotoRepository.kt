@@ -7,10 +7,12 @@ import com.example.oldphotorestorationapplication.data.photo.Photo
 import com.example.oldphotorestorationapplication.data.photo.PhotoDao
 import com.example.oldphotorestorationapplication.data.photowithfaces.PhotoWithFaces
 import com.example.oldphotorestorationapplication.data.photowithfaces.PhotoWithFacesDao
+import javax.inject.Inject
 
-class PhotoRepository(private val photoDao: PhotoDao,
-                      private val faceDao: FaceDao,
-                      private val photoWithFacesDao: PhotoWithFacesDao
+class PhotoRepository @Inject constructor(
+    private val photoDao: PhotoDao,
+    private val faceDao: FaceDao,
+    private val photoWithFacesDao: PhotoWithFacesDao
 ) {
     val readAllPhoto: LiveData<List<Photo>> = photoDao.readAllData()
     val readAllFaces: LiveData<List<Face>> = faceDao.readAllFaces()

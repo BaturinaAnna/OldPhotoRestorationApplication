@@ -13,8 +13,10 @@ import com.example.oldphotorestorationapplication.data.photo.Photo
 import com.example.oldphotorestorationapplication.databinding.FacePopupWindowBinding
 import com.example.oldphotorestorationapplication.databinding.PhotoEditorBinding
 import com.example.oldphotorestorationapplication.showAlertDialog
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.face_popup_window.*
 
+@AndroidEntryPoint
 class PhotoEditorActivity : AppCompatActivity(), OnFaceClickListener {
     private lateinit var binding: PhotoEditorBinding
     private lateinit var mViewModel: PhotoEditorViewModel

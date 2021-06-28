@@ -10,8 +10,9 @@ import com.example.oldphotorestorationapplication.R
 import com.example.oldphotorestorationapplication.data.face.Face
 import com.example.oldphotorestorationapplication.databinding.PeopleGalleryFragmentBinding
 import com.example.oldphotorestorationapplication.galleries.GalleriesActivity
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class PeopleGalleryFragment: Fragment(R.layout.people_gallery_fragment), OnPersonClickListener{
 
     private lateinit var binding: PeopleGalleryFragmentBinding

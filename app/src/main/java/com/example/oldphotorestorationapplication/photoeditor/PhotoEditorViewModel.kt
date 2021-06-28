@@ -1,26 +1,20 @@
 package com.example.oldphotorestorationapplication.photoeditor
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.oldphotorestorationapplication.data.PhotoDatabase
 import com.example.oldphotorestorationapplication.data.PhotoRepository
 import com.example.oldphotorestorationapplication.data.face.Face
 import com.example.oldphotorestorationapplication.data.photo.Photo
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
+import javax.inject.Inject
 
-class PhotoEditorViewModel (application: Application) : AndroidViewModel(application) {
-    val allFaces: LiveData<List<Face>>
+@HiltViewModel
+class PhotoEditorViewModel @Inject constructor(
     private val repositoryPhoto: PhotoRepository
-
-    init {
-        val photoDao = PhotoDatabase.getDatabase().photoDao()
-        val faceDao = PhotoDatabase.getDatabase().faceDao()
-        val photoAndFacesDao = PhotoDatabase.getDatabase().photoAndFacesDao()
-        repositoryPhoto = PhotoRepository(photoDao, faceDao, photoAndFacesDao)
-        allFaces = repositoryPhoto.readAllFaces
-    }
+) : ViewModel() {
+    val allFaces: LiveData<List<Face>> = repositoryPhoto.readAllFaces
 
     fun updatePhoto(photo: Photo) {
         viewModelScope.launch(Dispatchers.IO) { repositoryPhoto.updatePhoto(photo) }

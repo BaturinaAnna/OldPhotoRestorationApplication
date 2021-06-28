@@ -1,31 +1,24 @@
 package com.example.oldphotorestorationapplication.photorestorationsettings
 
-import android.app.Application
 import android.graphics.BitmapFactory
-import androidx.lifecycle.AndroidViewModel
-import com.example.oldphotorestorationapplication.data.PhotoDatabase
+import androidx.lifecycle.ViewModel
 import com.example.oldphotorestorationapplication.data.PhotoRepository
 import com.example.oldphotorestorationapplication.data.face.Face
 import com.example.oldphotorestorationapplication.data.photo.Photo
 import com.example.oldphotorestorationapplication.network.NetworkRepository
 import com.example.oldphotorestorationapplication.network.RestorationNetwork
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class PhotoRestorationSettingsViewModel(application: Application) : AndroidViewModel(application) {
-    private val repositoryPhoto: PhotoRepository
+@HiltViewModel
+class PhotoRestorationSettingsViewModel@Inject constructor(
+    private val repositoryPhoto: PhotoRepository,
     private val repositoryNetwork: NetworkRepository
-
-    init {
-        val photoDao = PhotoDatabase.getDatabase().photoDao()
-        val faceDao = PhotoDatabase.getDatabase().faceDao()
-        val photoAndFacesDao = PhotoDatabase.getDatabase().photoAndFacesDao()
-        repositoryPhoto = PhotoRepository(photoDao, faceDao, photoAndFacesDao)
-        val restorationNetwork = RestorationNetwork()
-        repositoryNetwork = NetworkRepository(restorationNetwork)
-    }
+) : ViewModel() {
 
     fun restoreAndSavePhoto(imagePath: String, removeScratches: String) {
         CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {

@@ -20,9 +20,11 @@ import com.example.oldphotorestorationapplication.photoeditor.PhotoEditorActivit
 import com.example.oldphotorestorationapplication.photogallery.PhotoGalleryFragment
 import com.example.oldphotorestorationapplication.photorestorationsettings.PhotoRestorationSettingsActivity
 import com.example.oldphotorestorationapplication.showAlertDialog
+import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 import java.io.FileOutputStream
 
+@AndroidEntryPoint
 class GalleriesActivity :
     AppCompatActivity(),
     ImagePickerBottomsheet.ItemClickListener,

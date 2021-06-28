@@ -17,27 +17,4 @@ abstract class PhotoDatabase : RoomDatabase() {
     abstract fun photoDao(): PhotoDao
     abstract fun faceDao(): FaceDao
     abstract fun photoAndFacesDao(): PhotoWithFacesDao
-
-    companion object {
-        @Volatile private var INSTANCE: PhotoDatabase? = null
-
-        fun getDatabase(): PhotoDatabase {
-            val tempInstance = INSTANCE
-            if (tempInstance != null) {
-                return tempInstance
-            }
-            synchronized(this) {
-                val instance =
-                    Room.databaseBuilder(
-                            App.appContext,
-                            PhotoDatabase::class.java,
-                            "OldPhotoDatabase"
-                        )
-                        .fallbackToDestructiveMigration()
-                        .build()
-                INSTANCE = instance
-                return instance
-            }
-        }
-    }
 }

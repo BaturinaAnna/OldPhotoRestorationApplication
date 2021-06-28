@@ -16,10 +16,11 @@ import com.example.oldphotorestorationapplication.data.photo.Photo
 import com.example.oldphotorestorationapplication.databinding.PersonEditorBinding
 import com.example.oldphotorestorationapplication.photoeditor.PhotoEditorActivity
 import com.example.oldphotorestorationapplication.showAlertDialog
+import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 import java.io.FileOutputStream
 
-
+@AndroidEntryPoint
 class FaceDetailsActivity: AppCompatActivity(), OnPhotoForFaceClickListener, OnPhotoForFaceLongClickListener {
     private lateinit var binding: PersonEditorBinding
     private lateinit var mViewModel: FaceDetailsViewModel

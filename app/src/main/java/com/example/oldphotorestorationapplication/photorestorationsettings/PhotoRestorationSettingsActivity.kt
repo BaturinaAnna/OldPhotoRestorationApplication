@@ -10,8 +10,9 @@ import androidx.lifecycle.ViewModelProvider
 import com.app.imagepickerlibrary.*
 import com.example.oldphotorestorationapplication.R
 import com.example.oldphotorestorationapplication.databinding.RestorationSettingsBinding
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class PhotoRestorationSettingsActivity :
     AppCompatActivity(),
     ImagePickerBottomsheet.ItemClickListener,
