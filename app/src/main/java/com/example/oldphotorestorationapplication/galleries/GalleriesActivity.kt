@@ -174,10 +174,11 @@ class GalleriesActivity :
     // IMAGE PICKER
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
         if (item.itemId == R.id.signOut) {
             showAlertDialog(
                 context = this@GalleriesActivity,
-                message = "Are you sure you want to sign out?",
+                message = resources.getString(R.string.sure_want_to_exit),
                 actionsPositive = { _, _ ->
                     mViewModel.signOut()
                     val intent = Intent(this, AuthenticationActivity::class.java)

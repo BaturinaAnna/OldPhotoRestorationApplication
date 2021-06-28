@@ -32,5 +32,4 @@ class Validation {
         }
         return valid
     }
-
 }

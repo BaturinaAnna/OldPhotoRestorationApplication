@@ -2,11 +2,12 @@ package com.example.oldphotorestorationapplication.firebaseAuth
 
 import androidx.lifecycle.MutableLiveData
 import com.google.firebase.auth.*
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-
-class FirebaseAuthRepository {
-
-    private val firebaseAuth = FirebaseAuth.getInstance()
+class FirebaseAuthRepository @Inject constructor(
+    private val firebaseAuth: FirebaseAuth
+) {
 
     fun checkIfCurrentUser(): Boolean{
         val currentUser = firebaseAuth.currentUser
@@ -26,7 +27,6 @@ class FirebaseAuthRepository {
         return authResult
     }
 
-
     fun signInUser(email: String, password: String): MutableLiveData<AuthResult<FirebaseUser?>> {
         val authResult: MutableLiveData<AuthResult<FirebaseUser?>> = MutableLiveData(AuthResult.Error(null))
         firebaseAuth.signInWithEmailAndPassword(email, password)
@@ -43,5 +43,4 @@ class FirebaseAuthRepository {
     fun signOut(){
         firebaseAuth.signOut()
     }
-
 }

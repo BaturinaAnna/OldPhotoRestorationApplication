@@ -1,11 +1,14 @@
 package com.example.oldphotorestorationapplication.galleries
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import com.example.oldphotorestorationapplication.firebaseAuth.FirebaseAuthRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class GalleriesViewModel(application: Application) : AndroidViewModel(application) {
-    private val firebaseAuthRepository: FirebaseAuthRepository = FirebaseAuthRepository()
+@HiltViewModel
+class GalleriesViewModel @Inject constructor(
+    private val firebaseAuthRepository: FirebaseAuthRepository
+): ViewModel() {
 
     fun signOut(){
         firebaseAuthRepository.signOut()

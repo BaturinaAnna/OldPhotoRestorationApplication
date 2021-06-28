@@ -6,7 +6,8 @@ import com.example.oldphotorestorationapplication.data.face.Face
 import com.example.oldphotorestorationapplication.data.photo.Photo
 
 data class PhotoWithFaces(
-    @Embedded val photo: Photo,
+    @Embedded
+    val photo: Photo,
     @Relation(
         parentColumn = "idPhoto",
         entityColumn = "idPhotoFace"

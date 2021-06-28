@@ -1,6 +1,5 @@
 package com.example.oldphotorestorationapplication.photoeditor
 
-import android.R
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
@@ -8,6 +7,7 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.oldphotorestorationapplication.R
 import com.example.oldphotorestorationapplication.data.face.Face
 import com.example.oldphotorestorationapplication.data.photo.Photo
 import com.example.oldphotorestorationapplication.databinding.FacePopupWindowBinding
@@ -77,7 +77,7 @@ class PhotoEditorActivity : AppCompatActivity(), OnFaceClickListener {
         if (checkUnsavedChanges(editingPhoto)) {
             showAlertDialog(
                 context = this@PhotoEditorActivity,
-                message = "There are unsaved changes. Do you want to save them?",
+                message = resources.getString(R.string.save_changes),
                 actionsPositive = { _, _ ->
                         editingPhoto = updatePhotoInfo(editingPhoto)
                         mViewModel.updatePhoto(editingPhoto)
@@ -112,7 +112,7 @@ class PhotoEditorActivity : AppCompatActivity(), OnFaceClickListener {
         binding.buttonDelete.setOnClickListener {
             showAlertDialog(
                 context = this@PhotoEditorActivity,
-                message = "Are you sure you want to delete this photo?",
+                message = resources.getString(R.string.sure_want_to_exit),
                 actionsPositive = { _, _ ->
                     mViewModel.deletePhoto(photo)
                     Toast.makeText(applicationContext, "Successfully removed", Toast.LENGTH_SHORT).show()
@@ -150,7 +150,7 @@ class PhotoEditorActivity : AppCompatActivity(), OnFaceClickListener {
             if (checkUnsavedChangesFace(face)) {
                 showAlertDialog(
                     context = this@PhotoEditorActivity,
-                    message = "There are unsaved changes. Do you want to save them?",
+                    message = resources.getString(R.string.save_changes),
                     actionsPositive = { _, _ ->
                         face = updateFaceInfo(face)
                         mViewModel.updateFace(face)
@@ -162,7 +162,7 @@ class PhotoEditorActivity : AppCompatActivity(), OnFaceClickListener {
         popupWindow.showAtLocation(binding.root, Gravity.CENTER, 0, 0)
         bindingFacePopupWindow.imageView.setImageBitmap(face.face)
 
-        val arrayAdapter = ArrayAdapter(this, R.layout.simple_list_item_1, namesList)
+        val arrayAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, namesList)
 
         bindingFacePopupWindow.autoCompleteTextFaceName.setAdapter(arrayAdapter)
 
@@ -172,7 +172,7 @@ class PhotoEditorActivity : AppCompatActivity(), OnFaceClickListener {
             if (checkUnsavedChangesFace(face)) {
                 showAlertDialog(
                     context = this@PhotoEditorActivity,
-                    message = "There are unsaved changes. Do you want to save them?",
+                    message = resources.getString(R.string.save_changes),
                     actionsPositive = {_, _ ->
                         face = updateFaceInfo(face)
                         mViewModel.updateFace(face)

@@ -82,7 +82,7 @@ class PhotoGalleryFragment: Fragment(R.layout.photo_gallery_fragment), OnPhotoCl
                     this.context?.let { context ->
                         showAlertDialog(
                             context = context,
-                            message = "Are you sure you want to delete this photo?",
+                            message = resources.getString(R.string.sure_want_to_delete),
                             actionsPositive = { _, _ ->
                                 mViewModel.deletePhoto(photo!!)
                                 Toast.makeText(context, "Successfully removed", Toast.LENGTH_SHORT).show() },

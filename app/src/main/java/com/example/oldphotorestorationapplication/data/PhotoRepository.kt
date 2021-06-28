@@ -19,7 +19,7 @@ class PhotoRepository @Inject constructor(
     val readAllPhotoWithFaces: LiveData<List<PhotoWithFaces>> = photoWithFacesDao.readAllPhotoWithFaces()
     val readAllFacesWithNames: LiveData<List<Face>> = faceDao.readAllFacesWithNames()
 
-    suspend fun addPhoto(photo: Photo):Long {
+    suspend fun addPhoto(photo: Photo): Long {
         return photoDao.addPhoto(photo)
     }
 

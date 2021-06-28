@@ -7,7 +7,9 @@ import androidx.fragment.app.Fragment
 import com.example.oldphotorestorationapplication.R
 import com.example.oldphotorestorationapplication.databinding.AuthenticationBinding
 import com.example.oldphotorestorationapplication.galleries.GalleriesActivity
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class AuthenticationActivity: AppCompatActivity() {
 
     private lateinit var binding: AuthenticationBinding
@@ -22,19 +24,19 @@ class AuthenticationActivity: AppCompatActivity() {
         init()
     }
 
-    private fun init(){
+    private fun init() {
         this.supportActionBar?.hide()
         setCurrentFragment(authenticationSignInFragment)
     }
 
-    private fun setCurrentFragment(fragment: Fragment){
+    private fun setCurrentFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction().apply {
             replace(R.id.fragment_auth_container, fragment)
             commit()
         }
     }
 
-    internal fun goToGalleryActivity(){
+    internal fun goToGalleryActivity() {
         val intent = Intent(this, GalleriesActivity::class.java)
         startActivity(intent)
         finish()

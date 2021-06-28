@@ -10,8 +10,9 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.oldphotorestorationapplication.R
 import com.example.oldphotorestorationapplication.databinding.AuthenticationSignInFragmentBinding
 import com.example.oldphotorestorationapplication.firebaseAuth.AuthResult
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class SignInFragment : Fragment(R.layout.authentication_sign_in_fragment) {
 
     private lateinit var binding: AuthenticationSignInFragmentBinding

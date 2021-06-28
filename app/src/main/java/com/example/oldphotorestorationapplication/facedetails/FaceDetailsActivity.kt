@@ -63,7 +63,7 @@ class FaceDetailsActivity: AppCompatActivity(), OnPhotoForFaceClickListener, OnP
                 mViewModel.allPhotoWithFaces.observe(this, { photos ->
                     listPhotosWithFace = photos.filter {
                         it.faces.any { it.name == currentFace.name}
-                    }.map{
+                    }.map {
                         it.photo
 //                        Photo(initialPhoto = it.photo.initialPhoto,
 //                            restoredPhoto = resizeImage(it.photo.restoredPhoto),
@@ -104,7 +104,7 @@ class FaceDetailsActivity: AppCompatActivity(), OnPhotoForFaceClickListener, OnP
                     val photo = listPhotosWithFace[position]
                     showAlertDialog(
                         context = this,
-                        message = "Are you sure you want to delete this photo?",
+                        message = resources.getString(R.string.sure_want_to_exit),
                         actionsPositive = { _, _ ->
                             mViewModel.deletePhoto(photo)
                             Toast.makeText(applicationContext, "Successfully removed", Toast.LENGTH_SHORT).show() },

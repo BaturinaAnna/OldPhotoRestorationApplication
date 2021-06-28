@@ -21,9 +21,15 @@ object DatabaseModule {
             .fallbackToDestructiveMigration()
             .build()
 
-    @Singleton @Provides fun providePhotoDao(database: PhotoDatabase) = database.photoDao()
+    @Singleton
+    @Provides
+    fun providePhotoDao(database: PhotoDatabase) = database.photoDao()
 
-    @Singleton @Provides fun provideFaceDao(database: PhotoDatabase) = database.faceDao()
+    @Singleton
+    @Provides
+    fun provideFaceDao(database: PhotoDatabase) = database.faceDao()
 
-    @Singleton @Provides fun providePhotoWithDacesDao(database: PhotoDatabase) = database.photoAndFacesDao()
+    @Singleton
+    @Provides
+    fun providePhotoWithDacesDao(database: PhotoDatabase) = database.photoAndFacesDao()
 }
