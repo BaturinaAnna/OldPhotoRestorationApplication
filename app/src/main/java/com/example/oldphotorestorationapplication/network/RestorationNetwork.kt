@@ -40,7 +40,7 @@ class RestorationNetwork {
                         .toList()
                 }
             } else {
-                Log.d("ANNA", "Response is not successful")
+                Log.d("restoration network", "Response is not successful")
                 throw NullPointerException()
             }
         }
