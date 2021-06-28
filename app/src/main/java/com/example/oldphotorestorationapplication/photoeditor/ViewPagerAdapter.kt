@@ -1,4 +1,4 @@
-package com.example.oldphotorestorationapplication
+package com.example.oldphotorestorationapplication.photoeditor
 
 import android.content.Context
 import android.graphics.Bitmap

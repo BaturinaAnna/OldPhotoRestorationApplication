@@ -8,7 +8,6 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.oldphotorestorationapplication.ViewPagerAdapter
 import com.example.oldphotorestorationapplication.data.face.Face
 import com.example.oldphotorestorationapplication.data.photo.Photo
 import com.example.oldphotorestorationapplication.databinding.FacePopupWindowBinding

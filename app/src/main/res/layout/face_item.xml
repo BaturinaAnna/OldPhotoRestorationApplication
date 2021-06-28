@@ -17,4 +17,5 @@
         android:layout_height="match_parent"
         android:contentDescription="face"
         android:src="@mipmap/ic_launcher" />
+
 </androidx.cardview.widget.CardView>

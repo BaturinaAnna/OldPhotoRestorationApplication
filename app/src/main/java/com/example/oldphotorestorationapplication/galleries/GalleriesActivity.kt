@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -136,26 +137,17 @@ class GalleriesActivity :
         }
     }
 
-    // Override this method for customization of bottomsheet
     override fun doCustomisations(fragment: ImagePickerBottomsheet) {
         fragment.apply {
-            // Customize button text
             setButtonText(
                 cameraButtonText = "Select Camera",
                 galleryButtonText = "Select Gallery",
                 cancelButtonText = "Cancel"
             )
-            // Customize button text color
-            //            setButtonColors(galleryButtonColor =
-            // ContextCompat.getColor(requireContext(), R.color.white))
-            // For more customization make a style in your styles xml and pass it to this method.
-            // (This will override above method result).
-            //            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M)
-            // {
-            //                setTextAppearance(R.style.fontForNotificationLandingPage)
-            //            }
-            // To customize bottomsheet style
-            setBottomSheetBackgroundStyle(R.drawable.drawable_bottom_sheet_dialog)
+            setButtonColors(cameraButtonColor = ContextCompat.getColor(requireContext(), R.color.dark_brown))
+            setButtonColors(galleryButtonColor = ContextCompat.getColor(requireContext(), R.color.dark_brown))
+            setButtonColors(cancelButtonColor = ContextCompat.getColor(requireContext(), R.color.dark_brown))
+            setBottomSheetBackgroundStyle(R.color.light_brown)
         }
     }
 

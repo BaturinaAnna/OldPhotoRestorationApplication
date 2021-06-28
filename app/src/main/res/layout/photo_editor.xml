@@ -4,12 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    android:background="@color/brown">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/cardview_dark_background"
         android:orientation="vertical"
         android:padding="10dp">
 
@@ -31,68 +31,104 @@
             app:layout_constraintTop_toBottomOf="@+id/viewPager"
             tools:layout_editor_absoluteX="10dp" />
 
-        <EditText
-            android:id="@+id/editTextTitle"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/filledTextFieldTitle"
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:layout_gravity="center"
-            android:ems="10"
-            android:hint="Title of photo"
-            android:text=""
+            app:layout_constraintTop_toBottomOf="@+id/facesRecyclerView"
             android:layout_marginTop="15dp"
-            app:layout_constraintTop_toBottomOf="@+id/facesRecyclerView" />
+            app:boxBackgroundColor="@color/light_brown"
+            app:boxStrokeColor="@color/dark_dark_brown"
+            app:hintTextColor="@color/dark_dark_brown"
+            android:hint="Title of photo">
 
-        <EditText
-            android:id="@+id/editTextDescription"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editTextTitle"
+                android:text=""
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/filledTextDescription"
             android:layout_width="match_parent"
             android:layout_height="200dp"
-            android:layout_gravity="center"
-            android:ems="10"
-            android:hint="Description of photo"
+            app:layout_constraintTop_toBottomOf="@+id/filledTextFieldTitle"
             android:layout_marginTop="15dp"
-            android:text=""
-            app:layout_constraintTop_toBottomOf="@+id/editTextTitle"
-            tools:layout_editor_absoluteX="10dp" />
+            app:boxBackgroundColor="@color/light_brown"
+            app:boxStrokeColor="@color/dark_dark_brown"
+            app:hintTextColor="@color/dark_dark_brown"
+            android:hint="Description of photo">
 
-        <EditText
-            android:id="@+id/editTextDate"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editTextDescription"
+                android:text=""
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:layout_editor_absoluteX="10dp"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/filledTextDate"
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:layout_gravity="center"
-            android:ems="10"
-            app:layout_constraintTop_toBottomOf="@+id/editTextDescription"
+            app:layout_constraintTop_toBottomOf="@+id/filledTextDescription"
             android:layout_marginTop="15dp"
-            android:hint="Date when photo was taken"
-            android:text="" />
+            app:boxBackgroundColor="@color/light_brown"
+            app:boxStrokeColor="@color/dark_dark_brown"
+            app:hintTextColor="@color/dark_dark_brown"
+            android:hint="Date of photo">
 
-        <EditText
-            android:id="@+id/editTextLocation"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editTextDate"
+                android:text=""
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:layout_editor_absoluteX="10dp"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/filledTextLocation"
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:layout_gravity="center"
-            android:ems="10"
-            app:layout_constraintTop_toBottomOf="@+id/editTextDate"
+            app:layout_constraintTop_toBottomOf="@+id/filledTextDate"
             android:layout_marginTop="15dp"
-            android:hint="Location of photo"
-            android:text="" />
+            app:boxBackgroundColor="@color/light_brown"
+            app:boxStrokeColor="@color/dark_dark_brown"
+            app:hintTextColor="@color/dark_dark_brown"
+            android:hint="Location of photo">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editTextLocation"
+                android:text=""
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:layout_editor_absoluteX="10dp"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <Button
             android:id="@+id/buttonDelete"
             android:layout_width="150dp"
+            android:textAllCaps="false"
             android:layout_height="wrap_content"
             android:layout_marginVertical="15dp"
             android:text="Delete"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editTextLocation" />
+            app:layout_constraintTop_toBottomOf="@+id/filledTextLocation" />
 
         <Button
             android:id="@+id/buttonSave"
             android:layout_width="150dp"
+            android:textAllCaps="false"
             android:layout_height="wrap_content"
             android:layout_marginVertical="15dp"
             android:layout_marginRight="10dp"
             android:text="Save changes"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editTextLocation" />
+            app:layout_constraintTop_toBottomOf="@+id/filledTextLocation" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

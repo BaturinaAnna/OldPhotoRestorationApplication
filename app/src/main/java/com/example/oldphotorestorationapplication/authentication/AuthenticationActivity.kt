@@ -23,6 +23,7 @@ class AuthenticationActivity: AppCompatActivity() {
     }
 
     private fun init(){
+        this.supportActionBar?.hide()
         setCurrentFragment(authenticationSignInFragment)
     }
 
