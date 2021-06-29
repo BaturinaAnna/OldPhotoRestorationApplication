@@ -45,16 +45,6 @@ class PhotoGalleryFragment: Fragment(R.layout.photo_gallery_fragment), OnPhotoCl
 
         mViewModel = ViewModelProvider(this).get(PhotoGalleryViewModel::class.java)
         mViewModel.allPhotos.observe(viewLifecycleOwner, { photos ->
-//            val compressedPhotos = photos.map{
-//                Photo(initialPhoto = it.initialPhoto,
-//                    restoredPhoto = resizeImage(it.restoredPhoto),
-//                    title = it.title,
-//                    description = it.description,
-//                    date = it.date,
-//                    location = it.location,
-//                    id = it.idPhoto)
-//            }
-//            adapterPhoto.setData(compressedPhotos)
             adapterPhoto.setData(photos)
         })
         mViewModel.allPhotoWithFaces.observe(viewLifecycleOwner, { photoWithFaces ->
