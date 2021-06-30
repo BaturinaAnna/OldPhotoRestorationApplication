@@ -7,4 +7,4 @@ Everyone has old photographs that are precious as memories, but that are preserv
  - Neural Network to restore old photos (https://github.com/iddoroshenko/Bringing-Old-Photos-Back-to-Life)
  - Servlet to get old photo, run neural network and send its output to the android (https://github.com/BaturinaAnna/OldPhotoRestorationServlet/blob/main/src/main/java/com/example/OldPhotoRestoration/RestorationServlet.java)
 
-User cases - https://drive.google.com/drive/folders/1fttPEGJ2J613SKos7ZEmTc_w09v9keIh?usp=sharing
+Use cases - https://drive.google.com/drive/folders/1fttPEGJ2J613SKos7ZEmTc_w09v9keIh?usp=sharing
